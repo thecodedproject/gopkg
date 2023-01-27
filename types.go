@@ -5,7 +5,15 @@ import (
 )
 
 type Contents struct {
+
+	PackageName string
+	ImportsAndAliases map[string]string
+
+	Types []DeclType
+
 	Functions []DeclFunc
+
+	// TODO Deprecate - should use []DeclTypes instead
 	StructTypes []DeclStruct
 }
 

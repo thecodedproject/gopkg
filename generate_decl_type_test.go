@@ -109,6 +109,32 @@ func TestGenerateDeclType(t *testing.T) {
 				Type: gopkg.TypeInterface{},
 			},
 		},
+		{
+			Name: "TypeInterface with functions no import alias",
+			T: gopkg.DeclType{
+				Name: "MyServiceApi",
+				Type: gopkg.TypeInterface{
+					Funcs: []gopkg.DeclFunc{
+						{
+							Name: "CoolMethod",
+							Args: []gopkg.DeclVar{
+								{
+									Name: "aNumber",
+									Type: gopkg.TypeFloat64{},
+								},
+							},
+						},
+						{
+							Name: "OnlyRetArgs",
+							ReturnArgs: []gopkg.Type{
+								gopkg.TypeString{},
+								gopkg.TypeError{},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {
