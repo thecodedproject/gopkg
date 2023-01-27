@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package proto_conversion;
+
+message IntAsString {
+	string value = 1;
+}
+
+message ShopspringDecimal {
+	string value = 1;
+}
+
