@@ -14,7 +14,7 @@ import (
 const CURRENT_PKG = "current_pkg_import"
 
 // TODO: Rename to parse
-func GetContents(pkgDir string, pkgImportPath string) (*Contents, error) {
+func GetContents(pkgDir string, pkgImportPath string) (Contents, error) {
 
 	pkgs, err := parser.ParseDir(
 		token.NewFileSet(),
@@ -23,7 +23,7 @@ func GetContents(pkgDir string, pkgImportPath string) (*Contents, error) {
 		0,
 	)
 	if err != nil {
-		return nil, err
+		return Contents{}, err
 	}
 
 	if len(pkgs) != 1 {
@@ -31,22 +31,19 @@ func GetContents(pkgDir string, pkgImportPath string) (*Contents, error) {
 			fmt.Println(k)
 		}
 
-		return nil, fmt.Errorf("more than one package found in dir %s", pkgDir)
+		return Contents{}, fmt.Errorf("more than one package found in dir %s", pkgDir)
 	}
 
 	for k := range pkgs {
 		return parseAst(pkgImportPath, pkgs[k])
 	}
 
-	return nil, nil
+	return Contents{}, nil
 }
 
-func parseAst(pkgImportPath string, p *ast.Package) (*Contents, error) {
+func parseAst(pkgImportPath string, p *ast.Package) (Contents, error) {
 
-	pc := Contents{
-		Functions: make([]DeclFunc, 0),
-		StructTypes: make([]DeclStruct, 0),
-	}
+	var pc Contents
 
 	currentFileImports := make(map[string]string)
 
@@ -110,29 +107,21 @@ func parseAst(pkgImportPath string, p *ast.Package) (*Contents, error) {
 
 				switch s := n.Specs[0].(type) {
 				case *ast.TypeSpec:
-						switch s.Type.(type) {
-						case *ast.StructType:
 
-							structSpec := s.Type.(*ast.StructType)
+					fullType, err := getFullType(currentFileImports, s.Type)
+					if err != nil {
+						inspectingErr = err
+						return false
+					}
 
-							structFields, err := getDeclVarsFromFieldList(
-								currentFileImports,
-								structSpec.Fields,
-							)
-							if err != nil {
-								inspectingErr = err
-								return false
-							}
-
-							pc.StructTypes = append(
-								pc.StructTypes,
-								DeclStruct{
-									Name: s.Name.Name,
-									Import: pkgImportPath,
-									Fields: structFields,
-								},
-							)
-						}
+					pc.Types = append(
+						pc.Types,
+						DeclType{
+							Name: s.Name.Name,
+							Import: pkgImportPath,
+							Type: fullType,
+						},
+					)
 				}
 				return true
 
@@ -142,10 +131,10 @@ func parseAst(pkgImportPath string, p *ast.Package) (*Contents, error) {
 	})
 
 	if inspectingErr != nil {
-		return nil, inspectingErr
+		return Contents{}, inspectingErr
 	}
 
-	return &pc, nil
+	return pc, nil
 }
 
 // getArgTypeList gets an order list of arguments from an `ast.FieldList`
@@ -207,30 +196,49 @@ func getDeclVarsFromFieldList(
 	return typeList, nil
 }
 
-
-// getFieldTypeList returns a map of field names and types from an `ast.FieldList`
-//
-// Used to get the list of fields and there types when pasing the ast for a struct
-func getFieldTypeList(
+func getDeclFuncsFromFieldList(
 	imports map[string]string,
 	fieldList *ast.FieldList,
-) (map[string]Type, error) {
+) ([]DeclFunc, error) {
 
-	if fieldList == nil || fieldList.List == nil {
-		return nil, nil
-	}
+	funcs := make([]DeclFunc, 0, len(fieldList.List))
 
-	fieldTypeList := make(map[string]Type)
+	for i, method := range fieldList.List {
 
-	for i := range fieldList.List {
-		fieldType, err := getFullType(imports, fieldList.List[i].Type)
-		if err != nil {
-			return nil, err
+		for _, name := range method.Names {
+
+			if name.Obj != nil && name.Obj.Kind == ast.Fun {
+
+				funcDecl, ok := name.Obj.Decl.(*ast.Field)
+				if !ok {
+					return nil, errors.New("bad func decl")
+				}
+
+				funcType, ok := funcDecl.Type.(*ast.FuncType)
+				if !ok {
+					return nil, errors.New("bad func decl")
+				}
+
+				args, err := getDeclVarsFromFieldList(imports, funcType.Params)
+				if err != nil {
+					return nil, err
+				}
+
+				retArgs, err := getArgTypeList(imports, funcType.Results)
+				if err != nil {
+					return nil, err
+				}
+
+				funcs = append(funcs, DeclFunc{
+					Name: fieldList.List[i].Names[0].String(),
+					Args: args,
+					ReturnArgs: retArgs,
+				})
+			}
 		}
-		fieldTypeList[fieldList.List[i].Names[0].String()] = fieldType
 	}
 
-	return fieldTypeList, nil
+	return funcs, nil
 }
 
 func getFullType(
@@ -300,7 +308,31 @@ func getFullType(
 			}, nil
 
 		case *ast.StructType:
+
+			structFields, err := getDeclVarsFromFieldList(
+				imports,
+				t.Fields,
+			)
+			if err != nil {
+				return nil, err
+			}
+
 			return TypeStruct{
+				Fields: structFields,
+			}, nil
+
+		case *ast.InterfaceType:
+
+			interfaceFuncs, err := getDeclFuncsFromFieldList(
+				imports,
+				t.Methods,
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			return TypeInterface{
+				Funcs: interfaceFuncs,
 			}, nil
 
 		default:

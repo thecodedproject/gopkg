@@ -16,16 +16,18 @@ func GenerateFileToWriter(
 
 	w.Write([]byte("package " + c.PackageName + "\n\n"))
 
-	if len(c.ImportsAndAliases) > 0 {
+	if len(c.Imports) > 0 {
 		w.Write([]byte("import (\n"))
-		for importPath, alias := range c.ImportsAndAliases {
-			w.Write([]byte("\t" + alias + " \"" + importPath + "\"\n"))
+		for _, i := range c.Imports {
+			w.Write([]byte("\t" + i.Alias + " \"" + i.Import + "\"\n"))
 		}
 		w.Write([]byte(")\n\n"))
 	}
 
+	importAliases := importsToImportAliasMap(c.Imports)
+
 	for _, t := range c.Types {
-		err := GenerateDeclType(w, t, c.ImportsAndAliases)
+		err := GenerateDeclType(w, t, importAliases)
 		if err != nil {
 			return err
 		}
@@ -33,7 +35,7 @@ func GenerateFileToWriter(
 	}
 
 	for _, f := range c.Functions {
-		err := GenerateFunc(w, f, c.ImportsAndAliases)
+		err := GenerateDeclFunc(w, f, importAliases)
 		if err != nil {
 			return err
 		}
@@ -41,4 +43,13 @@ func GenerateFileToWriter(
 	}
 
 	return nil
+}
+
+func importsToImportAliasMap(imports []ImportAndAlias) map[string]string {
+
+	ret := make(map[string]string)
+	for _, i := range imports {
+		ret[i.Import] = i.Alias
+	}
+	return ret
 }

@@ -32,9 +32,9 @@ func TestGenerateFileToWriter(t *testing.T) {
 			Name: "imports with a struct type decl and a function decl",
 			C: gopkg.Contents{
 				PackageName: "struct_and_func",
-				ImportsAndAliases: map[string]string{
-					"context": "context",
-					"some/pkg/path": "pkg_path",
+				Imports: []gopkg.ImportAndAlias{
+					{"context", "context"},
+					{"some/pkg/path", "pkg_path"},
 				},
 				Types: []gopkg.DeclType{
 					{

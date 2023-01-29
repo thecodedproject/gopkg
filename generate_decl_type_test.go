@@ -31,6 +31,17 @@ func TestGenerateDeclType(t *testing.T) {
 			ExpectedErr: errors.New("type decl type cannot be nil"),
 		},
 		{
+			Name: "TypeArray to TypePointer of TypeString",
+			T: gopkg.DeclType{
+				Name: "AGlobalType",
+				Type: gopkg.TypeArray{
+					ValueType: gopkg.TypePointer{
+						ValueType: gopkg.TypeString{},
+					},
+				},
+			},
+		},
+		{
 			Name: "TypeStruct with no fields",
 			T: gopkg.DeclType{
 				Name: "MyStrct",

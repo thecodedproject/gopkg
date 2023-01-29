@@ -4,7 +4,13 @@ import (
 	shopspring_decimal "github.com/shopspring/decimal"
 )
 
-type SomeArrayStruct struct{
+type MyCustomArrayType [][][]float64
+
+type SomeArrayInterface interface {
+	ArrayMaker(n int64, vals string) []string
+}
+
+type SomeArrayStruct struct {
 	AOfInts []int64
 	AOfPToStrings []*string
 }

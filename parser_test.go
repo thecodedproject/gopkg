@@ -1,6 +1,7 @@
 package gopkg_test
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,14 +16,32 @@ func TestGetPackageContents(t *testing.T) {
 		Name string
 		PkgDir string
 		PkgImportPath string
-		Expected *gopkg.Contents
+		Expected gopkg.Contents
 	}{
 		{
 			Name: "all_built_in_golang_types",
 			PkgDir: "test_packages/all_built_in_types",
 			PkgImportPath: "some/import/all_built_in_types",
-			Expected: &gopkg.Contents{
+			Expected: gopkg.Contents{
 				Functions: []gopkg.DeclFunc{
+					{
+						Name: "SomeFloats",
+						Import: "some/import/all_built_in_types",
+						Args: []gopkg.DeclVar{
+							{
+								Name: "a",
+								Type: gopkg.TypeFloat32{},
+							},
+							{
+								Name: "b",
+								Type: gopkg.TypeFloat64{},
+							},
+						},
+						ReturnArgs: []gopkg.Type{
+							gopkg.TypeFloat32{},
+							gopkg.TypeFloat64{},
+						},
+					},
 					{
 						Name: "SomeInts",
 						Import: "some/import/all_built_in_types",
@@ -47,24 +66,6 @@ func TestGetPackageContents(t *testing.T) {
 						},
 					},
 					{
-						Name: "SomeFloats",
-						Import: "some/import/all_built_in_types",
-						Args: []gopkg.DeclVar{
-							{
-								Name: "a",
-								Type: gopkg.TypeFloat32{},
-							},
-							{
-								Name: "b",
-								Type: gopkg.TypeFloat64{},
-							},
-						},
-						ReturnArgs: []gopkg.Type{
-							gopkg.TypeFloat32{},
-							gopkg.TypeFloat64{},
-						},
-					},
-					{
 						Name: "SomeStrings",
 						Import: "some/import/all_built_in_types",
 						Args: []gopkg.DeclVar{
@@ -78,17 +79,19 @@ func TestGetPackageContents(t *testing.T) {
 						},
 					},
 				},
-				StructTypes: []gopkg.DeclStruct{
+				Types: []gopkg.DeclType{
 					{
 						Name: "SomeStruct",
 						Import: "some/import/all_built_in_types",
-						Fields: []gopkg.DeclVar{
-							{Name: "IA", Type: gopkg.TypeInt{}},
-							{Name: "IB", Type: gopkg.TypeInt32{}},
-							{Name: "IC", Type: gopkg.TypeInt64{}},
-							{Name: "FA", Type: gopkg.TypeFloat32{}},
-							{Name: "FB", Type: gopkg.TypeFloat64{}},
-							{Name: "S", Type: gopkg.TypeString{}},
+						Type: gopkg.TypeStruct{
+							Fields: []gopkg.DeclVar{
+								{Name: "IA", Type: gopkg.TypeInt{}},
+								{Name: "IB", Type: gopkg.TypeInt32{}},
+								{Name: "IC", Type: gopkg.TypeInt64{}},
+								{Name: "FA", Type: gopkg.TypeFloat32{}},
+								{Name: "FB", Type: gopkg.TypeFloat64{}},
+								{Name: "S", Type: gopkg.TypeString{}},
+							},
 						},
 					},
 				},
@@ -98,34 +101,8 @@ func TestGetPackageContents(t *testing.T) {
 			Name: "composite_types",
 			PkgDir: "test_packages/composite_types",
 			PkgImportPath: "some/import/composite_types",
-			Expected: &gopkg.Contents{
+			Expected: gopkg.Contents{
 				Functions: []gopkg.DeclFunc{
-					{
-						Name: "SomePointerFunc",
-						Import: "some/import/composite_types",
-						Args: []gopkg.DeclVar{
-							{
-								Name: "a",
-								Type: gopkg.TypePointer{
-									ValueType: gopkg.TypeFloat32{},
-								},
-							},
-							{
-								Name: "b",
-								Type: gopkg.TypePointer{
-									ValueType: gopkg.TypeUnknownNamed{
-										Name: "SomePointerStruct",
-										Import: "some/import/composite_types",
-									},
-								},
-							},
-						},
-						ReturnArgs: []gopkg.Type{
-							gopkg.TypePointer{
-								ValueType: gopkg.TypeString{},
-							},
-						},
-					},
 					{
 						Name: "SomeArrayFunc",
 						Import: "some/import/composite_types",
@@ -155,23 +132,123 @@ func TestGetPackageContents(t *testing.T) {
 							},
 						},
 					},
-				},
-				StructTypes: []gopkg.DeclStruct{
 					{
-						Name: "SomeArrayStruct",
+						Name: "SomePointerFunc",
 						Import: "some/import/composite_types",
-						Fields: []gopkg.DeclVar{
+						Args: []gopkg.DeclVar{
 							{
-								Name: "AOfInts",
-								Type: gopkg.TypeArray{
-									ValueType: gopkg.TypeInt64{},
+								Name: "a",
+								Type: gopkg.TypePointer{
+									ValueType: gopkg.TypeFloat32{},
 								},
 							},
 							{
-								Name: "AOfPToStrings",
-								Type: gopkg.TypeArray{
-									ValueType: gopkg.TypePointer{
-										ValueType: gopkg.TypeString{},
+								Name: "b",
+								Type: gopkg.TypePointer{
+									ValueType: gopkg.TypeUnknownNamed{
+										Name: "SomePointerStruct",
+										Import: "some/import/composite_types",
+									},
+								},
+							},
+						},
+						ReturnArgs: []gopkg.Type{
+							gopkg.TypePointer{
+								ValueType: gopkg.TypeString{},
+							},
+						},
+					},
+				},
+				Types: []gopkg.DeclType{
+					{
+						Name: "MyCustomArrayType",
+						Import: "some/import/composite_types",
+						Type: gopkg.TypeArray{
+							ValueType: gopkg.TypeArray{
+								ValueType: gopkg.TypeArray{
+									ValueType: gopkg.TypeFloat64{},
+								},
+							},
+						},
+					},
+					{
+						Name: "MyCustomPointer",
+						Import: "some/import/composite_types",
+						Type: gopkg.TypePointer{
+							ValueType: gopkg.TypePointer{
+								ValueType: gopkg.TypeFloat32{},
+							},
+						},
+					},
+					{
+						Name: "SomeArrayInterface",
+						Import: "some/import/composite_types",
+						Type: gopkg.TypeInterface{
+							Funcs: []gopkg.DeclFunc{
+								{
+									Name: "ArrayMaker",
+									Args: []gopkg.DeclVar{
+										{Name: "n", Type: gopkg.TypeInt64{}},
+										{Name: "vals", Type: gopkg.TypeString{}},
+									},
+									ReturnArgs: []gopkg.Type{
+										gopkg.TypeArray{
+											ValueType: gopkg.TypeString{},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						Name: "SomeArrayStruct",
+						Import: "some/import/composite_types",
+						Type: gopkg.TypeStruct{
+							Fields: []gopkg.DeclVar{
+								{
+									Name: "AOfInts",
+									Type: gopkg.TypeArray{
+										ValueType: gopkg.TypeInt64{},
+									},
+								},
+								{
+									Name: "AOfPToStrings",
+									Type: gopkg.TypeArray{
+										ValueType: gopkg.TypePointer{
+											ValueType: gopkg.TypeString{},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						Name: "SomePointerInterface",
+						Import: "some/import/composite_types",
+						Type: gopkg.TypeInterface{
+							Funcs: []gopkg.DeclFunc{
+								{
+									Name: "Something",
+									ReturnArgs: []gopkg.Type{
+										gopkg.TypePointer{
+											ValueType: gopkg.TypeInt64{},
+										},
+									},
+								},
+								{
+									Name: "PointerMaker",
+									Args: []gopkg.DeclVar{
+										{
+											Name: "val",
+											Type: gopkg.TypePointer{
+												ValueType: gopkg.TypeString{},
+											},
+										},
+									},
+									ReturnArgs: []gopkg.Type{
+										gopkg.TypePointer{
+											ValueType: gopkg.TypeFloat64{},
+										},
 									},
 								},
 							},
@@ -180,11 +257,13 @@ func TestGetPackageContents(t *testing.T) {
 					{
 						Name: "SomePointerStruct",
 						Import: "some/import/composite_types",
-						Fields: []gopkg.DeclVar{
-							{
-								Name: "PToInt",
-								Type: gopkg.TypePointer{
-									ValueType: gopkg.TypeInt32{},
+						Type: gopkg.TypeStruct{
+							Fields: []gopkg.DeclVar{
+								{
+									Name: "PToInt",
+									Type: gopkg.TypePointer{
+										ValueType: gopkg.TypeInt32{},
+									},
 								},
 							},
 						},
@@ -199,14 +278,14 @@ func TestGetPackageContents(t *testing.T) {
 			Name: "custom_types",
 			PkgDir: "test_packages/custom_types",
 			PkgImportPath: "some/import/custom_types",
-			Expected: &gopkg.Contents{
+			Expected: gopkg.Contents{
 			},
 		},*/
 		{
 			Name: "proto_conversion_package",
 			PkgDir: "test_packages/proto_conversion",
 			PkgImportPath: "some/import/proto_conversion",
-			Expected: &gopkg.Contents{
+			Expected: gopkg.Contents{
 				Functions: []gopkg.DeclFunc{
 					{
 						Name: "IntAsStringFromProto",
@@ -299,38 +378,42 @@ func TestGetPackageContents(t *testing.T) {
 						Import: "some/import/proto_conversion",
 					},
 				},
-				StructTypes: []gopkg.DeclStruct{
+				Types: []gopkg.DeclType{
 					{
 						Name: "IntAsString",
 						Import: "some/import/proto_conversion",
-						Fields: []gopkg.DeclVar{
-							{Name: "Value", Type: gopkg.TypeString{}},
-							{Name: "XXX_NoUnkeyedLiteral", Type: gopkg.TypeStruct{}},
-							{
-								Name: "XXX_unrecognized",
-								Type: gopkg.TypeArray{
-									ValueType: gopkg.TypeByte{},
+						Type: gopkg.TypeStruct{
+							Fields: []gopkg.DeclVar{
+								{Name: "Value", Type: gopkg.TypeString{}},
+								{Name: "XXX_NoUnkeyedLiteral", Type: gopkg.TypeStruct{}},
+								{
+									Name: "XXX_unrecognized",
+									Type: gopkg.TypeArray{
+										ValueType: gopkg.TypeByte{},
+									},
 								},
+								{Name: "XXX_sizecache", Type: gopkg.TypeInt32{}},
 							},
-							{Name: "XXX_sizecache", Type: gopkg.TypeInt32{}},
 						},
 					},
 					{
 						Name: "ShopspringDecimal",
 						Import: "some/import/proto_conversion",
-						Fields: []gopkg.DeclVar{
-							{Name: "Value", Type: gopkg.TypeString{}},
-							{
-								Name: "XXX_NoUnkeyedLiteral",
-								Type: gopkg.TypeStruct{},
-							},
-							{
-								Name: "XXX_unrecognized",
-								Type: gopkg.TypeArray{
-									ValueType: gopkg.TypeByte{},
+						Type: gopkg.TypeStruct{
+							Fields: []gopkg.DeclVar{
+								{Name: "Value", Type: gopkg.TypeString{}},
+								{
+									Name: "XXX_NoUnkeyedLiteral",
+									Type: gopkg.TypeStruct{},
 								},
+								{
+									Name: "XXX_unrecognized",
+									Type: gopkg.TypeArray{
+										ValueType: gopkg.TypeByte{},
+									},
+								},
+								{Name: "XXX_sizecache", Type: gopkg.TypeInt32{}},
 							},
-							{Name: "XXX_sizecache", Type: gopkg.TypeInt32{}},
 						},
 					},
 				},
@@ -344,9 +427,21 @@ func TestGetPackageContents(t *testing.T) {
 			pc, err := gopkg.GetContents(test.PkgDir, test.PkgImportPath)
 			require.NoError(t, err)
 
-			// TODO: This should probably be assert.Equal - The ordering matters here!
-			assert.ElementsMatch(t, test.Expected.Functions, pc.Functions)
-			assert.ElementsMatch(t, test.Expected.StructTypes, pc.StructTypes)
+			// TODO consider sorting as part of parsing (as AST parsing is non-deterministic in order)
+			sortDecls(pc)
+
+			assert.Equal(t, test.Expected, pc)
 		})
 	}
+}
+
+func sortDecls(c gopkg.Contents) {
+
+	sort.Slice(c.Types, func(i, j int) bool {
+		return c.Types[i].Name < c.Types[j].Name
+	})
+
+	sort.Slice(c.Functions, func(i, j int) bool {
+		return c.Functions[i].Name < c.Functions[j].Name
+	})
 }

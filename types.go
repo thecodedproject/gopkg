@@ -7,7 +7,7 @@ import (
 type Contents struct {
 
 	PackageName string
-	ImportsAndAliases map[string]string
+	Imports []ImportAndAlias
 
 	Types []DeclType
 
@@ -15,6 +15,11 @@ type Contents struct {
 
 	// TODO Deprecate - should use []DeclTypes instead
 	StructTypes []DeclStruct
+}
+
+type ImportAndAlias struct {
+	Import string
+	Alias string
 }
 
 type Type interface {

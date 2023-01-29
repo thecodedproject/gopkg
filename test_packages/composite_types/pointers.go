@@ -3,7 +3,14 @@ package composite_types
 import (
 )
 
-type SomePointerStruct struct{
+type MyCustomPointer **float32
+
+type SomePointerInterface interface {
+	Something() *int64
+	PointerMaker(val *string) *float64
+}
+
+type SomePointerStruct struct {
 	PToInt *int32
 }
 
