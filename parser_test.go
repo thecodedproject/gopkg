@@ -25,6 +25,19 @@ func TestGetPackageContents(t *testing.T) {
 			Expected: gopkg.Contents{
 				Functions: []gopkg.DeclFunc{
 					{
+						Name: "MyBoolFunc",
+						Import: "some/import/all_built_in_types",
+						Args: []gopkg.DeclVar{
+							{
+								Name: "maybe",
+								Type: gopkg.TypeBool{},
+							},
+						},
+						ReturnArgs: []gopkg.Type{
+							gopkg.TypeBool{},
+						},
+					},
+					{
 						Name: "SomeFloats",
 						Import: "some/import/all_built_in_types",
 						Args: []gopkg.DeclVar{
@@ -80,6 +93,15 @@ func TestGetPackageContents(t *testing.T) {
 					},
 				},
 				Types: []gopkg.DeclType{
+					{
+						Name: "MyBoolStruct",
+						Import: "some/import/all_built_in_types",
+						Type: gopkg.TypeStruct{
+							Fields: []gopkg.DeclVar{
+								{Name: "Some", Type: gopkg.TypeBool{}},
+							},
+						},
+					},
 					{
 						Name: "SomeStruct",
 						Import: "some/import/all_built_in_types",
@@ -286,98 +308,7 @@ func TestGetPackageContents(t *testing.T) {
 			PkgDir: "test_packages/proto_conversion",
 			PkgImportPath: "some/import/proto_conversion",
 			Expected: gopkg.Contents{
-				Functions: []gopkg.DeclFunc{
-					{
-						Name: "IntAsStringFromProto",
-						Import: "some/import/proto_conversion",
-						Args: []gopkg.DeclVar{
-							{
-								Name: "v",
-								Type: gopkg.TypePointer{
-									ValueType: gopkg.TypeUnknownNamed{
-										Name: "IntAsString",
-										Import: "some/import/proto_conversion",
-									},
-								},
-							},
-						},
-						ReturnArgs: []gopkg.Type{
-							gopkg.TypeInt{},
-							gopkg.TypeError{},
-						},
-					},
-					{
-						Name: "IntAsStringToProto",
-						Import: "some/import/proto_conversion",
-						Args: []gopkg.DeclVar{
-							{
-								Name: "i",
-								Type: gopkg.TypeInt{},
-							},
-						},
-						ReturnArgs: []gopkg.Type{
-							gopkg.TypePointer{
-								ValueType: gopkg.TypeUnknownNamed{
-									Name: "IntAsString",
-									Import: "some/import/proto_conversion",
-								},
-							},
-							gopkg.TypeError{},
-						},
-					},
-					{
-						Name: "ShopspringDecimalFromProto",
-						Import: "some/import/proto_conversion",
-						Args: []gopkg.DeclVar{
-							{
-								Name: "v",
-								Type: gopkg.TypePointer{
-									ValueType: gopkg.TypeUnknownNamed{
-										Name: "ShopspringDecimal",
-										Import: "some/import/proto_conversion",
-									},
-								},
-							},
-						},
-						ReturnArgs: []gopkg.Type{
-							gopkg.TypeUnknownNamed{
-								Name: "Decimal",
-								Import: "github.com/shopspring/decimal",
-							},
-							gopkg.TypeError{},
-						},
-					},
-					{
-						Name: "ShopspringDecimalToProto",
-						Import: "some/import/proto_conversion",
-						Args: []gopkg.DeclVar{
-							{
-								Name: "v",
-								Type: gopkg.TypeUnknownNamed{
-									Name: "Decimal",
-									Import: "github.com/shopspring/decimal",
-								},
-							},
-						},
-						ReturnArgs: []gopkg.Type{
-							gopkg.TypePointer{
-								ValueType: gopkg.TypeUnknownNamed{
-									Name: "ShopspringDecimal",
-									Import: "some/import/proto_conversion",
-								},
-							},
-							gopkg.TypeError{},
-						},
-					},
-					{
-						Name: "init",
-						Import: "some/import/proto_conversion",
-					},
-					{
-						Name: "init",
-						Import: "some/import/proto_conversion",
-					},
-				},
+				Functions: protoConversionPackageFuncs(),
 				Types: []gopkg.DeclType{
 					{
 						Name: "IntAsString",
@@ -419,6 +350,61 @@ func TestGetPackageContents(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "receiver_funcs",
+			PkgDir: "test_packages/receiver_funcs",
+			PkgImportPath: "some/import/receiver_funcs",
+			Expected: gopkg.Contents{
+				Functions: []gopkg.DeclFunc{
+					{
+						Name: "PointerRecFunc",
+						Import: "some/import/receiver_funcs",
+						Receiver: gopkg.FuncReceiver{
+							VarName: "m",
+							TypeName: "MyType",
+							IsPointer: true,
+						},
+					},
+					{
+						Name: "ValueReceiverFunc",
+						Import: "some/import/receiver_funcs",
+						Receiver: gopkg.FuncReceiver{
+							VarName: "m",
+							TypeName: "MyType",
+						},
+					},
+					{
+						Name: "OtherPRecFunc",
+						Import: "some/import/receiver_funcs",
+						Receiver: gopkg.FuncReceiver{
+							VarName: "o",
+							TypeName: "OtherType",
+							IsPointer: true,
+						},
+					},
+					{
+						Name: "SomeOtherValRec",
+						Import: "some/import/receiver_funcs",
+						Receiver: gopkg.FuncReceiver{
+							VarName: "o",
+							TypeName: "OtherType",
+						},
+					},
+				},
+				Types: []gopkg.DeclType{
+					{
+						Name: "MyType",
+						Import: "some/import/receiver_funcs",
+						Type: gopkg.TypeStruct{},
+					},
+					{
+						Name: "OtherType",
+						Import: "some/import/receiver_funcs",
+						Type: gopkg.TypeError{},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {
@@ -435,13 +421,256 @@ func TestGetPackageContents(t *testing.T) {
 	}
 }
 
+// TODO Use gopkg full sorting of contents method once implemented
 func sortDecls(c gopkg.Contents) {
 
 	sort.Slice(c.Types, func(i, j int) bool {
 		return c.Types[i].Name < c.Types[j].Name
 	})
 
-	sort.Slice(c.Functions, func(i, j int) bool {
-		return c.Functions[i].Name < c.Functions[j].Name
-	})
+	gopkg.SortFuncs(c.Functions)
+}
+
+
+func protoConversionPackageFuncs() []gopkg.DeclFunc {
+
+	ret := make([]gopkg.DeclFunc, 0)
+
+	ret = append(ret, protoTypeFuncs("IntAsString")...)
+
+	ret = append(ret, protoTypeFuncs("ShopspringDecimal")...)
+
+	ret = append(ret, []gopkg.DeclFunc{
+		{
+			Name: "IntAsStringFromProto",
+			Import: "some/import/proto_conversion",
+			Args: []gopkg.DeclVar{
+				{
+					Name: "v",
+					Type: gopkg.TypePointer{
+						ValueType: gopkg.TypeUnknownNamed{
+							Name: "IntAsString",
+							Import: "some/import/proto_conversion",
+						},
+					},
+				},
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeInt{},
+				gopkg.TypeError{},
+			},
+		},
+		{
+			Name: "IntAsStringToProto",
+			Import: "some/import/proto_conversion",
+			Args: []gopkg.DeclVar{
+				{
+					Name: "i",
+					Type: gopkg.TypeInt{},
+				},
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypePointer{
+					ValueType: gopkg.TypeUnknownNamed{
+						Name: "IntAsString",
+						Import: "some/import/proto_conversion",
+					},
+				},
+				gopkg.TypeError{},
+			},
+		},
+		{
+			Name: "ShopspringDecimalFromProto",
+			Import: "some/import/proto_conversion",
+			Args: []gopkg.DeclVar{
+				{
+					Name: "v",
+					Type: gopkg.TypePointer{
+						ValueType: gopkg.TypeUnknownNamed{
+							Name: "ShopspringDecimal",
+							Import: "some/import/proto_conversion",
+						},
+					},
+				},
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeUnknownNamed{
+					Name: "Decimal",
+					Import: "github.com/shopspring/decimal",
+				},
+				gopkg.TypeError{},
+			},
+		},
+		{
+			Name: "ShopspringDecimalToProto",
+			Import: "some/import/proto_conversion",
+			Args: []gopkg.DeclVar{
+				{
+					Name: "v",
+					Type: gopkg.TypeUnknownNamed{
+						Name: "Decimal",
+						Import: "github.com/shopspring/decimal",
+					},
+				},
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypePointer{
+					ValueType: gopkg.TypeUnknownNamed{
+						Name: "ShopspringDecimal",
+						Import: "some/import/proto_conversion",
+					},
+				},
+				gopkg.TypeError{},
+			},
+		},
+		{
+			Name: "init",
+			Import: "some/import/proto_conversion",
+		},
+		{
+			Name: "init",
+			Import: "some/import/proto_conversion",
+		},
+	}...)
+
+	return ret
+}
+
+func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
+
+	return []gopkg.DeclFunc{
+		{
+			Name: "Descriptor",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				TypeName: typeName,
+				IsPointer: true,
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
+				gopkg.TypeArray{ValueType: gopkg.TypeInt{}},
+			},
+		},
+		{
+			Name: "GetValue",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeString{},
+			},
+		},
+		{
+			Name: "ProtoMessage",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				TypeName: typeName,
+				IsPointer: true,
+			},
+		},
+		{
+			Name: "Reset",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+		},
+		{
+			Name: "String",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeString{},
+			},
+		},
+		{
+			Name: "XXX_DiscardUnknown",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+		},
+		{
+			Name: "XXX_Marshal",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+			Args: []gopkg.DeclVar{
+				{
+					Name: "b",
+					Type: gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
+				},
+				{
+					Name: "deterministic",
+					Type: gopkg.TypeBool{},
+				},
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
+				gopkg.TypeError{},
+			},
+		},
+		{
+			Name: "XXX_Merge",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+			Args: []gopkg.DeclVar{
+				{
+					Name: "src",
+					Type: gopkg.TypeUnknownNamed{
+						Name: "Message",
+						Import: "github.com/golang/protobuf/proto",
+					},
+				},
+			},
+		},
+		{
+			Name: "XXX_Size",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeInt{},
+			},
+		},
+		{
+			Name: "XXX_Unmarshal",
+			Import: "some/import/proto_conversion",
+			Receiver: gopkg.FuncReceiver{
+				VarName: "m",
+				TypeName: typeName,
+				IsPointer: true,
+			},
+			Args: []gopkg.DeclVar{
+				{
+					Name: "b",
+					Type: gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
+				},
+			},
+			ReturnArgs: []gopkg.Type{
+				gopkg.TypeError{},
+			},
+		},
+	}
 }

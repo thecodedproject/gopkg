@@ -39,6 +39,16 @@ func (t TypeArray) FullType(importAliases map[string]string) string {
 	return "[]" + t.ValueType.FullType(importAliases)
 }
 
+type TypeBool struct {}
+
+func (t TypeBool) DefaultInit(importAliases map[string]string) (string, error) {
+	return "false", nil
+}
+
+func (t TypeBool) FullType(importAliases map[string]string) string {
+	return "bool"
+}
+
 type TypeByte struct {}
 
 func (t TypeByte) DefaultInit(importAliases map[string]string) (string, error) {

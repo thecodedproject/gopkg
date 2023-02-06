@@ -73,9 +73,10 @@ func parseAst(pkgImportPath string, p *ast.Package) (Contents, error) {
 
 			case *ast.FuncDecl:
 
-				// Skip functions with receivers
-				if n.Recv != nil {
-					return true
+				receiver, err := getFuncReceiverFromFieldList(n.Recv)
+				if err != nil {
+					inspectingErr = err
+					return false
 				}
 
 				args, err := getDeclVarsFromFieldList(currentFileImports, n.Type.Params)
@@ -93,6 +94,7 @@ func parseAst(pkgImportPath string, p *ast.Package) (Contents, error) {
 				f := DeclFunc{
 					Name: n.Name.String(),
 					Import: pkgImportPath,
+					Receiver: receiver,
 					Args: args,
 					ReturnArgs: retArgs,
 				}
@@ -182,13 +184,19 @@ func getDeclVarsFromFieldList(
 
 	typeList := make([]DeclVar, 0, len(fieldList.List))
 
-	for i := range fieldList.List {
-		fieldType, err := getFullType(imports, fieldList.List[i].Type)
+	for _, f := range fieldList.List {
+		fieldType, err := getFullType(imports, f.Type)
 		if err != nil {
 			return nil, err
 		}
+
+		var name string
+		if len(f.Names) > 0 {
+			name = f.Names[0].String()
+		}
+
 		typeList = append(typeList, DeclVar{
-			Name: fieldList.List[i].Names[0].String(),
+			Name: name,
 			Type: fieldType,
 		})
 	}
@@ -239,6 +247,47 @@ func getDeclFuncsFromFieldList(
 	}
 
 	return funcs, nil
+}
+
+func getFuncReceiverFromFieldList(
+	fieldList *ast.FieldList,
+) (FuncReceiver, error) {
+
+	if fieldList == nil {
+		return FuncReceiver{}, nil
+	}
+
+	types, err := getDeclVarsFromFieldList(nil, fieldList)
+	if err != nil {
+		return FuncReceiver{}, err
+	}
+
+	if len(types) != 1 {
+		return FuncReceiver{}, errors.New("More than one receiver in ast for method")
+	}
+
+	receiverType := types[0]
+
+	receiver := FuncReceiver{
+		VarName: receiverType.Name,
+	}
+	if p, ok := receiverType.Type.(TypePointer); ok {
+		receiver.IsPointer = true
+
+		t, ok := p.ValueType.(TypeUnknownNamed)
+		if !ok {
+			return FuncReceiver{}, errors.New("expected TypeUnknownNamed in pointer receiver but found different type")
+		}
+		receiver.TypeName = t.Name
+	} else {
+		t, ok := receiverType.Type.(TypeUnknownNamed)
+		if !ok {
+			return FuncReceiver{}, errors.New("expected TypeUnknownNamed in receiver but found different type")
+		}
+		receiver.TypeName = t.Name
+	}
+
+	return receiver, nil
 }
 
 func getFullType(
@@ -371,6 +420,7 @@ func addImport(imports map[string]string, n *ast.ImportSpec) {
 func isBuiltInType(t string) bool {
 
 	builtInTypes := map[string]struct{}{
+		"bool": {},
 		"byte": {},
 		"error": {},
 		"float32": {},
@@ -388,6 +438,8 @@ func isBuiltInType(t string) bool {
 func typeFromString(t string) Type {
 
 	switch t {
+	case "bool":
+		return TypeBool{}
 	case "byte":
 		return TypeByte{}
 	case "error":

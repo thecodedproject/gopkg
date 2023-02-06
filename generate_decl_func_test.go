@@ -17,6 +17,145 @@ func TestGenerateDeclFunc(t *testing.T) {
 		F gopkg.DeclFunc
 		ImportAliases map[string]string
 	}{
+
+		{
+			Name: "no args or return or body",
+			F: gopkg.DeclFunc{
+				Name: "NoArgsOrReturn",
+			},
+		},
+		{
+			Name: "value reciever with no args or returns no body",
+			F: gopkg.DeclFunc{
+				Name: "ANamedValueRecvFunc",
+				Receiver: gopkg.FuncReceiver{
+					VarName: "v",
+					TypeName: "ValueType",
+				},
+			},
+		},
+		{
+			Name: "value reciever unnamed with no args or returns no body",
+			F: gopkg.DeclFunc{
+				Name: "AUnnamedValueRecvFunc",
+				Receiver: gopkg.FuncReceiver{
+					TypeName: "ValueType",
+				},
+			},
+		},
+		{
+			Name: "pointer reciever with no args or returns no body",
+			F: gopkg.DeclFunc{
+				Name: "ANamedPointerRecvFunc",
+				Receiver: gopkg.FuncReceiver{
+					VarName: "p",
+					TypeName: "PointerType",
+					IsPointer: true,
+				},
+			},
+		},
+		{
+			Name: "pointer reciever unnamed with no args or returns no body",
+			F: gopkg.DeclFunc{
+				Name: "AUnnamedPointerRecvFunc",
+				Receiver: gopkg.FuncReceiver{
+					TypeName: "ValueType",
+					IsPointer: true,
+				},
+			},
+		},
+		{
+			Name: "single arg plus return no body",
+			F: gopkg.DeclFunc{
+				Name: "SingleArgPlusReturn",
+				Args: []gopkg.DeclVar{
+					{
+						Name: "myVar",
+						Type: gopkg.TypePointer{
+							ValueType: gopkg.TypeUnknownNamed{
+								Name: "int32",
+							},
+						},
+					},
+				},
+				ReturnArgs: []gopkg.Type{
+					gopkg.TypeUnknownNamed{Name: "error"},
+				},
+			},
+		},
+		{
+			Name: "multiple args and single return no body",
+			F: gopkg.DeclFunc{
+				Name: "MultiArgPlusReturn",
+				Args: []gopkg.DeclVar{
+					{
+						Name: "myVar",
+						Type: gopkg.TypeUnknownNamed{
+								Name: "int32",
+						},
+					},
+					{
+						Name: "myOtherVar",
+						Type: gopkg.TypeUnknownNamed{
+								Name: "string",
+						},
+					},
+				},
+				ReturnArgs: []gopkg.Type{
+					gopkg.TypeUnknownNamed{Name: "error"},
+				},
+			},
+		},
+		{
+			Name: "multiple args and multiple returns no body",
+			F: gopkg.DeclFunc{
+				Name: "MultiArgPlusMultiReturn",
+				Args: []gopkg.DeclVar{
+					{
+						Name: "a",
+						Type: gopkg.TypeUnknownNamed{
+								Name: "int",
+						},
+					},
+					{
+						Name: "b",
+						Type: gopkg.TypeUnknownNamed{
+								Name: "int",
+						},
+					},
+				},
+				ReturnArgs: []gopkg.Type{
+					gopkg.TypeUnknownNamed{Name: "int"},
+					gopkg.TypeUnknownNamed{Name: "float32"},
+					gopkg.TypeUnknownNamed{Name: "error"},
+				},
+			},
+		},
+		{
+			Name: "single arg and return with imports no body",
+			F: gopkg.DeclFunc{
+				Name: "SingleArgAndReturnWithImport",
+				Args: []gopkg.DeclVar{
+					{
+						Name: "a",
+						Type: gopkg.TypeUnknownNamed{
+								Name: "MyType",
+								Import: "some/import/path",
+						},
+					},
+				},
+				ReturnArgs: []gopkg.Type{
+					gopkg.TypeUnknownNamed{
+						Name: "OtherType",
+						Import: "other/import/path",
+					},
+				},
+			},
+			ImportAliases: map[string]string{
+				"some/import/path": "some_path",
+				"other/import/path": "other_path",
+			},
+		},
 		{
 			Name: "empty body no imports",
 			F: gopkg.DeclFunc{

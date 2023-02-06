@@ -18,6 +18,10 @@ func TestTypeDefaultInit(t *testing.T) {
 		ExpectedErr error
 	}{
 		{
+			Def: gopkg.TypeBool{},
+			Expected: "false",
+		},
+		{
 			Def: gopkg.TypeByte{},
 			Expected: "0",
 		},
@@ -141,6 +145,10 @@ func TestTypeFullType(t *testing.T) {
 		ImportAliases map[string]string
 		Expected string
 	}{
+		{
+			Def: gopkg.TypeBool{},
+			Expected: "bool",
+		},
 		{
 			Def: gopkg.TypeByte{},
 			Expected: "byte",

@@ -1,0 +1,5 @@
+func MultiArgPlusMultiReturn(
+	a int,
+	b int,
+) (int, float32, error) {
+}
