@@ -4,7 +4,9 @@ import (
 	"errors"
 )
 
-type Contents struct {
+type FileContents struct {
+
+	Filepath string
 
 	PackageName string
 	Imports []ImportAndAlias

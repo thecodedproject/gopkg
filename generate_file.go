@@ -7,7 +7,7 @@ import (
 
 func GenerateFileToWriter(
 	w io.Writer,
-	c Contents,
+	c FileContents,
 ) error {
 
 	if c.PackageName == "" {

@@ -7,14 +7,14 @@ import (
 	"go/token"
 	"go/ast"
 	"path"
+	"sort"
 
 	//"reflect"
 )
 
 const CURRENT_PKG = "current_pkg_import"
 
-// TODO: Rename to parse
-func GetContents(pkgDir string, pkgImportPath string) (Contents, error) {
+func GetContents(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 
 	pkgs, err := parser.ParseDir(
 		token.NewFileSet(),
@@ -23,7 +23,7 @@ func GetContents(pkgDir string, pkgImportPath string) (Contents, error) {
 		0,
 	)
 	if err != nil {
-		return Contents{}, err
+		return nil, err
 	}
 
 	if len(pkgs) != 1 {
@@ -31,19 +31,39 @@ func GetContents(pkgDir string, pkgImportPath string) (Contents, error) {
 			fmt.Println(k)
 		}
 
-		return Contents{}, fmt.Errorf("more than one package found in dir %s", pkgDir)
+		return nil, fmt.Errorf("more than one package found in dir %s", pkgDir)
 	}
 
-	for k := range pkgs {
-		return parseAst(pkgImportPath, pkgs[k])
+	pkgContents := make([]FileContents, 0)
+
+	for _, pkg := range pkgs {
+
+		for filepath, fileNode := range pkg.Files {
+
+			fileContents, err := parseNodeAst(pkgImportPath, fileNode)
+			if err != nil {
+				return nil, err
+			}
+
+			fileContents.Filepath = filepath
+
+			pkgContents = append(
+				pkgContents,
+				fileContents,
+			)
+		}
 	}
 
-	return Contents{}, nil
+	sort.Slice(pkgContents, func(i, j int) bool {
+		return pkgContents[i].Filepath < pkgContents[j].Filepath
+	})
+
+	return pkgContents, nil
 }
 
-func parseAst(pkgImportPath string, p *ast.Package) (Contents, error) {
+func parseNodeAst(pkgImportPath string, p ast.Node) (FileContents, error) {
 
-	var pc Contents
+	var pc FileContents
 
 	currentFileImports := make(map[string]string)
 
@@ -64,7 +84,13 @@ func parseAst(pkgImportPath string, p *ast.Package) (Contents, error) {
 
 			case *ast.File:
 
-				//fmt.Println("File: ", n.Name)
+				//fmt.Println("File:")
+
+				//for filepath, fileObj := range p.Files {
+				//	if n == fileObj {
+				//		fmt.Println("File path:", filepath)
+				//	}
+				//}
 
 				//fmt.Printf("Previous imports: %+v\n", currentFileImports)
 				currentFileImports = make(map[string]string)
@@ -133,7 +159,7 @@ func parseAst(pkgImportPath string, p *ast.Package) (Contents, error) {
 	})
 
 	if inspectingErr != nil {
-		return Contents{}, inspectingErr
+		return FileContents{}, inspectingErr
 	}
 
 	return pc, nil

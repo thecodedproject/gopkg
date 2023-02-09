@@ -1,6 +1,6 @@
 package proto_conversion
 
-import(
+import (
 	"strconv"
 	shopspring_decimal "github.com/shopspring/decimal"
 )

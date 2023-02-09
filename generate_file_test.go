@@ -15,7 +15,7 @@ func TestGenerateFileToWriter(t *testing.T) {
 
 	testCases := []struct{
 		Name string
-		C gopkg.Contents
+		C gopkg.FileContents
 		ExpectedErr error
 	}{
 		{
@@ -24,13 +24,13 @@ func TestGenerateFileToWriter(t *testing.T) {
 		},
 		{
 			Name: "empty file with package name",
-			C: gopkg.Contents{
+			C: gopkg.FileContents{
 				PackageName: "mypkg",
 			},
 		},
 		{
 			Name: "imports with a struct type decl and a function decl",
-			C: gopkg.Contents{
+			C: gopkg.FileContents{
 				PackageName: "struct_and_func",
 				Imports: []gopkg.ImportAndAlias{
 					{"context", "context"},

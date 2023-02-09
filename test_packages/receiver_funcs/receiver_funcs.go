@@ -14,7 +14,7 @@ func (m *MyType) PointerRecFunc() {
 	return
 }
 
-type OtherType error
+type OtherType bool
 
 func (o *OtherType) OtherPRecFunc() {
 	return
