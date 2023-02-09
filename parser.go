@@ -45,6 +45,7 @@ func GetContents(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 				return nil, err
 			}
 
+			fileContents.PackageName = pkg.Name
 			fileContents.Filepath = filepath
 
 			pkgContents = append(

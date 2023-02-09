@@ -25,6 +25,7 @@ func TestGetPackageContents(t *testing.T) {
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/all_built_in_types/bools.go",
+					PackageName: "all_built_in_types",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "MyBoolFunc",
@@ -54,6 +55,7 @@ func TestGetPackageContents(t *testing.T) {
 				},
 				{
 					Filepath: "test_packages/all_built_in_types/int_float_string_struct.go",
+					PackageName: "all_built_in_types",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "SomeInts",
@@ -136,6 +138,7 @@ func TestGetPackageContents(t *testing.T) {
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/composite_types/arrays.go",
+					PackageName: "composite_types",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "SomeArrayFunc",
@@ -225,6 +228,7 @@ func TestGetPackageContents(t *testing.T) {
 				},
 				{
 					Filepath: "test_packages/composite_types/pointers.go",
+					PackageName: "composite_types",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "SomePointerFunc",
@@ -330,6 +334,7 @@ func TestGetPackageContents(t *testing.T) {
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/proto_conversion/converters.go",
+					PackageName: "proto_conversion",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "IntAsStringFromProto",
@@ -417,6 +422,7 @@ func TestGetPackageContents(t *testing.T) {
 				},
 				{
 					Filepath: "test_packages/proto_conversion/def.pb.go",
+					PackageName: "proto_conversion",
 					Functions: protoConversionPackageFuncs(),
 					Types: []gopkg.DeclType{
 						{
@@ -460,6 +466,7 @@ func TestGetPackageContents(t *testing.T) {
 				},
 				{
 					Filepath: "test_packages/proto_conversion/generate.go",
+					PackageName: "proto_conversion",
 				},
 			},
 		},
@@ -470,6 +477,7 @@ func TestGetPackageContents(t *testing.T) {
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/receiver_funcs/receiver_funcs.go",
+					PackageName: "receiver_funcs",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "ValueReceiverFunc",
