@@ -1,2 +1,0 @@
-func (v ValueType) ANamedValueRecvFunc() {
-}

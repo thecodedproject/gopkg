@@ -1,4 +1,0 @@
-func MyFunction() (nice_package.MyStruct, other_package.OtherStruct) {
-
-	return nice_package.MyStruct{}, other_package.OtherStruct{}
-}

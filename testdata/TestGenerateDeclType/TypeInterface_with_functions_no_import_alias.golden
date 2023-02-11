@@ -1,4 +1,0 @@
-type MyServiceApi interface {
-	CoolMethod(aNumber float64)
-	OnlyRetArgs() (string, error)
-}

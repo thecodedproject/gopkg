@@ -1,4 +1,0 @@
-type MyStrct struct {
-	MapOfThings map[string]pkgpath.CustomContainer
-	OtherThing otherimport.ThingType
-}

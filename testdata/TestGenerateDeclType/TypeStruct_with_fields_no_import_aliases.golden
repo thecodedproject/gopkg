@@ -1,4 +1,0 @@
-type MyStrct struct {
-	SomeValue int
-	SomeOtherValue float64
-}

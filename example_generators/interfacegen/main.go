@@ -29,7 +29,7 @@ func main() {
 		log.Fatal("import path must be set with `--import")
 	}
 
-	pkgFiles, err := gopkg.GetContents(".", *importPath)
+	pkgFiles, err := gopkg.Parse(".", *importPath)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
