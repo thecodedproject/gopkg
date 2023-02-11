@@ -1,0 +1,4 @@
+func MyFunction() (int32, float64, string, MyStruct, *int32, []string) {
+
+	return 0, 0, "", MyStruct{}, nil, nil
+}

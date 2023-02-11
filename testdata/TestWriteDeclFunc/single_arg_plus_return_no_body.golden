@@ -1,0 +1,2 @@
+func SingleArgPlusReturn(myVar *int32) error {
+}

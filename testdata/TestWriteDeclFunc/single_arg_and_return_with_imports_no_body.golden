@@ -1,0 +1,2 @@
+func SingleArgAndReturnWithImport(a some_path.MyType) other_path.OtherType {
+}

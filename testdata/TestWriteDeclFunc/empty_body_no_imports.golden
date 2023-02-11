@@ -1,0 +1,2 @@
+func MyFunction(myVar int32) (int32, error) {
+}

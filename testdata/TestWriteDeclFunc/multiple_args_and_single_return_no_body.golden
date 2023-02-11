@@ -1,0 +1,5 @@
+func MultiArgPlusReturn(
+	myVar int32,
+	myOtherVar string,
+) error {
+}

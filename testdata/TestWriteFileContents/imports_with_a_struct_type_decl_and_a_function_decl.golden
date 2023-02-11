@@ -1,0 +1,17 @@
+package struct_and_func
+
+import (
+	context "context"
+	pkg_path "some/pkg/path"
+)
+
+type MyContainer struct {
+	Num int64
+	OtherThing pkg_path.SomeOtherType
+}
+
+func MyMethod(ctx context.Context) (int32, error) {
+
+	return 0, nil
+}
+
