@@ -26,6 +26,7 @@ func GetContents(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 		return nil, err
 	}
 
+	// TODO remove this requirement - need to be able to parse a package which has tests in as well!
 	if len(pkgs) != 1 {
 		for k := range pkgs {
 			fmt.Println(k)
