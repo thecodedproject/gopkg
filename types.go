@@ -12,10 +12,9 @@ type FileContents struct {
 
 	Imports []ImportAndAlias
 
+	Consts []DeclVar
 	Vars []DeclVar
-
 	Types []DeclType
-
 	Functions []DeclFunc
 }
 

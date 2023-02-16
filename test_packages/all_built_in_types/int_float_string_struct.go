@@ -1,5 +1,10 @@
 package all_built_in_types
 
+const (
+	MyConst, AnotherConst = "some val", "other val"
+	RealNumberConst float64 = 1.234
+)
+
 var (
 	OneInt, TwoInt int = 1, 2
 	SomeFloat float32

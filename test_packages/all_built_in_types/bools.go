@@ -1,5 +1,7 @@
 package all_built_in_types
 
+const AConstant bool = false
+
 var SomeDefaultVar bool = true
 
 type MyBoolStruct struct {

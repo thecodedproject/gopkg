@@ -26,6 +26,14 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/all_built_in_types/bools.go",
 					PackageName: "all_built_in_types",
+					Consts: []gopkg.DeclVar{
+						{
+							Name: "AConstant",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeBool{},
+							LiteralValue: "false",
+						},
+					},
 					Vars: []gopkg.DeclVar{
 						{
 							Name: "SomeDefaultVar",
@@ -64,6 +72,26 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/all_built_in_types/int_float_string_struct.go",
 					PackageName: "all_built_in_types",
+					Consts: []gopkg.DeclVar{
+						{
+							Name: "MyConst",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeUnnamedLiteral{},
+							LiteralValue: "\"some val\"",
+						},
+						{
+							Name: "AnotherConst",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeUnnamedLiteral{},
+							LiteralValue: "\"other val\"",
+						},
+						{
+							Name: "RealNumberConst",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeFloat64{},
+							LiteralValue: "1.234",
+						},
+					},
 					Vars: []gopkg.DeclVar{
 						{
 							Name: "OneInt",
@@ -456,6 +484,13 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/proto_conversion/def.pb.go",
 					PackageName: "proto_conversion",
+					Consts: []gopkg.DeclVar{
+						{
+							Name: "_",
+							Import: "some/import/proto_conversion",
+							Type: gopkg.TypeUnnamedLiteral{},
+						},
+					},
 					Vars: []gopkg.DeclVar{
 						{
 							Name: "_",

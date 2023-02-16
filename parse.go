@@ -128,10 +128,6 @@ func fileContentsFromAstFile(
 					)
 				case *ast.ValueSpec:
 
-					if decl.Tok != token.VAR {
-						continue
-					}
-
 					declVars, err := declVarsFromAstValueSpec(
 						pkgImportPath,
 						fileImports,
@@ -140,7 +136,11 @@ func fileContentsFromAstFile(
 					if err != nil {
 						return FileContents{}, err
 					}
-					contents.Vars = append(contents.Vars, declVars...)
+					if decl.Tok == token.VAR {
+						contents.Vars = append(contents.Vars, declVars...)
+					} else if decl.Tok == token.CONST {
+						contents.Consts = append(contents.Consts, declVars...)
+					}
 				}
 			}
 		}
