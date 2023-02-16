@@ -44,7 +44,7 @@ func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 
 		for filepath, fileNode := range pkg.Files {
 
-			fileContents, err := parseNodeAst(pkgImportPath, fileNode)
+			fileContents, err := fileContentsFromAstFile(pkgImportPath, fileNode)
 			if err != nil {
 				return nil, err
 			}
@@ -66,118 +66,87 @@ func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 	return pkgContents, nil
 }
 
-func parseNodeAst(
+func fileContentsFromAstFile(
 	pkgImportPath string,
-	p ast.Node,
+	f *ast.File,
 ) (FileContents, error) {
 
-	var pc FileContents
-
-	currentFileImports := make(map[string]string)
-
-	var inspectingErr error
-	ast.Inspect(p, func(node ast.Node) bool {
-
-		// If we have encountered an error stop parsing the AST asap (by stopping
-		// any more recursion into the ast)
-		if inspectingErr != nil {
-			return false
-		}
-
-		switch n := node.(type) {
-
-			case *ast.ImportSpec:
-				addImport(currentFileImports, n)
-				return true
-
-			case *ast.File:
-
-				//fmt.Println("File:")
-
-				//for filepath, fileObj := range p.Files {
-				//	if n == fileObj {
-				//		fmt.Println("File path:", filepath)
-				//	}
-				//}
-
-				//fmt.Printf("Previous imports: %+v\n", currentFileImports)
-				currentFileImports = make(map[string]string)
-				currentFileImports[CURRENT_PKG] = pkgImportPath
-				return true
-
-			case *ast.FuncDecl:
-
-				receiver, err := getFuncReceiverFromFieldList(n.Recv)
-				if err != nil {
-					inspectingErr = err
-					return false
-				}
-
-				args, err := getDeclVarsFromFieldList(currentFileImports, n.Type.Params)
-				if err != nil {
-					inspectingErr = err
-					return false
-				}
-
-				retArgs, err := getArgTypeList(currentFileImports, n.Type.Results)
-				if err != nil {
-					inspectingErr = err
-					return false
-				}
-
-				f := DeclFunc{
-					Name: n.Name.String(),
-					Import: pkgImportPath,
-					Receiver: receiver,
-					Args: args,
-					ReturnArgs: retArgs,
-				}
-
-				pc.Functions = append(pc.Functions, f)
-				return true
-
-			case *ast.GenDecl:
-
-				for _, declSpec := range n.Specs {
-
-					switch s := declSpec.(type) {
-					case *ast.TypeSpec:
-
-						fullType, err := getFullType(currentFileImports, s.Type)
-						if err != nil {
-							inspectingErr = err
-							return false
-						}
-
-						pc.Types = append(
-							pc.Types,
-							DeclType{
-								Name: s.Name.Name,
-								Import: pkgImportPath,
-								Type: fullType,
-							},
-						)
-					case *ast.ValueSpec:
-						declVars, err := declVarsFromAstValueSpec(pkgImportPath, s)
-						if err != nil {
-							inspectingErr = err
-							return false
-						}
-						pc.Vars = append(pc.Vars, declVars...)
-					}
-				}
-				return false
-
-			default:
-				return true
-		}
-	})
-
-	if inspectingErr != nil {
-		return FileContents{}, inspectingErr
+	fileImports := make(map[string]string)
+	fileImports[CURRENT_PKG] = pkgImportPath
+	for _, importSpec := range f.Imports {
+		addImport(fileImports, importSpec)
 	}
 
-	return pc, nil
+	var contents FileContents
+	for _, d := range f.Decls {
+		switch decl := d.(type) {
+		case *ast.FuncDecl:
+			receiver, err := getFuncReceiverFromFieldList(decl.Recv)
+			if err != nil {
+				return FileContents{}, err
+			}
+
+			args, err := getDeclVarsFromFieldList(fileImports, decl.Type.Params)
+			if err != nil {
+				return FileContents{}, err
+			}
+
+			retArgs, err := getArgTypeList(fileImports, decl.Type.Results)
+			if err != nil {
+				return FileContents{}, err
+			}
+
+			f := DeclFunc{
+				Name: decl.Name.String(),
+				Import: pkgImportPath,
+				Receiver: receiver,
+				Args: args,
+				ReturnArgs: retArgs,
+			}
+
+			contents.Functions = append(contents.Functions, f)
+
+		case *ast.GenDecl:
+
+			for _, declSpec := range decl.Specs {
+
+				switch s := declSpec.(type) {
+				case *ast.TypeSpec:
+
+					fullType, err := getFullType(fileImports, s.Type)
+					if err != nil {
+						return FileContents{}, err
+					}
+
+					contents.Types = append(
+						contents.Types,
+						DeclType{
+							Name: s.Name.Name,
+							Import: pkgImportPath,
+							Type: fullType,
+						},
+					)
+				case *ast.ValueSpec:
+
+					if decl.Tok != token.VAR {
+						continue
+					}
+
+					declVars, err := declVarsFromAstValueSpec(
+						pkgImportPath,
+						fileImports,
+						s,
+					)
+					if err != nil {
+						return FileContents{}, err
+					}
+					contents.Vars = append(contents.Vars, declVars...)
+				}
+			}
+		}
+	}
+
+	return contents, nil
 }
 
 // getArgTypeList gets an order list of arguments from an `ast.FieldList`
@@ -353,12 +322,7 @@ func getFullType(
 
 		case *ast.Ident:
 			if isBuiltInType(t.Name) {
-
 				return typeFromString(t.Name), nil
-
-				//return TypeUnknownNamed{
-				//	Name: t.Name,
-				//}, nil
 			}
 
 			importPath := imports[CURRENT_PKG]
@@ -441,7 +405,10 @@ func removeQuotes(s string) string {
 	return s
 }
 
-func addImport(imports map[string]string, n *ast.ImportSpec) {
+func addImport(
+	imports map[string]string,
+	n *ast.ImportSpec,
+) {
 
 	importPath := removeQuotes(n.Path.Value)
 	var localName string
@@ -503,6 +470,7 @@ func typeFromString(t string) Type {
 
 func declVarsFromAstValueSpec(
 	pkgImportPath string,
+	imports map[string]string,
 	spec *ast.ValueSpec,
 ) ([]DeclVar, error) {
 
@@ -511,7 +479,7 @@ func declVarsFromAstValueSpec(
 		sType = TypeUnnamedLiteral{}
 	} else {
 		var err error
-		sType, err = getFullType(nil, spec.Type)
+		sType, err = getFullType(imports, spec.Type)
 		if err != nil {
 			return nil, err
 		}

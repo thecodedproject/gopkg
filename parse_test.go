@@ -456,6 +456,44 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/proto_conversion/def.pb.go",
 					PackageName: "proto_conversion",
+					Vars: []gopkg.DeclVar{
+						{
+							Name: "_",
+							Import: "some/import/proto_conversion",
+							Type: gopkg.TypeUnnamedLiteral{},
+						},
+						{
+							Name: "_",
+							Import: "some/import/proto_conversion",
+							Type: gopkg.TypeUnnamedLiteral{},
+						},
+						{
+							Name: "_",
+							Import: "some/import/proto_conversion",
+							Type: gopkg.TypeUnnamedLiteral{},
+						},
+						{
+							Name: "xxx_messageInfo_IntAsString",
+							Import: "some/import/proto_conversion",
+							Type: gopkg.TypeUnknownNamed{
+								Name: "InternalMessageInfo",
+								Import: "github.com/golang/protobuf/proto",
+							},
+						},
+						{
+							Name: "xxx_messageInfo_ShopspringDecimal",
+							Import: "some/import/proto_conversion",
+							Type: gopkg.TypeUnknownNamed{
+								Name: "InternalMessageInfo",
+								Import: "github.com/golang/protobuf/proto",
+							},
+						},
+						{
+							Name: "fileDescriptor_76fb0470a3b910d8",
+							Import: "some/import/proto_conversion",
+							Type: gopkg.TypeUnnamedLiteral{},
+						},
+					},
 					Functions: protoConversionPackageFuncs(),
 					Types: []gopkg.DeclType{
 						{
