@@ -9,14 +9,14 @@ type FileContents struct {
 	Filepath string
 
 	PackageName string
+
 	Imports []ImportAndAlias
+
+	Vars []DeclVar
 
 	Types []DeclType
 
 	Functions []DeclFunc
-
-	// TODO Deprecate - should use []DeclTypes instead
-	StructTypes []DeclStruct
 }
 
 type ImportAndAlias struct {
@@ -231,4 +231,14 @@ func (t TypePointer) DefaultInit(importAliases map[string]string) (string, error
 
 func (t TypePointer) FullType(importAliases map[string]string) string {
 	return "*" + t.ValueType.FullType(importAliases)
+}
+
+type TypeUnnamedLiteral struct {}
+
+func (t TypeUnnamedLiteral) DefaultInit(importAliases map[string]string) (string, error) {
+	return "", errors.New("no default init for unnamed literal")
+}
+
+func (t TypeUnnamedLiteral) FullType(importAliases map[string]string) string {
+	return ""
 }

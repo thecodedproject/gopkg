@@ -26,6 +26,14 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/all_built_in_types/bools.go",
 					PackageName: "all_built_in_types",
+					Vars: []gopkg.DeclVar{
+						{
+							Name: "SomeDefaultVar",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeBool{},
+							LiteralValue: "true",
+						},
+					},
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "MyBoolFunc",
@@ -56,6 +64,31 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/all_built_in_types/int_float_string_struct.go",
 					PackageName: "all_built_in_types",
+					Vars: []gopkg.DeclVar{
+						{
+							Name: "OneInt",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeInt{},
+							LiteralValue: "1",
+						},
+						{
+							Name: "TwoInt",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeInt{},
+							LiteralValue: "2",
+						},
+						{
+							Name: "SomeFloat",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeFloat32{},
+						},
+						{
+							Name: "SomeUntyped",
+							Import: "some/import/all_built_in_types",
+							Type: gopkg.TypeUnnamedLiteral{},
+							LiteralValue: "\"a string\"",
+						},
+					},
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "SomeInts",

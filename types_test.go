@@ -102,6 +102,10 @@ func TestTypeDefaultInit(t *testing.T) {
 			},
 			ExpectedErr: errors.New("cannot deduce default init for named type with no value type"),
 		},
+		{
+			Def: gopkg.TypeUnnamedLiteral{},
+			ExpectedErr: errors.New("no default init for unnamed literal"),
+		},
 	}
 
 	for _, test := range testCases {
@@ -221,6 +225,10 @@ func TestTypeFullType(t *testing.T) {
 				"other/import": "other_alias",
 			},
 			Expected: "map[path_alias.MyType]*[]other_alias.MyOtherType",
+		},
+		{
+			Def: gopkg.TypeUnnamedLiteral{},
+			Expected: "",
 		},
 	}
 

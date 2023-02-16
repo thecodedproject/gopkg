@@ -1,5 +1,11 @@
 package all_built_in_types
 
+var (
+	OneInt, TwoInt int = 1, 2
+	SomeFloat float32
+	SomeUntyped = "a string"
+)
+
 type SomeStruct struct{
 
 	IA int

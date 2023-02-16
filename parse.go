@@ -16,8 +16,9 @@ const CURRENT_PKG = "current_pkg_import"
 
 func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 
+	fset := token.NewFileSet()
 	pkgs, err := parser.ParseDir(
-		token.NewFileSet(),
+		fset,
 		pkgDir,
 		nil,
 		0,
@@ -35,9 +36,11 @@ func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 		return nil, fmt.Errorf("more than one package found in dir %s", pkgDir)
 	}
 
+
 	pkgContents := make([]FileContents, 0)
 
 	for _, pkg := range pkgs {
+
 
 		for filepath, fileNode := range pkg.Files {
 
@@ -63,7 +66,10 @@ func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 	return pkgContents, nil
 }
 
-func parseNodeAst(pkgImportPath string, p ast.Node) (FileContents, error) {
+func parseNodeAst(
+	pkgImportPath string,
+	p ast.Node,
+) (FileContents, error) {
 
 	var pc FileContents
 
@@ -131,29 +137,36 @@ func parseNodeAst(pkgImportPath string, p ast.Node) (FileContents, error) {
 				return true
 
 			case *ast.GenDecl:
-				if len(n.Specs) == 0 {
-					return true
-				}
 
-				switch s := n.Specs[0].(type) {
-				case *ast.TypeSpec:
+				for _, declSpec := range n.Specs {
 
-					fullType, err := getFullType(currentFileImports, s.Type)
-					if err != nil {
-						inspectingErr = err
-						return false
+					switch s := declSpec.(type) {
+					case *ast.TypeSpec:
+
+						fullType, err := getFullType(currentFileImports, s.Type)
+						if err != nil {
+							inspectingErr = err
+							return false
+						}
+
+						pc.Types = append(
+							pc.Types,
+							DeclType{
+								Name: s.Name.Name,
+								Import: pkgImportPath,
+								Type: fullType,
+							},
+						)
+					case *ast.ValueSpec:
+						declVars, err := declVarsFromAstValueSpec(pkgImportPath, s)
+						if err != nil {
+							inspectingErr = err
+							return false
+						}
+						pc.Vars = append(pc.Vars, declVars...)
 					}
-
-					pc.Types = append(
-						pc.Types,
-						DeclType{
-							Name: s.Name.Name,
-							Import: pkgImportPath,
-							Type: fullType,
-						},
-					)
 				}
-				return true
+				return false
 
 			default:
 				return true
@@ -486,4 +499,48 @@ func typeFromString(t string) Type {
 		return TypeString{}
 	}
 	return nil
+}
+
+func declVarsFromAstValueSpec(
+	pkgImportPath string,
+	spec *ast.ValueSpec,
+) ([]DeclVar, error) {
+
+	var sType Type
+	if spec.Type == nil {
+		sType = TypeUnnamedLiteral{}
+	} else {
+		var err error
+		sType, err = getFullType(nil, spec.Type)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var declVars []DeclVar
+	hasLiteralValues := (len(spec.Names) == len(spec.Values))
+	for iDecl := range spec.Names {
+
+		var literalValue string
+		if hasLiteralValues {
+			switch litVal := spec.Values[iDecl].(type) {
+			case *ast.BasicLit:
+				literalValue = litVal.Value
+			case *ast.Ident:
+				literalValue = litVal.String()
+			}
+		}
+
+		declVars = append(
+			declVars,
+			DeclVar{
+				Name: spec.Names[iDecl].String(),
+				Import: pkgImportPath,
+				Type: sType,
+				LiteralValue: literalValue,
+			},
+		)
+	}
+
+	return declVars, nil
 }
