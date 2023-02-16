@@ -2,13 +2,13 @@ package gopkg
 
 import (
 	"errors"
-	"fmt"
 	"go/parser"
 	"go/token"
 	"go/ast"
 	"path"
 	"sort"
 
+	//"fmt"
 	//"reflect"
 )
 
@@ -26,16 +26,6 @@ func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO remove this requirement - need to be able to parse a package which has tests in as well!
-	if len(pkgs) != 1 {
-		for k := range pkgs {
-			fmt.Println(k)
-		}
-
-		return nil, fmt.Errorf("more than one package found in dir %s", pkgDir)
-	}
-
 
 	pkgContents := make([]FileContents, 0)
 

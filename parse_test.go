@@ -635,6 +635,57 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "pkg_with_tests",
+			PkgDir: "test_packages/pkg_with_tests",
+			PkgImportPath: "some/import/pkg_with_tests",
+			Expected: []gopkg.FileContents{
+				{
+					Filepath: "test_packages/pkg_with_tests/logic.go",
+					PackageName: "pkg_with_tests",
+					Functions: []gopkg.DeclFunc{
+						{
+							Name: "MyCoolLogic",
+							Import: "some/import/pkg_with_tests",
+							Args: []gopkg.DeclVar{
+								{
+									Name: "i",
+									Type: gopkg.TypeInt{},
+								},
+								{
+									Name: "j",
+									Type: gopkg.TypeInt{},
+								},
+							},
+							ReturnArgs: []gopkg.Type{
+								gopkg.TypeInt{},
+							},
+						},
+					},
+				},
+				{
+					Filepath: "test_packages/pkg_with_tests/logic_test.go",
+					PackageName: "pkg_with_tests_test",
+					Functions: []gopkg.DeclFunc{
+						{
+							Name: "TestMyCoolLogic",
+							Import: "some/import/pkg_with_tests",
+							Args: []gopkg.DeclVar{
+								{
+									Name: "t",
+									Type: gopkg.TypePointer{
+										ValueType: gopkg.TypeUnknownNamed{
+											Name: "T",
+											Import: "testing",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {
