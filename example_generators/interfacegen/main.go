@@ -36,10 +36,17 @@ func main() {
 
 	pkgName, iDecl := getInterfaceDecl(pkgFiles, *interfaceName)
 
-	err = gopkg.Generate([]gopkg.FileContents{
+	pkg := []gopkg.FileContents{
 		makeImplFile(pkgName, *typeName, iDecl),
 		makeTestFile(pkgName, *importPath, *typeName, iDecl),
-	})
+	}
+
+	err = gopkg.Lint(pkg)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	err = gopkg.Generate(pkg)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -68,13 +75,6 @@ func makeImplFile(
 	ret := gopkg.FileContents{
 		PackageName: pkgName,
 		Filepath: strcase.ToSnake(typeName) + "_impl.go",
-	}
-
-	ret.Imports = []gopkg.ImportAndAlias{
-		{
-			Import: "context",
-			Alias: "context",
-		},
 	}
 
 	ret.Types = []gopkg.DeclType{
@@ -117,20 +117,14 @@ func makeTestFile(
 	ret := gopkg.FileContents{
 		PackageName: pkgName + "_test",
 		Filepath: strcase.ToSnake(typeName) + "_impl_test.go",
-	}
-
-	ret.Imports = []gopkg.ImportAndAlias{
-		{
-			Import: "testing",
-			Alias: "testing",
-		},
-		{
-			Import: "github.com/stretchr/testify/require",
-			Alias: "require",
-		},
-		{
-			Import: pkgImportPath,
-			Alias: pkgName,
+		Imports: []gopkg.ImportAndAlias{
+			{
+				Import: "github.com/stretchr/testify/require",
+			},
+			{
+				Import: pkgImportPath,
+				Alias: pkgName,
+			},
 		},
 	}
 

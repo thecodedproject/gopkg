@@ -34,11 +34,18 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	err = gopkg.Generate([]gopkg.FileContents{
+	toGenerate := []gopkg.FileContents{
 		makeStringerImplFile(pkgName, enumConsts, *enumTypeName),
 		// TODO implement test file
 		//makeTestFile(pkgName, enumConsts, *enumTypeName),
-	})
+	}
+
+	err = gopkg.Lint(toGenerate)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	err = gopkg.Generate(toGenerate)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
