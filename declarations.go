@@ -11,6 +11,7 @@ type DeclFunc struct {
 	// TODO make ReturnArgs a []DeclVar type and allow parsing/generating named return args
 	ReturnArgs []Type
 	BodyTmpl string
+	BodyData any
 }
 
 type FuncReceiver struct {

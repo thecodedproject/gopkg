@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/neurotempest/gopkg/test_packages/pkg_with_tests"
 )
 
 func TestMyCoolLogic(t *testing.T) {
@@ -30,7 +32,7 @@ func TestMyCoolLogic(t *testing.T) {
 			require.Equal(
 				t,
 				test.Expected,
-				pkg_with_tests_test.MyCoolLogic(i, j),
+				pkg_with_tests.MyCoolLogic(test.I, test.J),
 			)
 		})
 	}

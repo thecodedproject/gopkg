@@ -23,6 +23,8 @@ func WriteDeclFunc(
 			return err
 		}
 
+		// TODO: Pass in the DeclFunc directly as the template.Execute data
+		// There is no need for the extra redirection of `.Func`
 		data := struct{
 			Func DeclFunc
 		}{
