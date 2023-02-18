@@ -12,6 +12,7 @@
     * Add import aliases
     * Check for TypeUnnamedLiteral (not in funcs/type defs)
     * Sort FileContents
+    * TypeNamed should not have a value type when used in func/struct defs
 
 * Add auto detection of pkg import path (for modules)
 

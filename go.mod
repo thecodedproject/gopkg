@@ -9,6 +9,8 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.0 // indirect
+	github.com/deckarep/golang-set v1.8.0 // indirect
+	github.com/deckarep/golang-set/v2 v2.1.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

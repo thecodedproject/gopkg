@@ -26,6 +26,7 @@ type ImportAndAlias struct {
 type Type interface {
 	DefaultInit(importAliases map[string]string) (string, error)
 	FullType(importAliases map[string]string) string
+	RequiredImports() map[string]bool
 }
 
 type TypeArray struct {
@@ -40,6 +41,10 @@ func (t TypeArray) FullType(importAliases map[string]string) string {
 	return "[]" + t.ValueType.FullType(importAliases)
 }
 
+func (t TypeArray) RequiredImports() map[string]bool {
+	return t.ValueType.RequiredImports()
+}
+
 type TypeBool struct {}
 
 func (t TypeBool) DefaultInit(importAliases map[string]string) (string, error) {
@@ -48,6 +53,10 @@ func (t TypeBool) DefaultInit(importAliases map[string]string) (string, error) {
 
 func (t TypeBool) FullType(importAliases map[string]string) string {
 	return "bool"
+}
+
+func (t TypeBool) RequiredImports() map[string]bool {
+	return nil
 }
 
 type TypeByte struct {}
@@ -60,6 +69,10 @@ func (t TypeByte) FullType(importAliases map[string]string) string {
 	return "byte"
 }
 
+func (t TypeByte) RequiredImports() map[string]bool {
+	return nil
+}
+
 type TypeError struct {}
 
 func (t TypeError) DefaultInit(importAliases map[string]string) (string, error) {
@@ -68,6 +81,10 @@ func (t TypeError) DefaultInit(importAliases map[string]string) (string, error) 
 
 func (t TypeError) FullType(importAliases map[string]string) string {
 	return "error"
+}
+
+func (t TypeError) RequiredImports() map[string]bool {
+	return nil
 }
 
 type TypeFloat32 struct {}
@@ -80,6 +97,10 @@ func (t TypeFloat32) FullType(importAliases map[string]string) string {
 	return "float32"
 }
 
+func (t TypeFloat32) RequiredImports() map[string]bool {
+	return nil
+}
+
 type TypeFloat64 struct {}
 
 func (t TypeFloat64) DefaultInit(importAliases map[string]string) (string, error) {
@@ -90,6 +111,10 @@ func (t TypeFloat64) FullType(importAliases map[string]string) string {
 	return "float64"
 }
 
+func (t TypeFloat64) RequiredImports() map[string]bool {
+	return nil
+}
+
 type TypeInt struct {}
 
 func (t TypeInt) DefaultInit(importAliases map[string]string) (string, error) {
@@ -98,6 +123,10 @@ func (t TypeInt) DefaultInit(importAliases map[string]string) (string, error) {
 
 func (t TypeInt) FullType(importAliases map[string]string) string {
 	return "int"
+}
+
+func (t TypeInt) RequiredImports() map[string]bool {
+	return nil
 }
 
 type TypeInterface struct {
@@ -123,6 +152,14 @@ func (t TypeInterface) FullType(importAliases map[string]string) string {
 	return ret
 }
 
+func (t TypeInterface) RequiredImports() map[string]bool {
+	ret := make(map[string]bool)
+	for _, f := range t.Funcs {
+		ret = union(ret, f.RequiredImports())
+	}
+	return ret
+}
+
 type TypeInt32 struct {}
 
 func (t TypeInt32) DefaultInit(importAliases map[string]string) (string, error) {
@@ -131,6 +168,10 @@ func (t TypeInt32) DefaultInit(importAliases map[string]string) (string, error) 
 
 func (t TypeInt32) FullType(importAliases map[string]string) string {
 	return "int32"
+}
+
+func (t TypeInt32) RequiredImports() map[string]bool {
+	return nil
 }
 
 type TypeInt64 struct {}
@@ -143,6 +184,10 @@ func (t TypeInt64) FullType(importAliases map[string]string) string {
 	return "int64"
 }
 
+func (t TypeInt64) RequiredImports() map[string]bool {
+	return nil
+}
+
 type TypeString struct {}
 
 func (t TypeString) DefaultInit(importAliases map[string]string) (string, error) {
@@ -151,6 +196,10 @@ func (t TypeString) DefaultInit(importAliases map[string]string) (string, error)
 
 func (t TypeString) FullType(importAliases map[string]string) string {
 	return "string"
+}
+
+func (t TypeString) RequiredImports() map[string]bool {
+	return nil
 }
 
 type TypeStruct struct {
@@ -174,6 +223,14 @@ func (t TypeStruct) FullType(importAliases map[string]string) string {
 
 	ret += "}"
 
+	return ret
+}
+
+func (t TypeStruct) RequiredImports() map[string]bool {
+	ret := make(map[string]bool)
+	for _, f := range t.Fields {
+		ret = union(ret, f.RequiredImports())
+	}
 	return ret
 }
 
@@ -207,6 +264,15 @@ func (t TypeUnknownNamed) FullType(importAliases map[string]string) string {
 	return t.Name
 }
 
+func (t TypeUnknownNamed) RequiredImports() map[string]bool {
+	if t.Import != "" {
+		return map[string]bool {
+			t.Import: true,
+		}
+	}
+	return nil
+}
+
 type TypeMap struct {
 	KeyType Type
 	ValueType Type
@@ -218,6 +284,13 @@ func (t TypeMap) DefaultInit(importAliases map[string]string) (string, error) {
 
 func (t TypeMap) FullType(importAliases map[string]string) string {
 	return "map[" + t.KeyType.FullType(importAliases) + "]" + t.ValueType.FullType(importAliases)
+}
+
+func (t TypeMap) RequiredImports() map[string]bool {
+	return union(
+		t.KeyType.RequiredImports(),
+		t.ValueType.RequiredImports(),
+	)
 }
 
 type TypePointer struct {
@@ -232,6 +305,10 @@ func (t TypePointer) FullType(importAliases map[string]string) string {
 	return "*" + t.ValueType.FullType(importAliases)
 }
 
+func (t TypePointer) RequiredImports() map[string]bool {
+	return t.ValueType.RequiredImports()
+}
+
 type TypeUnnamedLiteral struct {}
 
 func (t TypeUnnamedLiteral) DefaultInit(importAliases map[string]string) (string, error) {
@@ -240,4 +317,8 @@ func (t TypeUnnamedLiteral) DefaultInit(importAliases map[string]string) (string
 
 func (t TypeUnnamedLiteral) FullType(importAliases map[string]string) string {
 	return ""
+}
+
+func (t TypeUnnamedLiteral) RequiredImports() map[string]bool {
+	return nil
 }

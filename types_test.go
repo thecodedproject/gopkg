@@ -523,3 +523,209 @@ func TestTypeUnknownNamedDefaultInit(t *testing.T) {
 		})
 	}
 }
+
+func TestTypeRequiredImports_SimpleTypes(t *testing.T) {
+
+	simpleTypes := []gopkg.Type{
+		gopkg.TypeBool{},
+		gopkg.TypeByte{},
+		gopkg.TypeError{},
+		gopkg.TypeFloat32{},
+		gopkg.TypeFloat64{},
+		gopkg.TypeInt{},
+		gopkg.TypeInt32{},
+		gopkg.TypeInt64{},
+		gopkg.TypeString{},
+	}
+
+	for _, simpleType := range simpleTypes {
+		t.Run(simpleType.FullType(nil), func(t *testing.T) {
+			require.Equal(
+				t,
+				map[string]bool(nil),
+				simpleType.RequiredImports(),
+			)
+			return
+		})
+	}
+}
+
+func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
+
+	testCases := []struct{
+		Name string
+		Def gopkg.Type
+		Expected map[string]bool
+	}{
+		{
+			Name: "array of simple type",
+			Def: gopkg.TypeArray{
+				ValueType: gopkg.TypeString{},
+			},
+			Expected: map[string]bool(nil),
+		},
+		{
+			Name: "array of composite type",
+			Def: gopkg.TypeArray{
+				ValueType: gopkg.TypeMap{
+					KeyType: gopkg.TypeUnknownNamed{
+						Import: "array/other/import",
+					},
+					ValueType: gopkg.TypeUnknownNamed{
+						Import: "array/an/import",
+					},
+				},
+			},
+			Expected: map[string]bool{
+				"array/an/import": true,
+				"array/other/import": true,
+			},
+		},
+		{
+			Name: "pointer of simple type",
+			Def: gopkg.TypePointer{
+				ValueType: gopkg.TypeString{},
+			},
+			Expected: map[string]bool(nil),
+		},
+		{
+			Name: "pointer of composite type",
+			Def: gopkg.TypePointer{
+				ValueType: gopkg.TypeMap{
+					KeyType: gopkg.TypeUnknownNamed{
+						Import: "pointer/other/import",
+					},
+					ValueType: gopkg.TypeUnknownNamed{
+						Import: "pointer/an/import",
+					},
+				},
+			},
+			Expected: map[string]bool{
+				"pointer/an/import": true,
+				"pointer/other/import": true,
+			},
+		},
+		{
+			Name: "map with simple types",
+			Def: gopkg.TypeMap{
+				KeyType: gopkg.TypeInt{},
+				ValueType: gopkg.TypeString{},
+			},
+			Expected: map[string]bool(nil),
+		},
+		{
+			Name: "map with named types",
+			Def: gopkg.TypeMap{
+				KeyType: gopkg.TypeUnknownNamed{
+					Import: "other/import",
+				},
+				ValueType: gopkg.TypeUnknownNamed{
+					Import: "an/import",
+				},
+			},
+			Expected: map[string]bool{
+				"an/import": true,
+				"other/import": true,
+			},
+		},
+		{
+			Name: "named without import",
+			Def: gopkg.TypeUnknownNamed{},
+			Expected: map[string]bool(nil),
+		},
+		{
+			Name: "named with import",
+			Def: gopkg.TypeUnknownNamed{
+				Import: "some/import",
+			},
+			Expected: map[string]bool{
+				"some/import": true,
+			},
+		},
+		{
+			Name: "struct without fields",
+			Def: gopkg.TypeStruct{},
+			Expected: map[string]bool(nil),
+		},
+		{
+			Name: "struct with named fields",
+			Def: gopkg.TypeStruct{
+				Fields: []gopkg.DeclVar{
+					{
+						Type: gopkg.TypeUnknownNamed{
+							Import: "import/a",
+						},
+					},
+					{
+						Type: gopkg.TypeString{},
+					},
+					{
+						Type: gopkg.TypeUnknownNamed{
+							Import: "import/b",
+						},
+					},
+				},
+			},
+			Expected: map[string]bool{
+				"import/a": true,
+				"import/b": true,
+			},
+		},
+		{
+			Name: "interface without funcs",
+			Def: gopkg.TypeInterface{},
+			Expected: map[string]bool(nil),
+		},
+		{
+			Name: "interface with named funcs",
+			Def: gopkg.TypeInterface{
+				Funcs: []gopkg.DeclFunc{
+					{
+						Args: []gopkg.DeclVar{
+							{
+								Type: gopkg.TypeUnknownNamed{
+									Import: "import/aa",
+								},
+							},
+							{
+								Type: gopkg.TypeUnknownNamed{
+									Import: "import/bb",
+								},
+							},
+						},
+					},
+					{
+						ReturnArgs: []gopkg.Type{
+							gopkg.TypeUnknownNamed{
+								Import: "import/bb",
+							},
+							gopkg.TypeUnknownNamed{
+								Import: "import/cc",
+							},
+						},
+					},
+				},
+			},
+			Expected: map[string]bool{
+				"import/aa": true,
+				"import/bb": true,
+				"import/cc": true,
+			},
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+
+			actual := test.Def.RequiredImports()
+
+			if len(test.Expected) == 0 && len(actual) == 0{
+				// Allow actual to be either nil or an empty map
+				return
+			}
+
+			require.Equal(t, test.Expected, test.Def.RequiredImports())
+		})
+	}
+
+}

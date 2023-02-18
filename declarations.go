@@ -20,6 +20,7 @@ type FuncReceiver struct {
 	IsPointer bool
 }
 
+// TODO delete - deprecated
 type DeclStruct struct {
 	Name string
 	Import string
@@ -45,3 +46,14 @@ type DeclVar struct {
 	LiteralValue string
 }
 
+func (d DeclFunc) RequiredImports() map[string]bool {
+
+	ret := make(map[string]bool)
+	for _, arg := range d.Args {
+		ret = union(ret, arg.RequiredImports())
+	}
+	for _, retArg := range d.ReturnArgs {
+		ret = union(ret, retArg.RequiredImports())
+	}
+	return ret
+}
