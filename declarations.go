@@ -20,14 +20,6 @@ type FuncReceiver struct {
 	IsPointer bool
 }
 
-// TODO delete - deprecated
-type DeclStruct struct {
-	Name string
-	Import string
-	// TODO: Maybe also add struct field descriptors
-	Fields []DeclVar
-}
-
 type DeclType struct {
 	Name string
 	Import string
