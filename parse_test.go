@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/neurotempest/gopkg"
+	"github.com/neurotempest/gopkg/tmpl"
 )
 
 func TestParse(t *testing.T) {
@@ -72,9 +73,9 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeBool{},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeBool{},
-							},
+							),
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -156,11 +157,11 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeInt32{},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeInt{},
 								gopkg.TypeInt64{},
 								gopkg.TypeInt32{},
-							},
+							),
 						},
 						{
 							Name: "SomeFloats",
@@ -175,10 +176,10 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeFloat64{},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeFloat32{},
 								gopkg.TypeFloat64{},
-							},
+							),
 						},
 						{
 							Name: "SomeStrings",
@@ -189,9 +190,9 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeString{},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeString{},
-							},
+							),
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -245,14 +246,14 @@ func TestParse(t *testing.T) {
 									},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeArray{
 									ValueType: gopkg.TypeUnknownNamed{
 										Name: "SomeArrayStruct",
 										Import: "some/import/composite_types",
 									},
 								},
-							},
+							),
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -300,11 +301,11 @@ func TestParse(t *testing.T) {
 											{Name: "n", Type: gopkg.TypeInt64{}},
 											{Name: "vals", Type: gopkg.TypeString{}},
 										},
-										ReturnArgs: []gopkg.Type{
+										ReturnArgs: tmpl.UnnamedReturnArgs(
 											gopkg.TypeArray{
 												ValueType: gopkg.TypeString{},
 											},
-										},
+										),
 									},
 								},
 							},
@@ -336,11 +337,11 @@ func TestParse(t *testing.T) {
 									},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypePointer{
 									ValueType: gopkg.TypeString{},
 								},
-							},
+							),
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -360,11 +361,11 @@ func TestParse(t *testing.T) {
 								Funcs: []gopkg.DeclFunc{
 									{
 										Name: "Something",
-										ReturnArgs: []gopkg.Type{
+										ReturnArgs: tmpl.UnnamedReturnArgs(
 											gopkg.TypePointer{
 												ValueType: gopkg.TypeInt64{},
 											},
-										},
+										),
 									},
 									{
 										Name: "PointerMaker",
@@ -376,11 +377,11 @@ func TestParse(t *testing.T) {
 												},
 											},
 										},
-										ReturnArgs: []gopkg.Type{
+										ReturnArgs: tmpl.UnnamedReturnArgs(
 											gopkg.TypePointer{
 												ValueType: gopkg.TypeFloat64{},
 											},
-										},
+										),
 									},
 								},
 							},
@@ -439,10 +440,10 @@ func TestParse(t *testing.T) {
 									},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeInt{},
 								gopkg.TypeError{},
-							},
+							),
 						},
 						{
 							Name: "IntAsStringToProto",
@@ -453,7 +454,7 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeInt{},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypePointer{
 									ValueType: gopkg.TypeUnknownNamed{
 										Name: "IntAsString",
@@ -461,7 +462,7 @@ func TestParse(t *testing.T) {
 									},
 								},
 								gopkg.TypeError{},
-							},
+							),
 						},
 						{
 							Name: "ShopspringDecimalFromProto",
@@ -477,13 +478,13 @@ func TestParse(t *testing.T) {
 									},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeUnknownNamed{
 									Name: "Decimal",
 									Import: "github.com/shopspring/decimal",
 								},
 								gopkg.TypeError{},
-							},
+							),
 						},
 						{
 							Name: "ShopspringDecimalToProto",
@@ -497,7 +498,7 @@ func TestParse(t *testing.T) {
 									},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypePointer{
 									ValueType: gopkg.TypeUnknownNamed{
 										Name: "ShopspringDecimal",
@@ -505,7 +506,7 @@ func TestParse(t *testing.T) {
 									},
 								},
 								gopkg.TypeError{},
-							},
+							),
 						},
 					},
 				},
@@ -693,9 +694,9 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeInt{},
 								},
 							},
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeInt{},
-							},
+							),
 						},
 					},
 				},
@@ -778,9 +779,9 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				TypeName: typeName,
 				IsPointer: true,
 			},
-			ReturnArgs: []gopkg.Type{
+			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeString{},
-			},
+			),
 		},
 		{
 			Name: "ProtoMessage",
@@ -797,10 +798,10 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				TypeName: typeName,
 				IsPointer: true,
 			},
-			ReturnArgs: []gopkg.Type{
+			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
 				gopkg.TypeArray{ValueType: gopkg.TypeInt{}},
-			},
+			),
 		},
 		{
 			Name: "XXX_Unmarshal",
@@ -816,9 +817,9 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 					Type: gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
 				},
 			},
-			ReturnArgs: []gopkg.Type{
+			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeError{},
-			},
+			),
 		},
 		{
 			Name: "XXX_Marshal",
@@ -838,10 +839,10 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 					Type: gopkg.TypeBool{},
 				},
 			},
-			ReturnArgs: []gopkg.Type{
+			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
 				gopkg.TypeError{},
-			},
+			),
 		},
 		{
 			Name: "XXX_Merge",
@@ -869,9 +870,9 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				TypeName: typeName,
 				IsPointer: true,
 			},
-			ReturnArgs: []gopkg.Type{
+			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeInt{},
-			},
+			),
 		},
 		{
 			Name: "XXX_DiscardUnknown",
@@ -890,9 +891,9 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				TypeName: typeName,
 				IsPointer: true,
 			},
-			ReturnArgs: []gopkg.Type{
+			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeString{},
-			},
+			),
 		},
 	}
 }

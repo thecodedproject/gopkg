@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/neurotempest/gopkg"
+	"github.com/neurotempest/gopkg/tmpl"
 )
 
 func TestWriteDeclType(t *testing.T) {
@@ -137,10 +138,10 @@ func TestWriteDeclType(t *testing.T) {
 						},
 						{
 							Name: "OnlyRetArgs",
-							ReturnArgs: []gopkg.Type{
+							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeString{},
 								gopkg.TypeError{},
-							},
+							),
 						},
 					},
 				},

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/neurotempest/gopkg"
+	"github.com/neurotempest/gopkg/tmpl"
 )
 
 func TestWriteDeclFunc(t *testing.T) {
@@ -78,9 +79,9 @@ func TestWriteDeclFunc(t *testing.T) {
 						},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeUnknownNamed{Name: "error"},
-				},
+				),
 			},
 		},
 		{
@@ -101,9 +102,9 @@ func TestWriteDeclFunc(t *testing.T) {
 						},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeUnknownNamed{Name: "error"},
-				},
+				),
 			},
 		},
 		{
@@ -124,11 +125,11 @@ func TestWriteDeclFunc(t *testing.T) {
 						},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeUnknownNamed{Name: "int"},
 					gopkg.TypeUnknownNamed{Name: "float32"},
 					gopkg.TypeUnknownNamed{Name: "error"},
-				},
+				),
 			},
 		},
 		{
@@ -144,12 +145,12 @@ func TestWriteDeclFunc(t *testing.T) {
 						},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeUnknownNamed{
 						Name: "OtherType",
 						Import: "other/import/path",
 					},
-				},
+				),
 			},
 			ImportAliases: map[string]string{
 				"some/import/path": "some_path",
@@ -166,10 +167,10 @@ func TestWriteDeclFunc(t *testing.T) {
 						Type: gopkg.TypeInt32{},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeInt32{},
 					gopkg.TypeError{},
-				},
+				),
 			},
 		},
 		{
@@ -185,12 +186,12 @@ func TestWriteDeclFunc(t *testing.T) {
 						},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeUnknownNamed{
 						Name: "OtherType",
 						Import: "github.com/otherpackage",
 					},
-				},
+				),
 			},
 			ImportAliases: map[string]string{
 				"/some/path/tomypkg": "my_pkg",
@@ -201,7 +202,7 @@ func TestWriteDeclFunc(t *testing.T) {
 			Name: "return default return types",
 			F: gopkg.DeclFunc{
 				Name: "MyFunction",
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeInt32{},
 					gopkg.TypeFloat64{},
 					gopkg.TypeString{},
@@ -215,7 +216,7 @@ func TestWriteDeclFunc(t *testing.T) {
 					gopkg.TypeArray{
 						ValueType: gopkg.TypeString{},
 					},
-				},
+				),
 				BodyTmpl: `
 	{{FuncReturnDefaults}}
 `,
@@ -225,7 +226,7 @@ func TestWriteDeclFunc(t *testing.T) {
 			Name: "return default return types with import aliases",
 			F: gopkg.DeclFunc{
 				Name: "MyFunction",
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeUnknownNamed{
 						Name: "MyStruct",
 						Import: "github.com/some/nice_package",
@@ -236,7 +237,7 @@ func TestWriteDeclFunc(t *testing.T) {
 						Import: "github.com/some/other_package",
 						ValueType: gopkg.TypeStruct{},
 					},
-				},
+				),
 				BodyTmpl: `
 	{{FuncReturnDefaults}}
 `,
@@ -267,14 +268,14 @@ func TestWriteDeclFunc(t *testing.T) {
 						Type: gopkg.TypeFloat64{},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeInt32{},
 					gopkg.TypeUnknownNamed{
 						Name: "MyStruct",
 						Import: "package/to/wrap",
 					},
 					gopkg.TypeError{},
-				},
+				),
 				BodyTmpl: `
 	return wrap.SomeFuncToWrap(
 {{- range .Func.Args}}
@@ -309,10 +310,10 @@ func TestWriteDeclFunc(t *testing.T) {
 						Type: gopkg.TypeFloat64{},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeFloat64{},
 					gopkg.TypeError{},
-				},
+				),
 				BodyTmpl: `
 	ret, err := SomeFuncToWrap(
 {{- range .Func.Args}}

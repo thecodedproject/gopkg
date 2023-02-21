@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/neurotempest/gopkg"
+	"github.com/neurotempest/gopkg/tmpl"
 )
 
 func TestTypeDefaultInit(t *testing.T) {
@@ -348,18 +349,18 @@ func TestTypeInterfaceFullType(t *testing.T) {
 								Type: gopkg.TypeFloat64{},
 							},
 						},
-						ReturnArgs: []gopkg.Type{
+						ReturnArgs: tmpl.UnnamedReturnArgs(
 							gopkg.TypeString{},
 							gopkg.TypeError{},
-						},
+						),
 					},
 					{
 						Name: "SecondMethod",
-						ReturnArgs: []gopkg.Type{
+						ReturnArgs: tmpl.UnnamedReturnArgs(
 							gopkg.TypeUnknownNamed{
 								Name: "MyType",
 							},
-						},
+						),
 					},
 				},
 			},
@@ -695,14 +696,14 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 						},
 					},
 					{
-						ReturnArgs: []gopkg.Type{
+						ReturnArgs: tmpl.UnnamedReturnArgs(
 							gopkg.TypeUnknownNamed{
 								Import: "import/bb",
 							},
 							gopkg.TypeUnknownNamed{
 								Import: "import/cc",
 							},
-						},
+						),
 					},
 				},
 			},

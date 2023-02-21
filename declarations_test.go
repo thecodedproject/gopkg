@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/neurotempest/gopkg"
+	"github.com/neurotempest/gopkg/tmpl"
 )
 
 func TestDeclFunc_RequiredImports(t *testing.T) {
@@ -33,14 +34,14 @@ func TestDeclFunc_RequiredImports(t *testing.T) {
 						},
 					},
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeUnknownNamed{
 						Import: "import/3",
 					},
 					gopkg.TypeUnknownNamed{
 						Import: "import/1",
 					},
-				},
+				),
 			},
 			Expected: map[string]bool{
 				"import/1": true,

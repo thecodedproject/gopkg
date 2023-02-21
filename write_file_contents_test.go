@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/neurotempest/gopkg"
+	"github.com/neurotempest/gopkg/tmpl"
 )
 
 func TestWriteFileContents(t *testing.T) {
@@ -65,10 +66,10 @@ func TestWriteFileContents(t *testing.T) {
 								},
 							},
 						},
-						ReturnArgs: []gopkg.Type{
+						ReturnArgs: tmpl.UnnamedReturnArgs(
 							gopkg.TypeInt32{},
 							gopkg.TypeError{},
-						},
+						),
 						BodyTmpl: `
 	{{FuncReturnDefaults}}
 `,

@@ -98,7 +98,8 @@ func fileContentsFromAstFile(
 				return FileContents{}, err
 			}
 
-			retArgs, err := getArgTypeList(fileImports, decl.Type.Results)
+			//retArgs, err := getArgTypeList(fileImports, decl.Type.Results)
+			retArgs, err := getDeclVarsFromFieldList(fileImports, decl.Type.Results)
 			if err != nil {
 				return FileContents{}, err
 			}
@@ -249,7 +250,7 @@ func getDeclFuncsFromFieldList(
 					return nil, err
 				}
 
-				retArgs, err := getArgTypeList(imports, funcType.Results)
+				retArgs, err := getDeclVarsFromFieldList(imports, funcType.Results)
 				if err != nil {
 					return nil, err
 				}
