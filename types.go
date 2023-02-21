@@ -10,6 +10,8 @@ type FileContents struct {
 
 	PackageName string
 
+	PackageImportPath string
+
 	Imports []ImportAndAlias
 
 	Consts []DeclVar

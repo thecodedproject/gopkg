@@ -1,7 +1,6 @@
 package gopkg_test
 
 import (
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,17 +14,38 @@ func TestParse(t *testing.T) {
 	testCases := []struct{
 		Name string
 		PkgDir string
-		PkgImportPath string
+		ParseOptions []gopkg.ParseOption
 		Expected []gopkg.FileContents
 	}{
 		{
+			Name: "no options will auto-detect pkg import dir",
+			PkgDir: "test_packages/very_simple",
+			Expected: []gopkg.FileContents{
+				{
+					Filepath: "test_packages/very_simple/very_simple.go",
+					PackageName: "very_simple",
+					PackageImportPath: "github.com/neurotempest/gopkg/test_packages/very_simple",
+					Vars: []gopkg.DeclVar{
+						{
+							Name: "MyVar",
+							Import: "github.com/neurotempest/gopkg/test_packages/very_simple",
+							Type: gopkg.TypeInt{},
+						},
+					},
+				},
+			},
+		},
+		{
 			Name: "all_built_in_golang_types",
 			PkgDir: "test_packages/all_built_in_types",
-			PkgImportPath: "some/import/all_built_in_types",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("some/import/all_built_in_types"),
+			},
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/all_built_in_types/bools.go",
 					PackageName: "all_built_in_types",
+					PackageImportPath: "some/import/all_built_in_types",
 					Consts: []gopkg.DeclVar{
 						{
 							Name: "AConstant",
@@ -72,6 +92,7 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/all_built_in_types/int_float_string_struct.go",
 					PackageName: "all_built_in_types",
+					PackageImportPath: "some/import/all_built_in_types",
 					Consts: []gopkg.DeclVar{
 						{
 							Name: "MyConst",
@@ -195,11 +216,14 @@ func TestParse(t *testing.T) {
 		{
 			Name: "composite_types",
 			PkgDir: "test_packages/composite_types",
-			PkgImportPath: "some/import/composite_types",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("some/import/composite_types"),
+			},
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/composite_types/arrays.go",
 					PackageName: "composite_types",
+					PackageImportPath: "some/import/composite_types",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "SomeArrayFunc",
@@ -290,6 +314,7 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/composite_types/pointers.go",
 					PackageName: "composite_types",
+					PackageImportPath: "some/import/composite_types",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "SomePointerFunc",
@@ -391,11 +416,14 @@ func TestParse(t *testing.T) {
 		{
 			Name: "proto_conversion_package",
 			PkgDir: "test_packages/proto_conversion",
-			PkgImportPath: "some/import/proto_conversion",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("some/import/proto_conversion"),
+			},
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/proto_conversion/converters.go",
 					PackageName: "proto_conversion",
+					PackageImportPath: "some/import/proto_conversion",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "IntAsStringFromProto",
@@ -484,6 +512,7 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/proto_conversion/def.pb.go",
 					PackageName: "proto_conversion",
+					PackageImportPath: "some/import/proto_conversion",
 					Consts: []gopkg.DeclVar{
 						{
 							Name: "_",
@@ -573,17 +602,21 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/proto_conversion/generate.go",
 					PackageName: "proto_conversion",
+					PackageImportPath: "some/import/proto_conversion",
 				},
 			},
 		},
 		{
 			Name: "receiver_funcs",
 			PkgDir: "test_packages/receiver_funcs",
-			PkgImportPath: "some/import/receiver_funcs",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("some/import/receiver_funcs"),
+			},
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/receiver_funcs/receiver_funcs.go",
 					PackageName: "receiver_funcs",
+					PackageImportPath: "some/import/receiver_funcs",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "ValueReceiverFunc",
@@ -638,11 +671,14 @@ func TestParse(t *testing.T) {
 		{
 			Name: "pkg_with_tests",
 			PkgDir: "test_packages/pkg_with_tests",
-			PkgImportPath: "some/import/pkg_with_tests",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("some/import/pkg_with_tests"),
+			},
 			Expected: []gopkg.FileContents{
 				{
 					Filepath: "test_packages/pkg_with_tests/logic.go",
 					PackageName: "pkg_with_tests",
+					PackageImportPath: "some/import/pkg_with_tests",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "MyCoolLogic",
@@ -666,6 +702,7 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/pkg_with_tests/logic_test.go",
 					PackageName: "pkg_with_tests_test",
+					PackageImportPath: "some/import/pkg_with_tests",
 					Functions: []gopkg.DeclFunc{
 						{
 							Name: "TestMyCoolLogic",
@@ -691,26 +728,13 @@ func TestParse(t *testing.T) {
 	for _, test := range testCases {
 		t.Run(test.Name, func(t *testing.T) {
 
-			pc, err := gopkg.Parse(test.PkgDir, test.PkgImportPath)
+			pc, err := gopkg.Parse(test.PkgDir, test.ParseOptions...)
 			require.NoError(t, err)
-
-			//sortDecls(pc[0])
 
 			assert.Equal(t, test.Expected, pc)
 		})
 	}
 }
-
-// TODO Use gopkg full sorting of contents method once implemented
-func sortDecls(c gopkg.FileContents) {
-
-	sort.Slice(c.Types, func(i, j int) bool {
-		return c.Types[i].Name < c.Types[j].Name
-	})
-
-	gopkg.SortFuncs(c.Functions)
-}
-
 
 func protoConversionPackageFuncs() []gopkg.DeclFunc {
 

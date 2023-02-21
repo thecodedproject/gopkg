@@ -8,8 +8,6 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/neurotempest/gopkg"
-
-	"fmt"
 )
 
 var (
@@ -24,7 +22,9 @@ func main() {
 		log.Fatal("enum type name must be set")
 	}
 
-	pkgFiles, err := gopkg.Parse(".", "")
+	outputDir := "."
+
+	pkgFiles, err := gopkg.Parse(outputDir)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -34,10 +34,11 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+	pkgImportPath, err := gopkg.PackageImportPath(outputDir)
+
 	toGenerate := []gopkg.FileContents{
 		makeStringerImplFile(pkgName, enumConsts, *enumTypeName),
-		// TODO implement test file
-		//makeTestFile(pkgName, enumConsts, *enumTypeName),
+		makeTestFile(pkgName, pkgImportPath, enumConsts, *enumTypeName),
 	}
 
 	err = gopkg.Lint(toGenerate)
@@ -79,10 +80,6 @@ func makeStringerImplFile(
 	enumName string,
 ) gopkg.FileContents {
 
-	for _, t := range enumConsts {
-		fmt.Println("const:", t)
-	}
-
 	varName := strings.ToLower(string(enumName[0]))
 
 	ret := gopkg.FileContents{
@@ -116,74 +113,78 @@ func makeStringerImplFile(
 	return ret
 }
 
-/*
 func makeTestFile(
 	pkgName string,
-	pkgImportPath string
+	pkgImportPath string,
 	enumConsts []string,
 	enumName string,
 ) gopkg.FileContents {
 
+	testCases := make([]interface{}, 0, len(enumConsts))
+	for _, c := range enumConsts {
+		testCases = append(testCases, struct{
+			Name string
+			Enum string
+			Expected string
+		}{
+			Name: c,
+			Enum: c,
+			Expected: c,
+		})
+	}
 
 	ret := gopkg.FileContents{
 		PackageName: pkgName + "_test",
-		Filepath: strcase.ToSnake(typeName) + "_impl_test.go",
-	}
-
-	ret.Imports = []gopkg.ImportAndAlias{
-		{
-			Import: "testing",
-			Alias: "testing",
+		Filepath: strcase.ToSnake(enumName) + "_string_test.go",
+		Imports: []gopkg.ImportAndAlias{
+			{
+				Import: "github.com/stretchr/testify/require",
+				Alias: "require",
+			},
+			{
+				Import: pkgImportPath,
+				Alias: pkgName,
+			},
 		},
-		{
-			Import: "github.com/stretchr/testify/require",
-			Alias: "require",
-		},
-		{
-			Import: pkgImportPath,
-			Alias: pkgName,
-		},
-	}
-
-	iType, ok := iDecl.Type.(gopkg.TypeInterface)
-	if !ok {
-		log.Fatal(iDecl.Name, "not an interface declaration")
-	}
-
-	for _, iFunc := range iType.Funcs {
-
-		ret.Functions = append(ret.Functions, gopkg.DeclFunc{
-			Name: "Test" + typeName + "_" + iFunc.Name,
-			Args: []gopkg.DeclVar{
-				{
-					Name: "t",
-					Type: gopkg.TypePointer{
-						ValueType: gopkg.TypeUnknownNamed{
-							Name: "T",
-							Import: "testing",
+		Functions: []gopkg.DeclFunc{
+			{
+				Name: "Test" + enumName + "_String",
+				Args: []gopkg.DeclVar{
+					{
+						Name: "t",
+						Type: gopkg.TypePointer{
+							ValueType: gopkg.TypeUnknownNamed{
+								Name: "T",
+								Import: "testing",
+							},
 						},
 					},
 				},
-			},
-			BodyTmpl: `
+				BodyData: testCases,
+				BodyTmpl: `
 	testCases := []struct{
 		Name string
-		V ` + pkgName + "." + typeName + `
+		Enum ` + pkgName + "." + enumName + `
+		Expected string
 	}{
+{{- range .Func.BodyData}}
 		{
-			Name: "empty type with empty inputs",
+			Name: "{{.Name}}",
+			Enum: ` + pkgName + `.{{.Enum}},
+			Expected: "{{.Expected}}",
 		},
+{{end -}}
 	}
 
 	for _, test := range testCases {
 		t.Run(test.Name, func(t *testing.T) {
-			require.True(t, false, "TODO: implement test")
+			require.Equal(t, test.Expected, test.Enum.String())
 		})
 	}
 `,
-		})
+			},
+		},
 	}
 
 	return ret
 }
-*/

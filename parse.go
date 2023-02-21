@@ -14,7 +14,20 @@ import (
 
 const CURRENT_PKG = "current_pkg_import"
 
-func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
+func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
+
+	var parseOptions parseOptions
+	for _, opt := range opts {
+		parseOptions = opt(parseOptions)
+	}
+
+	if parseOptions.pkgImportPath == "" {
+		var err error
+		parseOptions.pkgImportPath, err = PackageImportPath(pkgDir)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	fset := token.NewFileSet()
 	pkgs, err := parser.ParseDir(
@@ -34,12 +47,16 @@ func Parse(pkgDir string, pkgImportPath string) ([]FileContents, error) {
 
 		for filepath, fileNode := range pkg.Files {
 
-			fileContents, err := fileContentsFromAstFile(pkgImportPath, fileNode)
+			fileContents, err := fileContentsFromAstFile(
+				parseOptions.pkgImportPath,
+				fileNode,
+			)
 			if err != nil {
 				return nil, err
 			}
 
 			fileContents.PackageName = pkg.Name
+			fileContents.PackageImportPath = parseOptions.pkgImportPath
 			fileContents.Filepath = filepath
 
 			pkgContents = append(
@@ -501,4 +518,18 @@ func declVarsFromAstValueSpec(
 	}
 
 	return declVars, nil
+}
+
+type ParseOption func(parseOptions)parseOptions
+
+type parseOptions struct {
+	pkgImportPath string
+}
+
+func ParseWithPkgImportPath(importPath string) ParseOption {
+
+	return func(o parseOptions) parseOptions {
+		o.pkgImportPath = importPath
+		return o
+	}
 }

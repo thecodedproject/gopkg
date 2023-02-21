@@ -12,7 +12,6 @@ import (
 var (
 	interfaceName = flag.String("interface", "", "name of the interface to generate impl for")
 	typeName = flag.String("type", "", "name of the type to generate the impl for")
-	importPath = flag.String("import", "", "import path of interface pacakage")
 )
 
 func main() {
@@ -25,20 +24,17 @@ func main() {
 	if *typeName == "" {
 		log.Fatal("type name must be set with `--type`")
 	}
-	if *importPath == "" {
-		log.Fatal("import path must be set with `--import")
-	}
 
-	pkgFiles, err := gopkg.Parse(".", *importPath)
+	pkgFiles, err := gopkg.Parse(".")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	pkgName, iDecl := getInterfaceDecl(pkgFiles, *interfaceName)
+	pkgName, importPath, iDecl := getInterfaceDecl(pkgFiles, *interfaceName)
 
 	pkg := []gopkg.FileContents{
 		makeImplFile(pkgName, *typeName, iDecl),
-		makeTestFile(pkgName, *importPath, *typeName, iDecl),
+		makeTestFile(pkgName, importPath, *typeName, iDecl),
 	}
 
 	err = gopkg.Lint(pkg)
@@ -52,18 +48,18 @@ func main() {
 	}
 }
 
-func getInterfaceDecl(pkgFiles []gopkg.FileContents, name string) (string, gopkg.DeclType) {
+func getInterfaceDecl(pkgFiles []gopkg.FileContents, name string) (string, string, gopkg.DeclType) {
 
 	for _, file := range pkgFiles {
 		for _, typeDecl := range file.Types {
 			if typeDecl.Name == name {
-				return file.PackageName, typeDecl
+				return file.PackageName, file.PackageImportPath, typeDecl
 			}
 		}
 	}
 
 	log.Fatal("no such interface", *interfaceName)
-	return "", gopkg.DeclType{}
+	return "", "", gopkg.DeclType{}
 }
 
 func makeImplFile(
@@ -119,9 +115,6 @@ func makeTestFile(
 		Filepath: strcase.ToSnake(typeName) + "_impl_test.go",
 		Imports: []gopkg.ImportAndAlias{
 			{
-				Import: "github.com/stretchr/testify/require",
-			},
-			{
 				Import: pkgImportPath,
 				Alias: pkgName,
 			},
@@ -160,7 +153,7 @@ func makeTestFile(
 
 	for _, test := range testCases {
 		t.Run(test.Name, func(t *testing.T) {
-			require.True(t, false, "TODO: implement test")
+			// TODO: implement test
 		})
 	}
 `,
