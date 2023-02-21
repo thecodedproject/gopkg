@@ -7,9 +7,6 @@ import (
 	"go/ast"
 	"path"
 	"sort"
-
-	//"fmt"
-	//"reflect"
 )
 
 const CURRENT_PKG = "current_pkg_import"
@@ -98,7 +95,6 @@ func fileContentsFromAstFile(
 				return FileContents{}, err
 			}
 
-			//retArgs, err := getArgTypeList(fileImports, decl.Type.Results)
 			retArgs, err := getDeclVarsFromFieldList(fileImports, decl.Type.Results)
 			if err != nil {
 				return FileContents{}, err
@@ -208,15 +204,18 @@ func getDeclVarsFromFieldList(
 			return nil, err
 		}
 
-		var name string
-		if len(f.Names) > 0 {
-			name = f.Names[0].String()
+		if len(f.Names) == 0 {
+			typeList = append(typeList, DeclVar{
+				Type: fieldType,
+			})
+		} else {
+			for _, name := range f.Names {
+				typeList = append(typeList, DeclVar{
+					Name: name.String(),
+					Type: fieldType,
+				})
+			}
 		}
-
-		typeList = append(typeList, DeclVar{
-			Name: name,
-			Type: fieldType,
-		})
 	}
 
 	return typeList, nil
@@ -229,7 +228,7 @@ func getDeclFuncsFromFieldList(
 
 	funcs := make([]DeclFunc, 0, len(fieldList.List))
 
-	for i, method := range fieldList.List {
+	for _, method := range fieldList.List {
 
 		for _, name := range method.Names {
 
@@ -256,7 +255,7 @@ func getDeclFuncsFromFieldList(
 				}
 
 				funcs = append(funcs, DeclFunc{
-					Name: fieldList.List[i].Names[0].String(),
+					Name: name.String(),
 					Args: args,
 					ReturnArgs: retArgs,
 				})

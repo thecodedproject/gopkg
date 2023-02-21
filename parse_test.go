@@ -724,6 +724,94 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "named_return_args",
+			PkgDir: "test_packages/named_return_args",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("myimport/named_return_args"),
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Filepath: "test_packages/named_return_args/named_return_args.go",
+					PackageName: "named_return_args",
+					PackageImportPath: "myimport/named_return_args",
+					Types: []gopkg.DeclType{
+						{
+							Name: "SomeInterface",
+							Import: "myimport/named_return_args",
+							Type: gopkg.TypeInterface{
+								Funcs: []gopkg.DeclFunc{
+									{
+										Name: "SomeFunc",
+										ReturnArgs: []gopkg.DeclVar{
+											{
+												Name: "a",
+												Type: gopkg.TypeInt{},
+											},
+											{
+												Name: "b",
+												Type: gopkg.TypeError{},
+											},
+										},
+									},
+									{
+										Name: "OtherFunc",
+										ReturnArgs: []gopkg.DeclVar{
+											{
+												Name: "c",
+												Type: gopkg.TypeInt64{},
+											},
+											{
+												Name: "d",
+												Type: gopkg.TypeInt64{},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Functions: []gopkg.DeclFunc{
+						{
+							Name: "MyMethod",
+							Import: "myimport/named_return_args",
+							ReturnArgs: []gopkg.DeclVar{
+								{
+									Name: "e",
+									Type: gopkg.TypeInt32{},
+								},
+								{
+									Name: "f",
+									Type: gopkg.TypeInt32{},
+								},
+								{
+									Name: "g",
+									Type: gopkg.TypeInt32{},
+								},
+							},
+						},
+						{
+							Name: "MyOtherMethod",
+							Import: "myimport/named_return_args",
+							ReturnArgs: []gopkg.DeclVar{
+								{
+									Name: "i",
+									Type: gopkg.TypeInt32{},
+								},
+								{
+									Name: "j",
+									Type: gopkg.TypeFloat64{},
+								},
+								{
+									Name: "k",
+									Type: gopkg.TypeError{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {
