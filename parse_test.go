@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/neurotempest/gopkg"
-	"github.com/neurotempest/gopkg/tmpl"
+	"github.com/thecodedproject/gopkg"
+	"github.com/thecodedproject/gopkg/tmpl"
 )
 
 func TestParse(t *testing.T) {
@@ -25,11 +25,11 @@ func TestParse(t *testing.T) {
 				{
 					Filepath: "test_packages/very_simple/very_simple.go",
 					PackageName: "very_simple",
-					PackageImportPath: "github.com/neurotempest/gopkg/test_packages/very_simple",
+					PackageImportPath: "github.com/thecodedproject/gopkg/test_packages/very_simple",
 					Vars: []gopkg.DeclVar{
 						{
 							Name: "MyVar",
-							Import: "github.com/neurotempest/gopkg/test_packages/very_simple",
+							Import: "github.com/thecodedproject/gopkg/test_packages/very_simple",
 							Type: gopkg.TypeInt{},
 						},
 					},

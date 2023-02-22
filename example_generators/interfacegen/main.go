@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
-	"github.com/neurotempest/gopkg"
+	"github.com/thecodedproject/gopkg"
 )
 
 var (

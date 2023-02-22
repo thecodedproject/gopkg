@@ -7,7 +7,8 @@ import (
 	"strings"
 
 	"github.com/iancoleman/strcase"
-	"github.com/neurotempest/gopkg"
+	"github.com/thecodedproject/gopkg"
+	"github.com/thecodedproject/gopkg/tmpl"
 )
 
 var (
@@ -92,9 +93,9 @@ func makeStringerImplFile(
 					VarName: varName,
 					TypeName: enumName,
 				},
-				ReturnArgs: []gopkg.Type{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeString{},
-				},
+				),
 				BodyData: enumConsts,
 				BodyTmpl: `
 	switch ` + varName + ` {

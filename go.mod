@@ -1,4 +1,4 @@
-module github.com/neurotempest/gopkg
+module github.com/thecodedproject/gopkg
 
 go 1.19
 

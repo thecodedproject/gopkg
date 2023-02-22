@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/neurotempest/gopkg/test_packages/pkg_with_tests"
+	"github.com/thecodedproject/gopkg/test_packages/pkg_with_tests"
 )
 
 func TestMyCoolLogic(t *testing.T) {

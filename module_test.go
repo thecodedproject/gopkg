@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/neurotempest/gopkg"
+	"github.com/thecodedproject/gopkg"
 )
 
 func TestPackageImportPath(t *testing.T) {
@@ -29,32 +29,32 @@ func TestPackageImportPath(t *testing.T) {
 		{
 			Name: "current module",
 			Path: ".",
-			Expected: "github.com/neurotempest/gopkg",
+			Expected: "github.com/thecodedproject/gopkg",
 		},
 		{
 			Name: "sub package of current module without dot",
 			Path: "test_packages/composite_types",
-			Expected: "github.com/neurotempest/gopkg/test_packages/composite_types",
+			Expected: "github.com/thecodedproject/gopkg/test_packages/composite_types",
 		},
 		{
 			Name: "sub package of current module with dot",
 			Path: "./test_packages/all_built_in_types",
-			Expected: "github.com/neurotempest/gopkg/test_packages/all_built_in_types",
+			Expected: "github.com/thecodedproject/gopkg/test_packages/all_built_in_types",
 		},
 		{
 			Name: "existing file within sub package",
 			Path: "./test_packages/proto_conversion/converters.go",
-			Expected: "github.com/neurotempest/gopkg/test_packages/proto_conversion",
+			Expected: "github.com/thecodedproject/gopkg/test_packages/proto_conversion",
 		},
 		{
 			Name: "sub package of current module with trailing slash",
 			Path: "test_packages/composite_types/",
-			Expected: "github.com/neurotempest/gopkg/test_packages/composite_types",
+			Expected: "github.com/thecodedproject/gopkg/test_packages/composite_types",
 		},
 		{
 			Name: "sub package of current module double-dot in path",
 			Path: "test_packages/../test_packages/composite_types/../composite_types",
-			Expected: "github.com/neurotempest/gopkg/test_packages/composite_types",
+			Expected: "github.com/thecodedproject/gopkg/test_packages/composite_types",
 		},
 	}
 

@@ -1,7 +1,7 @@
 package tmpl
 
 import (
-	"github.com/neurotempest/gopkg"
+	"github.com/thecodedproject/gopkg"
 )
 
 func UnnamedReturnArgs(retArgs ...gopkg.Type) []gopkg.DeclVar {

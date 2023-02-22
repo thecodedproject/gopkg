@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/neurotempest/gopkg"
+	"github.com/thecodedproject/gopkg"
 )
 
 func TestSortFuncs(t *testing.T) {

@@ -8,8 +8,8 @@ import (
 	"github.com/sebdah/goldie/v2"
 	"github.com/stretchr/testify/require"
 
-	"github.com/neurotempest/gopkg"
-	"github.com/neurotempest/gopkg/tmpl"
+	"github.com/thecodedproject/gopkg"
+	"github.com/thecodedproject/gopkg/tmpl"
 )
 
 func TestWriteDeclType(t *testing.T) {

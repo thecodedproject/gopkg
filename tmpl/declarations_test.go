@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/neurotempest/gopkg"
-	"github.com/neurotempest/gopkg/tmpl"
+	"github.com/thecodedproject/gopkg"
+	"github.com/thecodedproject/gopkg/tmpl"
 )
 
 func TestUnnamedReturnArgs(t *testing.T) {
