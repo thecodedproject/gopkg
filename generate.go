@@ -19,3 +19,21 @@ func Generate(files []FileContents) error {
 
 	return nil
 }
+
+func LintAndGenerate(
+	files []FileContents,
+	extraLintRules ...func([]FileContents)error,
+) error {
+
+	err := Lint(files, extraLintRules...)
+	if err != nil {
+		return err
+	}
+
+	err = Generate(files)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
