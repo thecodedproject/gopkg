@@ -1,0 +1,14 @@
+=== RUN   TestMyEnum_String
+=== RUN   TestMyEnum_String/MyEnumUnknown
+=== RUN   TestMyEnum_String/MyEnumOne
+=== RUN   TestMyEnum_String/MyEnumTwo
+=== RUN   TestMyEnum_String/MyEnumThree
+=== RUN   TestMyEnum_String/MyEnumSentinal
+--- PASS: TestMyEnum_String (X.XXs)
+    --- PASS: TestMyEnum_String/MyEnumUnknown (X.XXs)
+    --- PASS: TestMyEnum_String/MyEnumOne (X.XXs)
+    --- PASS: TestMyEnum_String/MyEnumTwo (X.XXs)
+    --- PASS: TestMyEnum_String/MyEnumThree (X.XXs)
+    --- PASS: TestMyEnum_String/MyEnumSentinal (X.XXs)
+PASS
+ok  	github.com/thecodedproject/gopkg/example_generators/enumstringergen/example_single_enum	X.XXXs

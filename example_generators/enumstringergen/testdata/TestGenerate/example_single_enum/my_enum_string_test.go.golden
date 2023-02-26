@@ -1,0 +1,53 @@
+package enum_stringer_test
+
+import (
+	require "github.com/stretchr/testify/require"
+	enum_stringer "github.com/thecodedproject/gopkg/example_generators/enumstringergen/example_single_enum"
+	testing "testing"
+)
+
+func TestMyEnum_String(t *testing.T) {
+
+	testCases := []struct{
+		Name string
+		Enum enum_stringer.MyEnum
+		Expected string
+	}{
+		{
+			Name: "MyEnumUnknown",
+			Enum: enum_stringer.MyEnumUnknown,
+			Expected: "MyEnumUnknown",
+		},
+
+		{
+			Name: "MyEnumOne",
+			Enum: enum_stringer.MyEnumOne,
+			Expected: "MyEnumOne",
+		},
+
+		{
+			Name: "MyEnumTwo",
+			Enum: enum_stringer.MyEnumTwo,
+			Expected: "MyEnumTwo",
+		},
+
+		{
+			Name: "MyEnumThree",
+			Enum: enum_stringer.MyEnumThree,
+			Expected: "MyEnumThree",
+		},
+
+		{
+			Name: "MyEnumSentinal",
+			Enum: enum_stringer.MyEnumSentinal,
+			Expected: "MyEnumSentinal",
+		},
+}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+			require.Equal(t, test.Expected, test.Enum.String())
+		})
+	}
+}
+

@@ -8,5 +8,5 @@ const (
 	MyEnumOne MyEnum = 1
 	MyEnumTwo MyEnum = 2
 	MyEnumThree MyEnum = 3
-	MyEnumSentinal MyEnum = 4
+	MyEnumSentinal MyEnum = 5
 )

@@ -1,0 +1,20 @@
+package enum_stringer
+
+func (m MyEnum) String() string {
+
+	switch m {
+	case MyEnumUnknown:
+		return "MyEnumUnknown"
+	case MyEnumOne:
+		return "MyEnumOne"
+	case MyEnumTwo:
+		return "MyEnumTwo"
+	case MyEnumThree:
+		return "MyEnumThree"
+	case MyEnumSentinal:
+		return "MyEnumSentinal"
+	default:
+		return "MyEnum: Unknown value"
+	}
+}
+
