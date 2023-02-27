@@ -147,7 +147,7 @@ func (t TypeInterface) FullType(importAliases map[string]string) string {
 
 	ret := "interface {\n"
 	for _, f := range t.Funcs {
-		ret += "\t" + f.Name + funcArgsAndRetArgs(f, nil, false) + "\n"
+		ret += "\t" + f.Name + funcArgsAndRetArgs(f, importAliases, false) + "\n"
 	}
 	ret += "}"
 
