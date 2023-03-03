@@ -1,13 +1,18 @@
 package gopkg
 
 import (
-	"os"
+	"errors"
 )
 
 func Generate(files []FileContents) error {
 
 	for _, file := range files {
-		writer, err := os.Create(file.Filepath)
+
+		if file.Filepath == "" {
+			return errors.New("gopkg.Generate: empty FileContents.Filepath - this is required")
+		}
+
+		writer, err := CreatePathAndOpen(file.Filepath)
 		if err != nil {
 			return err
 		}
