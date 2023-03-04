@@ -25,7 +25,7 @@ func FuncWithContextAndError(
 		[]gopkg.DeclVar{
 			{
 				Name: "ctx",
-				Type: gopkg.TypeUnknownNamed{
+				Type: gopkg.TypeNamed{
 					Name: "Context",
 					Import: "context",
 				},

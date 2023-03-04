@@ -77,7 +77,7 @@ func TestWriteDeclType(t *testing.T) {
 							Name: "MapOfThings",
 							Type: gopkg.TypeMap{
 								KeyType: gopkg.TypeString{},
-								ValueType: gopkg.TypeUnknownNamed{
+								ValueType: gopkg.TypeNamed{
 									Name: "CustomContainer",
 									Import: "some/pkgpath",
 								},
@@ -85,7 +85,7 @@ func TestWriteDeclType(t *testing.T) {
 						},
 						{
 							Name: "OtherThing",
-							Type: gopkg.TypeUnknownNamed{
+							Type: gopkg.TypeNamed{
 								Name: "ThingType",
 								Import: "some/otherimport",
 							},
@@ -104,7 +104,7 @@ func TestWriteDeclType(t *testing.T) {
 				Name: "MyCustomMap",
 				Type: gopkg.TypeMap{
 					KeyType: gopkg.TypeString{},
-					ValueType: gopkg.TypeUnknownNamed{
+					ValueType: gopkg.TypeNamed{
 						Name: "CustomContainer",
 						Import: "some/pkgpath",
 					},

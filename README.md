@@ -14,6 +14,8 @@
 
   * Add tests for using DeclFunc.BodyData in template exectution
 
+* Add `TypeFunc` for parsing + generating func types
+
 * Allow generating named return args
 
 * Add doc strings

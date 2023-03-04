@@ -60,7 +60,7 @@ func getPkgNameAndEnumConsts(pkgFiles []gopkg.FileContents, enumName string) (st
 	for _, file := range pkgFiles {
 		pkgName = file.PackageName
 		for _, constDecl := range file.Consts {
-			if declType, ok := constDecl.Type.(gopkg.TypeUnknownNamed); ok {
+			if declType, ok := constDecl.Type.(gopkg.TypeNamed); ok {
 				if declType.Name == enumName {
 					enumConsts = append(enumConsts, constDecl.Name)
 				}
@@ -154,7 +154,7 @@ func makeTestFile(
 					{
 						Name: "t",
 						Type: gopkg.TypePointer{
-							ValueType: gopkg.TypeUnknownNamed{
+							ValueType: gopkg.TypeNamed{
 								Name: "T",
 								Import: "testing",
 							},

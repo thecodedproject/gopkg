@@ -45,7 +45,7 @@ func TestWriteFileContents(t *testing.T) {
 								{Name: "Num", Type: gopkg.TypeInt64{}},
 								{
 									Name: "OtherThing",
-									Type: gopkg.TypeUnknownNamed{
+									Type: gopkg.TypeNamed{
 										Name: "SomeOtherType",
 										Import: "some/pkg/path",
 									},
@@ -60,7 +60,7 @@ func TestWriteFileContents(t *testing.T) {
 						Args: []gopkg.DeclVar{
 							{
 								Name: "ctx",
-								Type: gopkg.TypeUnknownNamed{
+								Type: gopkg.TypeNamed{
 									Name: "Context",
 									Import: "context",
 								},

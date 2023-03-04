@@ -291,15 +291,15 @@ func getFuncReceiverFromFieldList(
 	if p, ok := receiverType.Type.(TypePointer); ok {
 		receiver.IsPointer = true
 
-		t, ok := p.ValueType.(TypeUnknownNamed)
+		t, ok := p.ValueType.(TypeNamed)
 		if !ok {
-			return FuncReceiver{}, errors.New("expected TypeUnknownNamed in pointer receiver but found different type")
+			return FuncReceiver{}, errors.New("expected TypeNamed in pointer receiver but found different type")
 		}
 		receiver.TypeName = t.Name
 	} else {
-		t, ok := receiverType.Type.(TypeUnknownNamed)
+		t, ok := receiverType.Type.(TypeNamed)
 		if !ok {
-			return FuncReceiver{}, errors.New("expected TypeUnknownNamed in receiver but found different type")
+			return FuncReceiver{}, errors.New("expected TypeNamed in receiver but found different type")
 		}
 		receiver.TypeName = t.Name
 	}
@@ -333,7 +333,7 @@ func getFullType(
 			}
 
 			importPath := imports[CURRENT_PKG]
-			return TypeUnknownNamed{
+			return TypeNamed{
 				Name: t.Name,
 				Import: importPath,
 			}, nil
@@ -363,7 +363,7 @@ func getFullType(
 
 			//fmt.Println("****** Type:", importPath, importPrefix + "." + t.Sel.Name)
 
-			return TypeUnknownNamed{
+			return TypeNamed{
 				Name: t.Sel.Name,
 				Import: importPath,
 			}, nil

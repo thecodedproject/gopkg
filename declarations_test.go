@@ -24,21 +24,21 @@ func TestDeclFunc_RequiredImports(t *testing.T) {
 			F: gopkg.DeclFunc{
 				Args: []gopkg.DeclVar{
 					{
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Import: "import/1",
 						},
 					},
 					{
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Import: "import/2",
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Import: "import/3",
 					},
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Import: "import/1",
 					},
 				),

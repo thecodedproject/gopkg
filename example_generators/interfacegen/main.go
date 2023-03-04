@@ -134,7 +134,7 @@ func makeTestFile(
 				{
 					Name: "t",
 					Type: gopkg.TypePointer{
-						ValueType: gopkg.TypeUnknownNamed{
+						ValueType: gopkg.TypeNamed{
 							Name: "T",
 							Import: "testing",
 						},

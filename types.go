@@ -237,13 +237,13 @@ func (t TypeStruct) RequiredImports() map[string]bool {
 }
 
 // TODO rename to something more approriate - maybe TypeNamed (or TypeAlias)
-type TypeUnknownNamed struct {
+type TypeNamed struct {
 	Name string
 	Import string
 	ValueType Type
 }
 
-func (t TypeUnknownNamed) DefaultInit(importAliases map[string]string) (string, error) {
+func (t TypeNamed) DefaultInit(importAliases map[string]string) (string, error) {
 
 	if t.ValueType != nil {
 
@@ -258,7 +258,7 @@ func (t TypeUnknownNamed) DefaultInit(importAliases map[string]string) (string, 
 	return "", errors.New("cannot deduce default init for named type with no value type")
 }
 
-func (t TypeUnknownNamed) FullType(importAliases map[string]string) string {
+func (t TypeNamed) FullType(importAliases map[string]string) string {
 	if alias, hasAlias := importAliases[t.Import]; hasAlias {
 		return alias + "." + t.Name
 	}
@@ -266,7 +266,7 @@ func (t TypeUnknownNamed) FullType(importAliases map[string]string) string {
 	return t.Name
 }
 
-func (t TypeUnknownNamed) RequiredImports() map[string]bool {
+func (t TypeNamed) RequiredImports() map[string]bool {
 	if t.Import != "" {
 		return map[string]bool {
 			t.Import: true,

@@ -24,7 +24,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "ctx",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
 						},
@@ -63,7 +63,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "ctx",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
 						},
@@ -104,7 +104,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "ctx",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
 						},

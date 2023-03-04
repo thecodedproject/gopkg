@@ -122,7 +122,7 @@ func TestAddRequiredImports(t *testing.T) {
 							},
 						},
 						{
-							Type: gopkg.TypeUnknownNamed{
+							Type: gopkg.TypeNamed{
 								Import: "other/import/path",
 							},
 						},
@@ -150,7 +150,7 @@ func TestAddRequiredImports(t *testing.T) {
 							},
 						},
 						{
-							Type: gopkg.TypeUnknownNamed{
+							Type: gopkg.TypeNamed{
 								Import: "other/import/path",
 							},
 						},
@@ -511,7 +511,7 @@ func varTypeNamed(
 
 	return gopkg.DeclVar{
 		Name: "My" + typeName,
-		Type: gopkg.TypeUnknownNamed{
+		Type: gopkg.TypeNamed{
 			Name: typeName,
 			Import: importName,
 		},

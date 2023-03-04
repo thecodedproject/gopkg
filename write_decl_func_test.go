@@ -73,14 +73,14 @@ func TestWriteDeclFunc(t *testing.T) {
 					{
 						Name: "myVar",
 						Type: gopkg.TypePointer{
-							ValueType: gopkg.TypeUnknownNamed{
+							ValueType: gopkg.TypeNamed{
 								Name: "int32",
 							},
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.TypeUnknownNamed{Name: "error"},
+					gopkg.TypeNamed{Name: "error"},
 				),
 			},
 		},
@@ -91,19 +91,19 @@ func TestWriteDeclFunc(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "myVar",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 								Name: "int32",
 						},
 					},
 					{
 						Name: "myOtherVar",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 								Name: "string",
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.TypeUnknownNamed{Name: "error"},
+					gopkg.TypeNamed{Name: "error"},
 				),
 			},
 		},
@@ -114,21 +114,21 @@ func TestWriteDeclFunc(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "a",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 								Name: "int",
 						},
 					},
 					{
 						Name: "b",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 								Name: "int",
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.TypeUnknownNamed{Name: "int"},
-					gopkg.TypeUnknownNamed{Name: "float32"},
-					gopkg.TypeUnknownNamed{Name: "error"},
+					gopkg.TypeNamed{Name: "int"},
+					gopkg.TypeNamed{Name: "float32"},
+					gopkg.TypeNamed{Name: "error"},
 				),
 			},
 		},
@@ -139,14 +139,14 @@ func TestWriteDeclFunc(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "a",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 								Name: "MyType",
 								Import: "some/import/path",
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Name: "OtherType",
 						Import: "other/import/path",
 					},
@@ -180,14 +180,14 @@ func TestWriteDeclFunc(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "myVar",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Name: "MyType",
 							Import: "/some/path/tomypkg",
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Name: "OtherType",
 						Import: "github.com/otherpackage",
 					},
@@ -206,7 +206,7 @@ func TestWriteDeclFunc(t *testing.T) {
 					gopkg.TypeInt32{},
 					gopkg.TypeFloat64{},
 					gopkg.TypeString{},
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Name: "MyStruct",
 						ValueType: gopkg.TypeStruct{},
 					},
@@ -227,12 +227,12 @@ func TestWriteDeclFunc(t *testing.T) {
 			F: gopkg.DeclFunc{
 				Name: "MyFunction",
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Name: "MyStruct",
 						Import: "github.com/some/nice_package",
 						ValueType: gopkg.TypeStruct{},
 					},
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Name: "OtherStruct",
 						Import: "github.com/some/other_package",
 						ValueType: gopkg.TypeStruct{},
@@ -254,7 +254,7 @@ func TestWriteDeclFunc(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "ctx",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
 						},
@@ -270,7 +270,7 @@ func TestWriteDeclFunc(t *testing.T) {
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeInt32{},
-					gopkg.TypeUnknownNamed{
+					gopkg.TypeNamed{
 						Name: "MyStruct",
 						Import: "package/to/wrap",
 					},
@@ -296,7 +296,7 @@ func TestWriteDeclFunc(t *testing.T) {
 				Args: []gopkg.DeclVar{
 					{
 						Name: "ctx",
-						Type: gopkg.TypeUnknownNamed{
+						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
 						},

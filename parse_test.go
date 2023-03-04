@@ -233,7 +233,7 @@ func TestParse(t *testing.T) {
 								{
 									Name: "a",
 									Type: gopkg.TypeArray{
-										ValueType: gopkg.TypeUnknownNamed{
+										ValueType: gopkg.TypeNamed{
 											Name: "Decimal",
 											Import: "github.com/shopspring/decimal",
 										},
@@ -248,7 +248,7 @@ func TestParse(t *testing.T) {
 							},
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeArray{
-									ValueType: gopkg.TypeUnknownNamed{
+									ValueType: gopkg.TypeNamed{
 										Name: "SomeArrayStruct",
 										Import: "some/import/composite_types",
 									},
@@ -330,7 +330,7 @@ func TestParse(t *testing.T) {
 								{
 									Name: "b",
 									Type: gopkg.TypePointer{
-										ValueType: gopkg.TypeUnknownNamed{
+										ValueType: gopkg.TypeNamed{
 											Name: "SomePointerStruct",
 											Import: "some/import/composite_types",
 										},
@@ -433,7 +433,7 @@ func TestParse(t *testing.T) {
 								{
 									Name: "v",
 									Type: gopkg.TypePointer{
-										ValueType: gopkg.TypeUnknownNamed{
+										ValueType: gopkg.TypeNamed{
 											Name: "IntAsString",
 											Import: "some/import/proto_conversion",
 										},
@@ -456,7 +456,7 @@ func TestParse(t *testing.T) {
 							},
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypePointer{
-									ValueType: gopkg.TypeUnknownNamed{
+									ValueType: gopkg.TypeNamed{
 										Name: "IntAsString",
 										Import: "some/import/proto_conversion",
 									},
@@ -471,7 +471,7 @@ func TestParse(t *testing.T) {
 								{
 									Name: "v",
 									Type: gopkg.TypePointer{
-										ValueType: gopkg.TypeUnknownNamed{
+										ValueType: gopkg.TypeNamed{
 											Name: "ShopspringDecimal",
 											Import: "some/import/proto_conversion",
 										},
@@ -479,7 +479,7 @@ func TestParse(t *testing.T) {
 								},
 							},
 							ReturnArgs: tmpl.UnnamedReturnArgs(
-								gopkg.TypeUnknownNamed{
+								gopkg.TypeNamed{
 									Name: "Decimal",
 									Import: "github.com/shopspring/decimal",
 								},
@@ -492,7 +492,7 @@ func TestParse(t *testing.T) {
 							Args: []gopkg.DeclVar{
 								{
 									Name: "v",
-									Type: gopkg.TypeUnknownNamed{
+									Type: gopkg.TypeNamed{
 										Name: "Decimal",
 										Import: "github.com/shopspring/decimal",
 									},
@@ -500,7 +500,7 @@ func TestParse(t *testing.T) {
 							},
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypePointer{
-									ValueType: gopkg.TypeUnknownNamed{
+									ValueType: gopkg.TypeNamed{
 										Name: "ShopspringDecimal",
 										Import: "some/import/proto_conversion",
 									},
@@ -540,7 +540,7 @@ func TestParse(t *testing.T) {
 						{
 							Name: "xxx_messageInfo_IntAsString",
 							Import: "some/import/proto_conversion",
-							Type: gopkg.TypeUnknownNamed{
+							Type: gopkg.TypeNamed{
 								Name: "InternalMessageInfo",
 								Import: "github.com/golang/protobuf/proto",
 							},
@@ -548,7 +548,7 @@ func TestParse(t *testing.T) {
 						{
 							Name: "xxx_messageInfo_ShopspringDecimal",
 							Import: "some/import/proto_conversion",
-							Type: gopkg.TypeUnknownNamed{
+							Type: gopkg.TypeNamed{
 								Name: "InternalMessageInfo",
 								Import: "github.com/golang/protobuf/proto",
 							},
@@ -712,7 +712,7 @@ func TestParse(t *testing.T) {
 								{
 									Name: "t",
 									Type: gopkg.TypePointer{
-										ValueType: gopkg.TypeUnknownNamed{
+										ValueType: gopkg.TypeNamed{
 											Name: "T",
 											Import: "testing",
 										},
@@ -943,7 +943,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 			Args: []gopkg.DeclVar{
 				{
 					Name: "src",
-					Type: gopkg.TypeUnknownNamed{
+					Type: gopkg.TypeNamed{
 						Name: "Message",
 						Import: "github.com/golang/protobuf/proto",
 					},
