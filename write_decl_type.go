@@ -18,8 +18,13 @@ func WriteDeclType(
 		return errors.New("type decl type cannot be nil")
 	}
 
+	fullType, err := decl.Type.FullType(importAliases)
+	if err != nil {
+		return err
+	}
+
 	w.Write([]byte(
-		"type " + decl.Name + " " + decl.Type.FullType(importAliases) + "\n",
+		"type " + decl.Name + " " + fullType + "\n",
 	))
 
 	return nil

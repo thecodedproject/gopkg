@@ -11,7 +11,12 @@ func WriteDeclFunc(
 	importAliases map[string]string,
 ) error {
 
-	w.Write([]byte(fullFuncDecl(decl, importAliases)))
+	funcDecl, err := fullFuncDecl(decl, importAliases)
+	if err != nil {
+		return err
+	}
+
+	w.Write([]byte(funcDecl))
 	w.Write([]byte(" {\n"))
 
 	if decl.BodyTmpl != "" {
@@ -42,7 +47,10 @@ func WriteDeclFunc(
 	return nil
 }
 
-func fullFuncDecl(f DeclFunc, importAliases map[string]string) string {
+func fullFuncDecl(
+	f DeclFunc,
+	importAliases map[string]string,
+) (string, error) {
 
 	decl := "func "
 
@@ -60,9 +68,14 @@ func fullFuncDecl(f DeclFunc, importAliases map[string]string) string {
 		decl += f.Receiver.TypeName + ") "
 	}
 
-	decl += f.Name + funcArgsAndRetArgs(f, importAliases, true)
+	argsAndRets, err := funcArgsAndRetArgs(f, importAliases, true)
+	if err != nil {
+		return "", err
+	}
 
-	return decl
+	decl += f.Name + argsAndRets
+
+	return decl, nil
 }
 
 // funcArgsAndRetArgs is a helper function which returns a function signature
@@ -75,7 +88,7 @@ func funcArgsAndRetArgs(
 	f DeclFunc,
 	importAliases map[string]string,
 	addNewLinesToArgsList bool,
-) string {
+) (string, error) {
 
 	decl := "("
 
@@ -94,7 +107,12 @@ func funcArgsAndRetArgs(
 			decl += "\t"
 		}
 
-		decl += arg.Name + " " + arg.FullType(importAliases)
+		argType, err := arg.FullType(importAliases)
+		if err != nil {
+			return "", err
+		}
+
+		decl += arg.Name + " " + argType
 
 		if addNewLinesToArgsList {
 			decl += ",\n"
@@ -106,11 +124,22 @@ func funcArgsAndRetArgs(
 	decl += ")"
 
 	if len(f.ReturnArgs) == 1 {
-			decl += " " + f.ReturnArgs[0].FullType(importAliases)
+			retType, err := f.ReturnArgs[0].FullType(importAliases)
+			if err != nil {
+				return "", err
+			}
+
+			decl += " " + retType
 	} else if len(f.ReturnArgs) > 1 {
 		decl += " ("
 		for i, ret := range f.ReturnArgs {
-			decl += ret.FullType(importAliases)
+
+			retType, err := ret.FullType(importAliases)
+			if err != nil {
+				return "", err
+			}
+
+			decl += retType
 
 			if i < len(f.ReturnArgs) - 1 {
 				decl += ", "
@@ -119,7 +148,7 @@ func funcArgsAndRetArgs(
 		decl += ")"
 	}
 
-	return decl
+	return decl, nil
 }
 
 func funcBaseTemplate(

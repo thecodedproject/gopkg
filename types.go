@@ -27,7 +27,7 @@ type ImportAndAlias struct {
 
 type Type interface {
 	DefaultInit(importAliases map[string]string) (string, error)
-	FullType(importAliases map[string]string) string
+	FullType(importAliases map[string]string) (string, error)
 	RequiredImports() map[string]bool
 }
 
@@ -39,8 +39,14 @@ func (t TypeArray) DefaultInit(importAliases map[string]string) (string, error) 
 	return "nil", nil
 }
 
-func (t TypeArray) FullType(importAliases map[string]string) string {
-	return "[]" + t.ValueType.FullType(importAliases)
+func (t TypeArray) FullType(importAliases map[string]string) (string, error) {
+
+	valueFullType, err := t.ValueType.FullType(importAliases)
+	if err != nil {
+		return "", err
+	}
+
+	return "[]" + valueFullType, nil
 }
 
 func (t TypeArray) RequiredImports() map[string]bool {
@@ -53,8 +59,8 @@ func (t TypeBool) DefaultInit(importAliases map[string]string) (string, error) {
 	return "false", nil
 }
 
-func (t TypeBool) FullType(importAliases map[string]string) string {
-	return "bool"
+func (t TypeBool) FullType(importAliases map[string]string) (string, error) {
+	return "bool", nil
 }
 
 func (t TypeBool) RequiredImports() map[string]bool {
@@ -67,8 +73,8 @@ func (t TypeByte) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
 }
 
-func (t TypeByte) FullType(importAliases map[string]string) string {
-	return "byte"
+func (t TypeByte) FullType(importAliases map[string]string) (string, error) {
+	return "byte", nil
 }
 
 func (t TypeByte) RequiredImports() map[string]bool {
@@ -81,8 +87,8 @@ func (t TypeError) DefaultInit(importAliases map[string]string) (string, error) 
 	return "nil", nil
 }
 
-func (t TypeError) FullType(importAliases map[string]string) string {
-	return "error"
+func (t TypeError) FullType(importAliases map[string]string) (string, error) {
+	return "error", nil
 }
 
 func (t TypeError) RequiredImports() map[string]bool {
@@ -95,8 +101,8 @@ func (t TypeFloat32) DefaultInit(importAliases map[string]string) (string, error
 	return "0", nil
 }
 
-func (t TypeFloat32) FullType(importAliases map[string]string) string {
-	return "float32"
+func (t TypeFloat32) FullType(importAliases map[string]string) (string, error) {
+	return "float32", nil
 }
 
 func (t TypeFloat32) RequiredImports() map[string]bool {
@@ -109,8 +115,8 @@ func (t TypeFloat64) DefaultInit(importAliases map[string]string) (string, error
 	return "0", nil
 }
 
-func (t TypeFloat64) FullType(importAliases map[string]string) string {
-	return "float64"
+func (t TypeFloat64) FullType(importAliases map[string]string) (string, error) {
+	return "float64", nil
 }
 
 func (t TypeFloat64) RequiredImports() map[string]bool {
@@ -123,8 +129,8 @@ func (t TypeInt) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
 }
 
-func (t TypeInt) FullType(importAliases map[string]string) string {
-	return "int"
+func (t TypeInt) FullType(importAliases map[string]string) (string, error) {
+	return "int", nil
 }
 
 func (t TypeInt) RequiredImports() map[string]bool {
@@ -139,19 +145,25 @@ func (t TypeInterface) DefaultInit(importAliases map[string]string) (string, err
 	return "nil", nil
 }
 
-func (t TypeInterface) FullType(importAliases map[string]string) string {
+func (t TypeInterface) FullType(importAliases map[string]string) (string, error) {
 
 	if len(t.Funcs) == 0 {
-		return "interface{}"
+		return "interface{}", nil
 	}
 
 	ret := "interface {\n"
 	for _, f := range t.Funcs {
-		ret += "\t" + f.Name + funcArgsAndRetArgs(f, importAliases, false) + "\n"
+
+		argsAndRets, err := funcArgsAndRetArgs(f, importAliases, false)
+		if err != nil {
+			return "", err
+		}
+
+		ret += "\t" + f.Name + argsAndRets + "\n"
 	}
 	ret += "}"
 
-	return ret
+	return ret, nil
 }
 
 func (t TypeInterface) RequiredImports() map[string]bool {
@@ -168,8 +180,8 @@ func (t TypeInt32) DefaultInit(importAliases map[string]string) (string, error) 
 	return "0", nil
 }
 
-func (t TypeInt32) FullType(importAliases map[string]string) string {
-	return "int32"
+func (t TypeInt32) FullType(importAliases map[string]string) (string, error) {
+	return "int32", nil
 }
 
 func (t TypeInt32) RequiredImports() map[string]bool {
@@ -182,8 +194,8 @@ func (t TypeInt64) DefaultInit(importAliases map[string]string) (string, error) 
 	return "0", nil
 }
 
-func (t TypeInt64) FullType(importAliases map[string]string) string {
-	return "int64"
+func (t TypeInt64) FullType(importAliases map[string]string) (string, error) {
+	return "int64", nil
 }
 
 func (t TypeInt64) RequiredImports() map[string]bool {
@@ -196,8 +208,8 @@ func (t TypeString) DefaultInit(importAliases map[string]string) (string, error)
 	return "\"\"", nil
 }
 
-func (t TypeString) FullType(importAliases map[string]string) string {
-	return "string"
+func (t TypeString) FullType(importAliases map[string]string) (string, error) {
+	return "string", nil
 }
 
 func (t TypeString) RequiredImports() map[string]bool {
@@ -212,7 +224,7 @@ func (t TypeStruct) DefaultInit(importAliases map[string]string) (string, error)
 	return "{}", nil
 }
 
-func (t TypeStruct) FullType(importAliases map[string]string) string {
+func (t TypeStruct) FullType(importAliases map[string]string) (string, error) {
 
 	ret := "struct {"
 
@@ -220,12 +232,16 @@ func (t TypeStruct) FullType(importAliases map[string]string) string {
 		if i == 0 {
 			ret += "\n"
 		}
-		ret += "\t" + f.Name + " " + f.FullType(importAliases) + "\n"
+		fieldFullType, err := f.FullType(importAliases)
+		if err != nil {
+			return "", err
+		}
+		ret += "\t" + f.Name + " " + fieldFullType + "\n"
 	}
 
 	ret += "}"
 
-	return ret
+	return ret, nil
 }
 
 func (t TypeStruct) RequiredImports() map[string]bool {
@@ -249,7 +265,13 @@ func (t TypeNamed) DefaultInit(importAliases map[string]string) (string, error) 
 
 		switch t.ValueType.(type) {
 		case TypeStruct:
-			return t.FullType(importAliases) + "{}", nil
+
+			structFullType, err := t.FullType(importAliases)
+			if err != nil {
+				return "", err
+			}
+
+			return structFullType + "{}", nil
 		default:
 			return t.ValueType.DefaultInit(importAliases)
 		}
@@ -258,12 +280,12 @@ func (t TypeNamed) DefaultInit(importAliases map[string]string) (string, error) 
 	return "", errors.New("cannot deduce default init for named type with no value type")
 }
 
-func (t TypeNamed) FullType(importAliases map[string]string) string {
+func (t TypeNamed) FullType(importAliases map[string]string) (string, error) {
 	if alias, hasAlias := importAliases[t.Import]; hasAlias {
-		return alias + "." + t.Name
+		return alias + "." + t.Name, nil
 	}
 
-	return t.Name
+	return t.Name, nil
 }
 
 func (t TypeNamed) RequiredImports() map[string]bool {
@@ -284,8 +306,19 @@ func (t TypeMap) DefaultInit(importAliases map[string]string) (string, error) {
 	return "nil", nil
 }
 
-func (t TypeMap) FullType(importAliases map[string]string) string {
-	return "map[" + t.KeyType.FullType(importAliases) + "]" + t.ValueType.FullType(importAliases)
+func (t TypeMap) FullType(importAliases map[string]string) (string, error) {
+
+	keyFullType, err := t.KeyType.FullType(importAliases)
+	if err != nil {
+		return "", err
+	}
+
+	valueFullType, err := t.ValueType.FullType(importAliases)
+	if err != nil {
+		return "", err
+	}
+
+	return "map[" + keyFullType + "]" + valueFullType, nil
 }
 
 func (t TypeMap) RequiredImports() map[string]bool {
@@ -303,8 +336,14 @@ func (t TypePointer) DefaultInit(importAliases map[string]string) (string, error
 	return "nil", nil
 }
 
-func (t TypePointer) FullType(importAliases map[string]string) string {
-	return "*" + t.ValueType.FullType(importAliases)
+func (t TypePointer) FullType(importAliases map[string]string) (string, error) {
+
+	valueFullType, err := t.ValueType.FullType(importAliases)
+	if err != nil {
+		return "", err
+	}
+
+	return "*" + valueFullType, nil
 }
 
 func (t TypePointer) RequiredImports() map[string]bool {
@@ -317,8 +356,8 @@ func (t TypeUnnamedLiteral) DefaultInit(importAliases map[string]string) (string
 	return "", errors.New("no default init for unnamed literal")
 }
 
-func (t TypeUnnamedLiteral) FullType(importAliases map[string]string) string {
-	return ""
+func (t TypeUnnamedLiteral) FullType(importAliases map[string]string) (string, error) {
+	return "", nil
 }
 
 func (t TypeUnnamedLiteral) RequiredImports() map[string]bool {

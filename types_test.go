@@ -110,7 +110,11 @@ func TestTypeDefaultInit(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		t.Run(test.Def.FullType(nil), func(t *testing.T) {
+
+		testName, err := test.Def.FullType(nil)
+		require.NoError(t, err)
+
+		t.Run(testName, func(t *testing.T) {
 			actual, err := test.Def.DefaultInit(test.ImportAliases)
 
 			if test.ExpectedErr != nil {
@@ -123,7 +127,7 @@ func TestTypeDefaultInit(t *testing.T) {
 		})
 
 		t.Run(
-			"TypeUnknownNamed_with_value_type" + test.Def.FullType(nil),
+			"TypeUnknownNamed_with_value_type" + testName,
 			func(t *testing.T) {
 
 			namedType := gopkg.TypeNamed{
@@ -235,7 +239,9 @@ func TestTypeFullType(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.Expected, func(t *testing.T) {
-			require.Equal(t, test.Expected, test.Def.FullType(test.ImportAliases))
+			fullType, err := test.Def.FullType(test.ImportAliases)
+			require.NoError(t, err)
+			require.Equal(t, test.Expected, fullType)
 		})
 	}
 }
@@ -312,7 +318,9 @@ func TestTypeStructFullType(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.Name, func(t *testing.T) {
-			require.Equal(t, test.Expected, test.Def.FullType(test.ImportAliases))
+			fullType, err := test.Def.FullType(test.ImportAliases)
+			require.NoError(t, err)
+			require.Equal(t, test.Expected, fullType)
 		})
 	}
 }
@@ -419,7 +427,9 @@ func TestTypeInterfaceFullType(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.Name, func(t *testing.T) {
-			require.Equal(t, test.Expected, test.Def.FullType(test.ImportAliases))
+			fullType, err := test.Def.FullType(test.ImportAliases)
+			require.NoError(t, err)
+			require.Equal(t, test.Expected, fullType)
 		})
 	}
 }
@@ -556,7 +566,10 @@ func TestTypeUnknownNamedDefaultInit(t *testing.T) {
 	}
 
 	for _, test := range testCases {
-		t.Run(test.Def.FullType(nil), func(t *testing.T) {
+		testName, err := test.Def.FullType(nil)
+		require.NoError(t, err)
+
+		t.Run(testName, func(t *testing.T) {
 			actual, err := test.Def.DefaultInit(test.ImportAliases)
 
 			if test.ExpectedErr != nil {
@@ -585,7 +598,10 @@ func TestTypeRequiredImports_SimpleTypes(t *testing.T) {
 	}
 
 	for _, simpleType := range simpleTypes {
-		t.Run(simpleType.FullType(nil), func(t *testing.T) {
+		testName, err := simpleType.FullType(nil)
+		require.NoError(t, err)
+
+		t.Run(testName, func(t *testing.T) {
 			require.Equal(
 				t,
 				map[string]bool(nil),
