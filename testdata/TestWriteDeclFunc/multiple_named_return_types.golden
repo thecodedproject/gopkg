@@ -1,0 +1,2 @@
+func NamedReturns() (one int32, two string, err error) {
+}

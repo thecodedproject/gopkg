@@ -1,6 +1,7 @@
 package gopkg
 
 import (
+	"errors"
 	"io"
 	"text/template"
 )
@@ -123,15 +124,37 @@ func funcArgsAndRetArgs(
 
 	decl += ")"
 
+	retArgs, err := funcRetArgs(f, importAliases)
+	if err != nil {
+		return "", err
+	}
+
+	return decl + retArgs, nil
+}
+
+func funcRetArgs(
+	f DeclFunc,
+	importAliases map[string]string,
+) (string, error) {
+
+	var retArgs string
+
 	if len(f.ReturnArgs) == 1 {
 			retType, err := f.ReturnArgs[0].FullType(importAliases)
 			if err != nil {
 				return "", err
 			}
 
-			decl += " " + retType
+			if f.ReturnArgs[0].Name == "" {
+				retArgs += " " + retType
+			} else {
+				retArgs += " (" + f.ReturnArgs[0].Name + " " + retType + ")"
+			}
 	} else if len(f.ReturnArgs) > 1 {
-		decl += " ("
+
+		namedRetArgs := (f.ReturnArgs[0].Name != "")
+
+		retArgs += " ("
 		for i, ret := range f.ReturnArgs {
 
 			retType, err := ret.FullType(importAliases)
@@ -139,16 +162,24 @@ func funcArgsAndRetArgs(
 				return "", err
 			}
 
-			decl += retType
+			if (namedRetArgs && ret.Name == "") || (!namedRetArgs && ret.Name != "") {
+				return "", errors.New("mix of named and unnamed func return args")
+			}
+
+			if namedRetArgs {
+				retArgs += ret.Name + " "
+			}
+
+			retArgs += retType
 
 			if i < len(f.ReturnArgs) - 1 {
-				decl += ", "
+				retArgs += ", "
 			}
 		}
-		decl += ")"
+		retArgs += ")"
 	}
 
-	return decl, nil
+	return retArgs, nil
 }
 
 func funcBaseTemplate(

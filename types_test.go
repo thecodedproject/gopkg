@@ -423,6 +423,51 @@ func TestTypeInterfaceFullType(t *testing.T) {
 	OtherMethod() alias_c.CStruct
 }`,
 		},
+		{
+			Name: "functions with named returns and import aliases",
+			Def: gopkg.TypeInterface{
+				Funcs: []gopkg.DeclFunc{
+					{
+						Name: "One",
+						ReturnArgs: []gopkg.DeclVar{
+							{
+								Name: "val",
+								Type: gopkg.TypeNamed{
+									Name: "BStruct",
+									Import: "some/other/path/tob",
+								},
+							},
+							{
+								Name: "err",
+								Type: gopkg.TypeError{},
+							},
+						},
+					},
+					{
+						Name: "Two",
+						ReturnArgs: []gopkg.DeclVar{
+							{
+								Name: "secondVal",
+								Type: gopkg.TypeNamed{
+									Name: "CStruct",
+									Import: "some/third/path/toc",
+								},
+							},
+						},
+					},
+				},
+			},
+			ImportAliases: map[string]string{
+				"some/path/toa": "alias_a",
+				"some/other/path/tob": "alias_b",
+				"some/third/path/toc": "alias_c",
+			},
+			Expected:
+`interface {
+	One() (val alias_b.BStruct, err error)
+	Two() (secondVal alias_c.CStruct)
+}`,
+		},
 	}
 
 	for _, test := range testCases {

@@ -2,6 +2,7 @@ package gopkg_test
 
 import (
 	"bytes"
+	"errors"
 	"testing"
 
 	"github.com/sebdah/goldie/v2"
@@ -17,8 +18,8 @@ func TestWriteDeclFunc(t *testing.T) {
 		Name string
 		F gopkg.DeclFunc
 		ImportAliases map[string]string
+		ExpectedErr error
 	}{
-
 		{
 			Name: "no args or return or body",
 			F: gopkg.DeclFunc{
@@ -199,6 +200,77 @@ func TestWriteDeclFunc(t *testing.T) {
 			},
 		},
 		{
+			Name: "single named return type",
+			F: gopkg.DeclFunc{
+				Name: "SingleNamedReturn",
+				ReturnArgs: []gopkg.DeclVar{
+					{
+						Name: "first",
+						Type: gopkg.TypeString{},
+					},
+				},
+			},
+		},
+		{
+			Name: "multiple named return types",
+			F: gopkg.DeclFunc{
+				Name: "NamedReturns",
+				ReturnArgs: []gopkg.DeclVar{
+					{
+						Name: "one",
+						Type: gopkg.TypeInt32{},
+					},
+					{
+						Name: "two",
+						Type: gopkg.TypeString{},
+					},
+					{
+						Name: "err",
+						Type: gopkg.TypeError{},
+					},
+				},
+			},
+		},
+		{
+			Name: "mix of named and unnamed return types returns error",
+			F: gopkg.DeclFunc{
+				Name: "NamedReturns",
+				ReturnArgs: []gopkg.DeclVar{
+					{
+						Name: "one",
+						Type: gopkg.TypeInt32{},
+					},
+					{
+						Type: gopkg.TypeString{},
+					},
+					{
+						Name: "err",
+						Type: gopkg.TypeError{},
+					},
+				},
+			},
+			ExpectedErr: errors.New("mix of named and unnamed func return args"),
+		},
+		{
+			Name: "mix of unnamed and named return types returns error",
+			F: gopkg.DeclFunc{
+				Name: "NamedReturns",
+				ReturnArgs: []gopkg.DeclVar{
+					{
+						Type: gopkg.TypeInt32{},
+					},
+					{
+						Type: gopkg.TypeString{},
+					},
+					{
+						Name: "err",
+						Type: gopkg.TypeError{},
+					},
+				},
+			},
+			ExpectedErr: errors.New("mix of named and unnamed func return args"),
+		},
+		{
 			Name: "return default return types",
 			F: gopkg.DeclFunc{
 				Name: "MyFunction",
@@ -342,6 +414,12 @@ func TestWriteDeclFunc(t *testing.T) {
 				test.F,
 				test.ImportAliases,
 			)
+
+			if test.ExpectedErr != nil {
+				require.Equal(t, test.ExpectedErr, err)
+				return
+			}
+
 			require.NoError(t, err)
 
 			g := goldie.New(t)
