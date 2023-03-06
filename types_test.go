@@ -39,6 +39,10 @@ func TestTypeDefaultInit(t *testing.T) {
 			Expected: "0",
 		},
 		{
+			Def: gopkg.TypeFunc{},
+			Expected: "nil",
+		},
+		{
 			Def: gopkg.TypeInt{},
 			Expected: "0",
 		},
@@ -240,6 +244,147 @@ func TestTypeFullType(t *testing.T) {
 	for _, test := range testCases {
 		t.Run(test.Expected, func(t *testing.T) {
 			fullType, err := test.Def.FullType(test.ImportAliases)
+			require.NoError(t, err)
+			require.Equal(t, test.Expected, fullType)
+		})
+	}
+}
+
+// TestTypeFuncFullType tests the TypeFunc.FullType functionality
+// It is in it's own test fixutre as it's more complicated than the other
+// types
+func TestTypeFuncFullType(t *testing.T) {
+
+	testCases := []struct{
+		Name string
+		Def gopkg.TypeFunc
+		ImportAliases map[string]string
+		Expected string
+		ExpectedErr error
+	}{
+		{
+			Name: "empty func",
+			Def: gopkg.TypeFunc{},
+			Expected: "func()",
+		},
+		{
+			Name: "func with built in unnamed args",
+			Def: gopkg.TypeFunc{
+				Args: tmpl.UnnamedReturnArgs(
+					gopkg.TypeString{},
+					gopkg.TypeInt64{},
+					gopkg.TypeError{},
+				),
+			},
+			Expected: "func(string, int64, error)",
+		},
+		{
+			Name: "func with built in named args",
+			Def: gopkg.TypeFunc{
+				Args: []gopkg.DeclVar{
+					{
+						Name: "first",
+						Type: gopkg.TypeArray{
+							ValueType: gopkg.TypeInt32{},
+						},
+					},
+					{
+						Name: "second",
+						Type: gopkg.TypeBool{},
+					},
+				},
+			},
+			Expected: "func(first []int32, second bool)",
+		},
+		{
+			Name: "func with built in unnamed return arg",
+			Def: gopkg.TypeFunc{
+				ReturnArgs: tmpl.UnnamedReturnArgs(
+					gopkg.TypeString{},
+				),
+			},
+			Expected: "func() string",
+		},
+		{
+			Name: "func with built in named return args",
+			Def: gopkg.TypeFunc{
+				ReturnArgs: []gopkg.DeclVar{
+					{
+						Name: "first",
+						Type: gopkg.TypeArray{
+							ValueType: gopkg.TypeInt32{},
+						},
+					},
+					{
+						Name: "err",
+						Type: gopkg.TypeError{},
+					},
+				},
+			},
+			Expected: "func() (first []int32, err error)",
+		},
+		{
+			Name: "func with args and return args with import aliases",
+			Def: gopkg.TypeFunc{
+				Args: []gopkg.DeclVar{
+					{
+						Name: "first",
+						Type: gopkg.TypeNamed{
+							Name: "SomeType",
+							Import: "some/path",
+						},
+					},
+					{
+						Name: "second",
+						Type: gopkg.TypeNamed{
+							Name: "SomeOtherType",
+							Import: "some/other",
+						},
+					},
+				},
+				ReturnArgs: []gopkg.DeclVar{
+					{
+						Name: "retVal",
+						Type: gopkg.TypeNamed{
+							Name: "SomeThirdType",
+							Import: "some/third",
+						},
+					},
+				},
+			},
+			ImportAliases: map[string]string{
+				"some/path": "path",
+				"some/other": "otheralias",
+				"some/third": "third",
+			},
+			Expected: "func(first path.SomeType, second otheralias.SomeOtherType) (retVal third.SomeThirdType)",
+		},
+		{
+			Name: "mix of named and unnamed params returns error",
+			Def: gopkg.TypeFunc{
+				Args: []gopkg.DeclVar{
+					{
+						Name: "first",
+						Type: gopkg.TypeArray{
+							ValueType: gopkg.TypeInt32{},
+						},
+					},
+					{
+						Type: gopkg.TypeBool{},
+					},
+				},
+			},
+			ExpectedErr: errors.New("mix of named and unnamed func args"),
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+			fullType, err := test.Def.FullType(test.ImportAliases)
+			if test.ExpectedErr != nil {
+				require.Equal(t, test.ExpectedErr, err)
+				return
+			}
 			require.NoError(t, err)
 			require.Equal(t, test.Expected, fullType)
 		})
@@ -817,6 +962,23 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 				"import/aa": true,
 				"import/bb": true,
 				"import/cc": true,
+			},
+		},
+		{
+			Name: "TypeFunc empty",
+			Def: gopkg.TypeFunc{},
+		},
+		{
+			Name: "TypeFunc with built in type args and return args",
+			Def: gopkg.TypeFunc{
+				Args: tmpl.UnnamedReturnArgs(
+					gopkg.String{},
+					gopkg.Int32{},
+				),
+				ReturnArgs: tmpl.UnnamedReturnArgs(
+					gopkg.String{},
+					gopkg.Int32{},
+				),
 			},
 		},
 	}

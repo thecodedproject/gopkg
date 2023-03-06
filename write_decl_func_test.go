@@ -249,7 +249,7 @@ func TestWriteDeclFunc(t *testing.T) {
 					},
 				},
 			},
-			ExpectedErr: errors.New("mix of named and unnamed func return args"),
+			ExpectedErr: errors.New("mix of named and unnamed func args"),
 		},
 		{
 			Name: "mix of unnamed and named return types returns error",
@@ -268,7 +268,7 @@ func TestWriteDeclFunc(t *testing.T) {
 					},
 				},
 			},
-			ExpectedErr: errors.New("mix of named and unnamed func return args"),
+			ExpectedErr: errors.New("mix of named and unnamed func args"),
 		},
 		{
 			Name: "return default return types",

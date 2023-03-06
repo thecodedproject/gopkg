@@ -69,7 +69,12 @@ func fullFuncDecl(
 		decl += f.Receiver.TypeName + ") "
 	}
 
-	argsAndRets, err := funcArgsAndRetArgs(f, importAliases, true)
+	argsAndRets, err := funcArgsAndRetArgs(
+		f.Args,
+		f.ReturnArgs,
+		importAliases,
+		true,
+	)
 	if err != nil {
 		return "", err
 	}
@@ -86,100 +91,91 @@ func fullFuncDecl(
 // `addNewLinesToArgsList` will new-line seperate the arguments list (iff there
 // is more than 1 argument in the args list)
 func funcArgsAndRetArgs(
-	f DeclFunc,
+	args []DeclVar,
+	returnArgs []DeclVar,
 	importAliases map[string]string,
 	addNewLinesToArgsList bool,
 ) (string, error) {
 
-	decl := "("
-
 	// Don't add new lines to arg list if there are 0 args or only 1 arg
-	if len(f.Args) < 2 {
+	if len(args) < 2 {
 		addNewLinesToArgsList = false
 	}
 
-	if addNewLinesToArgsList {
-		decl += "\n"
-	}
-
-	for iArg, arg := range f.Args {
-
-		if addNewLinesToArgsList {
-			decl += "\t"
-		}
-
-		argType, err := arg.FullType(importAliases)
-		if err != nil {
-			return "", err
-		}
-
-		decl += arg.Name + " " + argType
-
-		if addNewLinesToArgsList {
-			decl += ",\n"
-		} else if iArg < len(f.Args)-1 {
-			decl += ", "
-		}
-	}
-
-	decl += ")"
-
-	retArgs, err := funcRetArgs(f, importAliases)
+	argsList, err := funcArgsWithoutParenthesis(
+		args,
+		importAliases,
+		addNewLinesToArgsList,
+	)
 	if err != nil {
 		return "", err
 	}
 
-	return decl + retArgs, nil
-}
+	decl := "(" + argsList + ")"
 
-func funcRetArgs(
-	f DeclFunc,
-	importAliases map[string]string,
-) (string, error) {
-
-	var retArgs string
-
-	if len(f.ReturnArgs) == 1 {
-			retType, err := f.ReturnArgs[0].FullType(importAliases)
-			if err != nil {
-				return "", err
-			}
-
-			if f.ReturnArgs[0].Name == "" {
-				retArgs += " " + retType
-			} else {
-				retArgs += " (" + f.ReturnArgs[0].Name + " " + retType + ")"
-			}
-	} else if len(f.ReturnArgs) > 1 {
-
-		namedRetArgs := (f.ReturnArgs[0].Name != "")
-
-		retArgs += " ("
-		for i, ret := range f.ReturnArgs {
-
-			retType, err := ret.FullType(importAliases)
-			if err != nil {
-				return "", err
-			}
-
-			if (namedRetArgs && ret.Name == "") || (!namedRetArgs && ret.Name != "") {
-				return "", errors.New("mix of named and unnamed func return args")
-			}
-
-			if namedRetArgs {
-				retArgs += ret.Name + " "
-			}
-
-			retArgs += retType
-
-			if i < len(f.ReturnArgs) - 1 {
-				retArgs += ", "
-			}
-		}
-		retArgs += ")"
+	if len(returnArgs) == 0 {
+		return decl, nil
 	}
 
-	return retArgs, nil
+	retArgsList, err := funcArgsWithoutParenthesis(returnArgs, importAliases, false)
+	if err != nil {
+		return "", err
+	}
+
+	if len(returnArgs) == 1 && returnArgs[0].Name == "" {
+		return decl + " " + retArgsList, nil
+	}
+
+	return decl + " (" + retArgsList + ")", nil
+}
+
+func funcArgsWithoutParenthesis(
+	args []DeclVar,
+	importAliases map[string]string,
+	newlineDelimitted bool,
+) (string, error) {
+
+	if len(args) == 0 {
+		return "", nil
+	}
+
+	areNamedArgs := (args[0].Name != "")
+
+	var argList string
+	if newlineDelimitted {
+		argList += "\n\t"
+	}
+	for i, arg := range args {
+
+		if i > 0 {
+			if newlineDelimitted {
+				argList += ",\n\t"
+			} else {
+				argList += ", "
+			}
+		}
+
+		retType, err := arg.FullType(importAliases)
+		if err != nil {
+			return "", err
+		}
+
+		if (areNamedArgs && arg.Name == "") || (!areNamedArgs && arg.Name != "") {
+			return "", errors.New("mix of named and unnamed func args")
+		}
+
+		if areNamedArgs {
+			argList += arg.Name + " "
+		}
+
+		argList += retType
+	}
+
+	if newlineDelimitted {
+		argList += ",\n"
+	}
+
+	return argList, nil
 }
 
 func funcBaseTemplate(

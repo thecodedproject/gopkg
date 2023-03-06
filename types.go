@@ -154,7 +154,12 @@ func (t TypeInterface) FullType(importAliases map[string]string) (string, error)
 	ret := "interface {\n"
 	for _, f := range t.Funcs {
 
-		argsAndRets, err := funcArgsAndRetArgs(f, importAliases, false)
+		argsAndRets, err := funcArgsAndRetArgs(
+			f.Args,
+			f.ReturnArgs,
+			importAliases,
+			false,
+		)
 		if err != nil {
 			return "", err
 		}
@@ -361,5 +366,37 @@ func (t TypeUnnamedLiteral) FullType(importAliases map[string]string) (string, e
 }
 
 func (t TypeUnnamedLiteral) RequiredImports() map[string]bool {
+	return nil
+}
+
+type TypeFunc struct {
+	Args []DeclVar
+	ReturnArgs []DeclVar
+}
+
+func (t TypeFunc) DefaultInit(importAliases map[string]string) (string, error) {
+	return "nil", nil
+}
+
+func (t TypeFunc) FullType(importAliases map[string]string) (string, error) {
+
+	fullType := "func"
+
+	argsAndRets, err := funcArgsAndRetArgs(
+		t.Args,
+		t.ReturnArgs,
+		importAliases,
+		false,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	fullType += argsAndRets
+
+	return fullType, nil
+}
+
+func (t TypeFunc) RequiredImports() map[string]bool {
 	return nil
 }
