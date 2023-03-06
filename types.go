@@ -398,5 +398,13 @@ func (t TypeFunc) FullType(importAliases map[string]string) (string, error) {
 }
 
 func (t TypeFunc) RequiredImports() map[string]bool {
-	return nil
+
+	ret := make(map[string]bool)
+	for _, a := range t.Args {
+		ret = union(ret, a.RequiredImports())
+	}
+	for _, a := range t.ReturnArgs {
+		ret = union(ret, a.RequiredImports())
+	}
+	return ret
 }

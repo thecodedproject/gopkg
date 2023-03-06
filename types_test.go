@@ -972,13 +972,44 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 			Name: "TypeFunc with built in type args and return args",
 			Def: gopkg.TypeFunc{
 				Args: tmpl.UnnamedReturnArgs(
-					gopkg.String{},
-					gopkg.Int32{},
+					gopkg.TypeString{},
+					gopkg.TypeInt32{},
 				),
 				ReturnArgs: tmpl.UnnamedReturnArgs(
-					gopkg.String{},
-					gopkg.Int32{},
+					gopkg.TypeString{},
+					gopkg.TypeInt32{},
 				),
+			},
+		},
+		{
+			Name: "TypeFunc named types in type args and return args",
+			Def: gopkg.TypeFunc{
+				Args: tmpl.UnnamedReturnArgs(
+					gopkg.TypeNamed{
+						Name: "A",
+						Import: "import/aaa",
+					},
+					gopkg.TypeNamed{
+						Name: "B",
+						Import: "import/bbb",
+					},
+				),
+				ReturnArgs: tmpl.UnnamedReturnArgs(
+					gopkg.TypeNamed{
+						Name: "A",
+						Import: "import/ccc",
+					},
+					gopkg.TypeNamed{
+						Name: "B",
+						Import: "import/ddd",
+					},
+				),
+			},
+			Expected: map[string]bool{
+				"import/aaa": true,
+				"import/bbb": true,
+				"import/ccc": true,
+				"import/ddd": true,
 			},
 		},
 	}
