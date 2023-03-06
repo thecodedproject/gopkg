@@ -153,32 +153,6 @@ func fileContentsFromAstFile(
 	return contents, nil
 }
 
-// getArgTypeList gets an order list of arguments from an `ast.FieldList`
-//
-// Used to get either the types of the parameters arguments for a function,
-// or the return arguments for a function whilst parsing the ast.
-func getArgTypeList(
-	imports map[string]string,
-	fieldList *ast.FieldList,
-) ([]Type, error) {
-
-	if fieldList == nil || fieldList.List == nil {
-		return nil, nil
-	}
-
-	typeList := make([]Type, 0, len(fieldList.List))
-
-	for i := range fieldList.List {
-		fieldType, err := getFullType(imports, fieldList.List[i].Type)
-		if err != nil {
-			return nil, err
-		}
-		typeList = append(typeList, fieldType)
-	}
-
-	return typeList, nil
-}
-
 // getDeclVarsFromFieldList returns an ordered list of declared variables
 //
 // The ast field list might be, for example, the list of arguments passed into
@@ -394,6 +368,22 @@ func getFullType(
 
 			return TypeInterface{
 				Funcs: interfaceFuncs,
+			}, nil
+
+		case *ast.FuncType:
+
+			args, err := getDeclVarsFromFieldList(imports, t.Params)
+			if err != nil {
+				return nil, err
+			}
+			retArgs, err := getDeclVarsFromFieldList(imports, t.Results)
+			if err != nil {
+				return nil, err
+			}
+
+			return TypeFunc{
+				Args: args,
+				ReturnArgs: retArgs,
 			}, nil
 
 		default:

@@ -313,6 +313,102 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
+					Filepath: "test_packages/composite_types/function_types.go",
+					PackageName: "composite_types",
+					PackageImportPath: "some/import/composite_types",
+					Vars: []gopkg.DeclVar{
+						{
+							Name: "SomeVar",
+							Import: "some/import/composite_types",
+							Type: gopkg.TypeFunc{
+								Args: tmpl.UnnamedReturnArgs(
+									gopkg.TypeInt{},
+								),
+								ReturnArgs: tmpl.UnnamedReturnArgs(
+									gopkg.TypeString{},
+								),
+							},
+						},
+					},
+					Functions: []gopkg.DeclFunc{
+						{
+							Name: "SomeFunc",
+							Import: "some/import/composite_types",
+							Args: []gopkg.DeclVar{
+								{
+									Name: "f",
+									Type: gopkg.TypeFunc{},
+								},
+							},
+							ReturnArgs: tmpl.UnnamedReturnArgs(
+								gopkg.TypeFunc{
+									ReturnArgs: tmpl.UnnamedReturnArgs(
+										gopkg.TypeInt{},
+										gopkg.TypeInt{},
+									),
+								},
+							),
+						},
+					},
+					Types: []gopkg.DeclType{
+						{
+							Name: "SomeType",
+							Import: "some/import/composite_types",
+							Type: gopkg.TypeFunc{
+								ReturnArgs: tmpl.UnnamedReturnArgs(
+									gopkg.TypeError{},
+								),
+							},
+						},
+						{
+							Name: "SomeStruct",
+							Import: "some/import/composite_types",
+							Type: gopkg.TypeStruct{
+								Fields: []gopkg.DeclVar{
+									{
+										Name: "UnnamedFunc",
+										Type: gopkg.TypeFunc{
+											Args: tmpl.UnnamedReturnArgs(
+												gopkg.TypeInt{},
+												gopkg.TypeFloat32{},
+											),
+											ReturnArgs: tmpl.UnnamedReturnArgs(
+												gopkg.TypeString{},
+												gopkg.TypeError{},
+											),
+										},
+									},
+									{
+										Name: "NamedFunc",
+										Type: gopkg.TypeFunc{
+											Args: []gopkg.DeclVar{
+												{
+													Name: "a",
+													Type: gopkg.TypeInt64{},
+												},
+												{
+													Name: "b",
+													Type: gopkg.TypeBool{},
+												},
+											},
+											ReturnArgs: []gopkg.DeclVar{
+												{
+													Name: "c",
+													Type: gopkg.TypeFloat64{},
+												},
+												{
+													Name: "d",
+													Type: gopkg.TypeString{},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
 					Filepath: "test_packages/composite_types/pointers.go",
 					PackageName: "composite_types",
 					PackageImportPath: "some/import/composite_types",
