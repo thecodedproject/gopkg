@@ -344,7 +344,7 @@ func getFullType(
 
 		case *ast.StructType:
 
-			structFields, err := getDeclVarsFromFieldList(
+			structFieldsAndEmbeds, err := getDeclVarsFromFieldList(
 				imports,
 				t.Fields,
 			)
@@ -352,9 +352,16 @@ func getFullType(
 				return nil, err
 			}
 
-			return TypeStruct{
-				Fields: structFields,
-			}, nil
+			var s TypeStruct
+			for _, f := range structFieldsAndEmbeds {
+				if f.Name == "" {
+					s.Embeds = append(s.Embeds, f.Type)
+				} else {
+					s.Fields = append(s.Fields, f)
+				}
+			}
+
+			return s, nil
 
 		case *ast.InterfaceType:
 

@@ -500,16 +500,54 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
-		// TODO implement test for custom types
-		// eg structs/interfaces defined in the package being passed and 'unknonw types' from other packages
-		// also typedefs and global vars
-		/*{
+		{
 			Name: "custom_types",
 			PkgDir: "test_packages/custom_types",
-			PkgImportPath: "some/import/custom_types",
-			Expected: gopkg.FileContents{
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("some/import/custom_types"),
 			},
-		},*/
+			Expected: []gopkg.FileContents{
+				{
+					Filepath: "test_packages/custom_types/embedded_struct.go",
+					PackageName: "custom_types",
+					PackageImportPath: "some/import/custom_types",
+					Types: []gopkg.DeclType{
+						{
+							Name: "SingleEmbed",
+							Import: "some/import/custom_types",
+							Type: gopkg.TypeStruct{
+								Embeds: []gopkg.Type{
+									gopkg.TypeNamed{
+										Name: "Context",
+										Import: "context",
+									},
+								},
+							},
+						},
+						{
+							Name: "ManyEmbeds",
+							Import: "some/import/custom_types",
+							Type: gopkg.TypeStruct{
+								Embeds: []gopkg.Type{
+									gopkg.TypeError{},
+									gopkg.TypeNamed{
+										Name: "Context",
+										Import: "context",
+									},
+									gopkg.TypeInt32{},
+								},
+								Fields: []gopkg.DeclVar{
+									{
+										Name: "myVar",
+										Type: gopkg.TypeString{},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		{
 			Name: "proto_conversion_package",
 			PkgDir: "test_packages/proto_conversion",

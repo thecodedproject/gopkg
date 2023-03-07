@@ -222,6 +222,7 @@ func (t TypeString) RequiredImports() map[string]bool {
 }
 
 type TypeStruct struct {
+	Embeds []Type
 	Fields []DeclVar
 }
 
