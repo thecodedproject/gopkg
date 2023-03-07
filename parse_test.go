@@ -546,10 +546,6 @@ func TestParse(t *testing.T) {
 										Name: "Context",
 										Import: "context",
 									},
-									gopkg.TypeNamed{
-										Name: "InterfaceEmbed",
-										Import: "some/import/custom_types",
-									},
 									gopkg.TypeInt32{},
 								},
 								Fields: []gopkg.DeclVar{
@@ -567,6 +563,10 @@ func TestParse(t *testing.T) {
 								Embeds: []gopkg.Type{
 									gopkg.TypeNamed{
 										Name: "SingleEmbed",
+										Import: "some/import/custom_types",
+									},
+									gopkg.TypeNamed{
+										Name: "InterfaceEmbed",
 										Import: "some/import/custom_types",
 									},
 									gopkg.TypeNamed{

@@ -428,6 +428,32 @@ func TestTypeStructFullType(t *testing.T) {
 }`,
 		},
 		{
+			Name: "struct with embedded types only",
+			Def: gopkg.TypeStruct{
+				Embeds: []gopkg.Type{
+					gopkg.TypeNamed{
+						Name: "MyType",
+						Import: "github.com/myrepo",
+					},
+					gopkg.TypeNamed{
+						Name: "MyTypeTwo",
+						Import: "github.com/myotherrepo",
+					},
+					gopkg.TypeError{},
+				},
+			},
+			ImportAliases: map[string]string{
+				"github.com/myrepo": "myrepo_alias",
+				"github.com/myotherrepo": "myotherrepo_alias",
+			},
+			Expected:
+`struct {
+	myrepo_alias.MyType
+	myotherrepo_alias.MyTypeTwo
+	error
+}`,
+		},
+		{
 			Name: "struct with fields with import aliases",
 			Def: gopkg.TypeStruct{
 				Fields: []gopkg.DeclVar{
@@ -455,6 +481,45 @@ func TestTypeStructFullType(t *testing.T) {
 			},
 			Expected:
 `struct {
+	MyVal myrepo.SomeImportedType
+	MyOtherVal *myotherrepo.SomeOtherImportedType
+}`,
+		},
+		{
+			Name: "struct with fields and embedded types",
+			Def: gopkg.TypeStruct{
+				Embeds: []gopkg.Type{
+					gopkg.TypeInt32{},
+					gopkg.TypeError{},
+				},
+				Fields: []gopkg.DeclVar{
+					{
+						Name: "MyVal",
+						Type: gopkg.TypeNamed{
+							Name: "SomeImportedType",
+							Import: "github.com/myrepo",
+						},
+					},
+					{
+						Name: "MyOtherVal",
+						Type: gopkg.TypePointer{
+							ValueType: gopkg.TypeNamed{
+								Name: "SomeOtherImportedType",
+								Import: "github.com/myotherrepo",
+							},
+						},
+					},
+				},
+			},
+			ImportAliases: map[string]string{
+				"github.com/myrepo": "myrepo",
+				"github.com/myotherrepo": "myotherrepo",
+			},
+			Expected:
+`struct {
+	int32
+	error
+
 	MyVal myrepo.SomeImportedType
 	MyOtherVal *myotherrepo.SomeOtherImportedType
 }`,
@@ -566,6 +631,71 @@ func TestTypeInterfaceFullType(t *testing.T) {
 `interface {
 	MyMethod(val alias_a.AStruct) (alias_b.BStruct, error)
 	OtherMethod() alias_c.CStruct
+}`,
+		},
+		{
+			Name: "with embedded types only",
+			Def: gopkg.TypeInterface{
+				Embeds: []gopkg.Type{
+					gopkg.TypeString{},
+					gopkg.TypeNamed{
+						Name: "SomeT",
+						Import: "path/to/some",
+					},
+					gopkg.TypeNamed{
+						Name: "Other",
+						Import: "path/to/other",
+					},
+				},
+			},
+			ImportAliases: map[string]string{
+				"path/to/some": "alias_some",
+				"path/to/other": "other",
+			},
+			Expected:
+`interface {
+	string
+	alias_some.SomeT
+	other.Other
+}`,
+		},
+		{
+			Name: "with embedded types and functions",
+			Def: gopkg.TypeInterface{
+				Embeds: []gopkg.Type{
+					gopkg.TypeString{},
+					gopkg.TypeBool{},
+				},
+				Funcs: []gopkg.DeclFunc{
+					{
+						Name: "One",
+						Args: tmpl.UnnamedReturnArgs(
+							gopkg.TypeInt64{},
+							gopkg.TypeFloat64{},
+						),
+						ReturnArgs: tmpl.UnnamedReturnArgs(
+							gopkg.TypeInt64{},
+						),
+					},
+					{
+						Name: "Two",
+						ReturnArgs: tmpl.UnnamedReturnArgs(
+							gopkg.TypeInt32{},
+						),
+					},
+				},
+			},
+			ImportAliases: map[string]string{
+				"path/to/some": "alias_some",
+				"path/to/other": "other",
+			},
+			Expected:
+`interface {
+	string
+	bool
+
+	One(int64, float64) int64
+	Two() int32
 }`,
 		},
 		{
@@ -924,9 +1054,46 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 			},
 		},
 		{
+			Name: "struct with named embedded types",
+			Def: gopkg.TypeStruct{
+				Embeds: []gopkg.Type{
+					gopkg.TypeNamed{
+						Import: "import/a",
+					},
+					gopkg.TypeString{},
+					gopkg.TypeNamed{
+						Import: "import/b",
+					},
+				},
+			},
+			Expected: map[string]bool{
+				"import/a": true,
+				"import/b": true,
+			},
+		},
+		{
 			Name: "interface without funcs",
 			Def: gopkg.TypeInterface{},
 			Expected: map[string]bool(nil),
+		},
+		{
+			Name: "interface with named embedded types",
+			Def: gopkg.TypeInterface{
+				Embeds: []gopkg.Type{
+					gopkg.TypeNamed{
+						Import: "import/aa",
+					},
+					gopkg.TypeString{},
+					gopkg.TypeInt64{},
+					gopkg.TypeNamed{
+						Import: "import/bb",
+					},
+				},
+			},
+			Expected: map[string]bool{
+				"import/aa": true,
+				"import/bb": true,
+			},
 		},
 		{
 			Name: "interface with named funcs",

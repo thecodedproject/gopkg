@@ -148,11 +148,24 @@ func (t TypeInterface) DefaultInit(importAliases map[string]string) (string, err
 
 func (t TypeInterface) FullType(importAliases map[string]string) (string, error) {
 
-	if len(t.Funcs) == 0 {
+	if len(t.Embeds) == 0 && len(t.Funcs) == 0 {
 		return "interface{}", nil
 	}
 
 	ret := "interface {\n"
+
+	for _, e := range t.Embeds {
+		eFullType, err := e.FullType(importAliases)
+		if err != nil {
+			return "", err
+		}
+		ret += "\t" + eFullType + "\n"
+	}
+
+	if len(t.Embeds) > 0 && len(t.Funcs) > 0 {
+		ret += "\n"
+	}
+
 	for _, f := range t.Funcs {
 
 		argsAndRets, err := funcArgsAndRetArgs(
@@ -174,6 +187,9 @@ func (t TypeInterface) FullType(importAliases map[string]string) (string, error)
 
 func (t TypeInterface) RequiredImports() map[string]bool {
 	ret := make(map[string]bool)
+	for _, e := range t.Embeds {
+		ret = union(ret, e.RequiredImports())
+	}
 	for _, f := range t.Funcs {
 		ret = union(ret, f.RequiredImports())
 	}
@@ -235,6 +251,17 @@ func (t TypeStruct) FullType(importAliases map[string]string) (string, error) {
 
 	ret := "struct {"
 
+	for i, e := range t.Embeds {
+		if i == 0 {
+			ret += "\n"
+		}
+		eFullType, err := e.FullType(importAliases)
+		if err != nil {
+			return "", err
+		}
+		ret += "\t" + eFullType + "\n"
+	}
+
 	for i, f := range t.Fields {
 		if i == 0 {
 			ret += "\n"
@@ -253,6 +280,9 @@ func (t TypeStruct) FullType(importAliases map[string]string) (string, error) {
 
 func (t TypeStruct) RequiredImports() map[string]bool {
 	ret := make(map[string]bool)
+	for _, e := range t.Embeds {
+		ret = union(ret, e.RequiredImports())
+	}
 	for _, f := range t.Fields {
 		ret = union(ret, f.RequiredImports())
 	}

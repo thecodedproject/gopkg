@@ -16,7 +16,6 @@ type InterfaceEmbed interface {
 type ManyEmbeds struct {
 	error
 	c.Context
-	InterfaceEmbed
 
 	myVar string
 
@@ -25,6 +24,7 @@ type ManyEmbeds struct {
 
 type InterfaceManyEmbeds interface {
 	SingleEmbed
+	InterfaceEmbed
 	c.Context
 	error
 }
