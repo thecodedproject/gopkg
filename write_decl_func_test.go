@@ -350,7 +350,7 @@ func TestWriteDeclFunc(t *testing.T) {
 				),
 				BodyTmpl: `
 	return wrap.SomeFuncToWrap(
-{{- range .Func.Args}}
+{{- range .Args}}
 		{{.Name}},
 {{- end}}
 	)
@@ -388,7 +388,7 @@ func TestWriteDeclFunc(t *testing.T) {
 				),
 				BodyTmpl: `
 	ret, err := SomeFuncToWrap(
-{{- range .Func.Args}}
+{{- range .Args}}
 		{{.Name}},
 {{- end}}
 	)

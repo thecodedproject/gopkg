@@ -10,12 +10,6 @@
     * Check for TypeUnnamedLiteral (not in funcs/type defs)
     * Sort FileContents
 
-* Make DeclFunc.BodyTmpl execute pass the whole DeclFunc object as the data to execute (not as `.Func`)
-
-  * Add tests for using DeclFunc.BodyData in template exectution
-
-* Add `TypeFunc` for parsing + generating func types
-
 * Add error checks for generation, e.g:
 
   * Return error when generating a func if:

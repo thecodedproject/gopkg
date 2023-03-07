@@ -99,7 +99,7 @@ func makeStringerImplFile(
 				BodyData: enumConsts,
 				BodyTmpl: `
 	switch ` + varName + ` {
-{{- range .Func.BodyData}}
+{{- range .BodyData}}
 	case {{.}}:
 		return "{{.}}"
 {{- end}}
@@ -168,7 +168,7 @@ func makeTestFile(
 		Enum ` + pkgName + "." + enumName + `
 		Expected string
 	}{
-{{- range .Func.BodyData}}
+{{- range .BodyData}}
 		{
 			Name: "{{.Name}}",
 			Enum: ` + pkgName + `.{{.Enum}},
