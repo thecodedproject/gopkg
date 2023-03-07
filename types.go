@@ -138,6 +138,7 @@ func (t TypeInt) RequiredImports() map[string]bool {
 }
 
 type TypeInterface struct {
+	Embeds []Type
 	Funcs []DeclFunc
 }
 

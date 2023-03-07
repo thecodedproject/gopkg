@@ -373,9 +373,27 @@ func getFullType(
 				return nil, err
 			}
 
-			return TypeInterface{
+			i := TypeInterface{
 				Funcs: interfaceFuncs,
-			}, nil
+			}
+
+			// Embedded types or interfaces will appear in the field list
+			// without any name
+			possibleEmbeds, err := getDeclVarsFromFieldList(
+				imports,
+				t.Methods,
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, f := range possibleEmbeds {
+				if f.Name == "" {
+					i.Embeds = append(i.Embeds, f.Type)
+				}
+			}
+
+			return i, nil
 
 		case *ast.FuncType:
 

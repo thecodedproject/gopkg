@@ -508,7 +508,7 @@ func TestParse(t *testing.T) {
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/custom_types/embedded_struct.go",
+					Filepath: "test_packages/custom_types/embedded_types.go",
 					PackageName: "custom_types",
 					PackageImportPath: "some/import/custom_types",
 					Types: []gopkg.DeclType{
@@ -525,6 +525,18 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
+							Name: "InterfaceEmbed",
+							Import: "some/import/custom_types",
+							Type: gopkg.TypeInterface{
+								Embeds: []gopkg.Type{
+									gopkg.TypeFloat64{},
+								},
+								Funcs: []gopkg.DeclFunc{
+									{Name: "MyFunc"},
+								},
+							},
+						},
+						{
 							Name: "ManyEmbeds",
 							Import: "some/import/custom_types",
 							Type: gopkg.TypeStruct{
@@ -534,6 +546,10 @@ func TestParse(t *testing.T) {
 										Name: "Context",
 										Import: "context",
 									},
+									gopkg.TypeNamed{
+										Name: "InterfaceEmbed",
+										Import: "some/import/custom_types",
+									},
 									gopkg.TypeInt32{},
 								},
 								Fields: []gopkg.DeclVar{
@@ -542,6 +558,24 @@ func TestParse(t *testing.T) {
 										Type: gopkg.TypeString{},
 									},
 								},
+							},
+						},
+						{
+							Name: "InterfaceManyEmbeds",
+							Import: "some/import/custom_types",
+							Type: gopkg.TypeInterface{
+								Embeds: []gopkg.Type{
+									gopkg.TypeNamed{
+										Name: "SingleEmbed",
+										Import: "some/import/custom_types",
+									},
+									gopkg.TypeNamed{
+										Name: "Context",
+										Import: "context",
+									},
+									gopkg.TypeError{},
+								},
+								Funcs: []gopkg.DeclFunc{},
 							},
 						},
 					},
