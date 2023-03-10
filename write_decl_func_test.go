@@ -402,6 +402,26 @@ func TestWriteDeclFunc(t *testing.T) {
 				"context": "context",
 			},
 		},
+		{
+			Name: "using strcase mathods",
+			F: gopkg.DeclFunc{
+				Name: "StringCasing",
+				BodyData: struct{
+					Snake string
+					LowerCamel string
+					UpperCamel string
+				}{
+					Snake: "some_snake_case_str",
+					LowerCamel: "someLowerCamelStr",
+					UpperCamel: "SomeUpperCamelStr",
+				},
+				BodyTmpl: `
+	{{ToLowerCamel .BodyData.Snake}}
+	{{ToCamel .BodyData.LowerCamel}}
+	{{ToSnake .BodyData.UpperCamel}}
+`,
+			},
+		},
 	}
 
 	for _, test := range testCases {

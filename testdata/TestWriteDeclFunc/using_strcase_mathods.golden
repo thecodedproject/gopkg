@@ -1,0 +1,6 @@
+func StringCasing() {
+
+	someSnakeCaseStr
+	SomeLowerCamelStr
+	some_upper_camel_str
+}

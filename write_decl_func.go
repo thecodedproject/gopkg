@@ -4,6 +4,8 @@ import (
 	"errors"
 	"io"
 	"text/template"
+
+	"github.com/iancoleman/strcase"
 )
 
 func WriteDeclFunc(
@@ -177,6 +179,9 @@ func funcBaseTemplate(
 
 	return template.New("").Funcs(map[string]interface{}{
 		"FuncReturnDefaults": funcReturnDefaults(decl, importAliases),
+		"ToCamel": strcase.ToCamel,
+		"ToLowerCamel": strcase.ToLowerCamel,
+		"ToSnake": strcase.ToSnake,
 	})
 }
 
