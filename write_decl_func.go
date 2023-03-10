@@ -178,7 +178,8 @@ func funcBaseTemplate(
 ) *template.Template {
 
 	return template.New("").Funcs(map[string]interface{}{
-		"FuncReturnDefaults": funcReturnDefaults(decl, importAliases),
+		"FuncReturnDefaults": funcReturnDefaults(decl, importAliases, false),
+		"FuncReturnDefaultsWithErr": funcReturnDefaults(decl, importAliases, true),
 		"ToCamel": strcase.ToCamel,
 		"ToLowerCamel": strcase.ToLowerCamel,
 		"ToSnake": strcase.ToSnake,
@@ -188,6 +189,7 @@ func funcBaseTemplate(
 func funcReturnDefaults(
 	decl DeclFunc,
 	importAliases map[string]string,
+	replaceErrorReturnsWithErr bool,
 ) func() (string, error) {
 
 	return func() (string, error) {
@@ -198,6 +200,14 @@ func funcReturnDefaults(
 			if i > 0 {
 				statement += ", "
 			}
+
+			if replaceErrorReturnsWithErr {
+				if _, isError := retArg.Type.(TypeError); isError {
+					statement += "err"
+					continue
+				}
+			}
+
 			argInit, err := retArg.DefaultInit(importAliases)
 			if err != nil {
 				return "", err
@@ -209,3 +219,4 @@ func funcReturnDefaults(
 		return statement, nil
 	}
 }
+

@@ -320,6 +320,58 @@ func TestWriteDeclFunc(t *testing.T) {
 			},
 		},
 		{
+			Name: "return default return types with error",
+			F: gopkg.DeclFunc{
+				Name: "MyFunction",
+				ReturnArgs: tmpl.UnnamedReturnArgs(
+					gopkg.TypeNamed{
+						Name: "AStruct",
+						Import: "github.com/some/nice_package",
+						ValueType: gopkg.TypeStruct{},
+					},
+					gopkg.TypeNamed{
+						Name: "OtherStruct",
+						Import: "github.com/some/other_package",
+						ValueType: gopkg.TypeStruct{},
+					},
+					gopkg.TypeError{},
+				),
+				BodyTmpl: `
+	{{FuncReturnDefaultsWithErr}}
+`,
+			},
+			ImportAliases: map[string]string{
+				"github.com/some/nice_package": "nice_package",
+				"github.com/some/other_package": "other_package",
+			},
+		},
+		{
+			Name: "return default return types with error when there is no error type just returns defaults",
+			F: gopkg.DeclFunc{
+				Name: "MyFunction",
+				ReturnArgs: tmpl.UnnamedReturnArgs(
+					gopkg.TypeNamed{
+						Name: "AStruct",
+						Import: "github.com/some/nice_package",
+						ValueType: gopkg.TypeStruct{},
+					},
+					gopkg.TypeNamed{
+						Name: "OtherStruct",
+						Import: "github.com/some/other_package",
+						ValueType: gopkg.TypeStruct{},
+					},
+					gopkg.TypeInt32{},
+				),
+				BodyTmpl: `
+	{{FuncReturnDefaultsWithErr}}
+`,
+			},
+			ImportAliases: map[string]string{
+				"github.com/some/nice_package": "nice_package",
+				"github.com/some/other_package": "other_package",
+			},
+		},
+		{
 			Name: "simple wrapper function",
 			F: gopkg.DeclFunc{
 				Name: "SomeWrapper",

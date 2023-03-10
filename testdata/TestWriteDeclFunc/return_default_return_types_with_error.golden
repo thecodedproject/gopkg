@@ -1,0 +1,4 @@
+func MyFunction() (nice_package.AStruct, other_package.OtherStruct, error) {
+
+	return nice_package.AStruct{}, other_package.OtherStruct{}, err
+}
