@@ -27,6 +27,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
+							ValueType: gopkg.TypeInterface{},
 						},
 					},
 				},
@@ -66,6 +67,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
+							ValueType: gopkg.TypeInterface{},
 						},
 					},
 					{
@@ -107,6 +109,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 						Type: gopkg.TypeNamed{
 							Name: "Context",
 							Import: "context",
+							ValueType: gopkg.TypeInterface{},
 						},
 					},
 				},

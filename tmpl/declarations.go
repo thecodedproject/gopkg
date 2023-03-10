@@ -28,6 +28,7 @@ func FuncWithContextAndError(
 				Type: gopkg.TypeNamed{
 					Name: "Context",
 					Import: "context",
+					ValueType: gopkg.TypeInterface{},
 				},
 			},
 		},
