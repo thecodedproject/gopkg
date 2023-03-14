@@ -77,6 +77,65 @@ func TestWriteFileContents(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "imports with single variable definaition and a type",
+			C: gopkg.FileContents{
+				PackageName: "global_vars",
+				Imports: []gopkg.ImportAndAlias{
+					{"flag", ""},
+				},
+				Vars: []gopkg.DeclVar{
+					{
+						Name: "someArg",
+						Type: gopkg.TypeUnnamedLiteral{},
+						LiteralValue: `flag.String("some_arg", "", "set an arg")`,
+					},
+				},
+				Types: []gopkg.DeclType{
+					{
+						Name: "AStruct",
+						Type: gopkg.TypeStruct{},
+					},
+				},
+			},
+		},
+		{
+			Name: "imports with some const and variable definitions with a func",
+			C: gopkg.FileContents{
+				PackageName: "global_vars",
+				Imports: []gopkg.ImportAndAlias{
+					{"flag", ""},
+				},
+				Vars: []gopkg.DeclVar{
+					{
+						Name: "someArg",
+						Type: gopkg.TypeUnnamedLiteral{},
+						LiteralValue: `flag.String("some_arg", "", "set an arg")`,
+					},
+					{
+						Name: "someOtherArg",
+						Type: gopkg.TypeUnnamedLiteral{},
+						LiteralValue: `flag.String("some_other_arg", "", "set an arg")`,
+					},
+				},
+				Consts: []gopkg.DeclVar{
+					{
+						Name: "SomeConst",
+						LiteralValue: `123`,
+					},
+					{
+						Name: "SomeOtherConst",
+						Type: gopkg.TypeString{},
+						LiteralValue: `"hello world"`,
+					},
+				},
+				Functions: []gopkg.DeclFunc{
+					{
+						Name: "AStub",
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {

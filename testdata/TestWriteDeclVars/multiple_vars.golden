@@ -1,0 +1,6 @@
+var (
+	myVal = 123
+	someInt int64
+	cmdArg flag = flag.String("some_arg", "", "set an arg")
+)
+

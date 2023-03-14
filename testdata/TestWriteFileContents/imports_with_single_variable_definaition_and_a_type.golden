@@ -1,0 +1,10 @@
+package global_vars
+
+import (
+	 "flag"
+)
+
+var someArg = flag.String("some_arg", "", "set an arg")
+
+type AStruct struct {}
+

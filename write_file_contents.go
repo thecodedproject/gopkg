@@ -26,6 +26,16 @@ func WriteFileContents(
 
 	importAliases := importsToImportAliasMap(c.Imports)
 
+	err := WriteDeclVars(w, "const", c.Consts, importAliases)
+	if err != nil {
+		return err
+	}
+
+	err = WriteDeclVars(w, "var", c.Vars, importAliases)
+	if err != nil {
+		return err
+	}
+
 	for _, t := range c.Types {
 		err := WriteDeclType(w, t, importAliases)
 		if err != nil {

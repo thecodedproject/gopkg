@@ -1,0 +1,19 @@
+package global_vars
+
+import (
+	 "flag"
+)
+
+const (
+	SomeConst = 123
+	SomeOtherConst string = "hello world"
+)
+
+var (
+	someArg = flag.String("some_arg", "", "set an arg")
+	someOtherArg = flag.String("some_other_arg", "", "set an arg")
+)
+
+func AStub() {
+}
+
