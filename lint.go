@@ -71,9 +71,9 @@ func AddAliasToAllImports(pkg []FileContents) error {
 
 func AddRequiredImports(pkg []FileContents) error {
 
-	for iF := range pkg {
+	for iF, file := range pkg {
 		existingImportSet := make(map[string]bool)
-		for _, i := range pkg[iF].Imports {
+		for _, i := range file.Imports {
 			existingImportSet[i.Import] = true
 		}
 
@@ -82,13 +82,17 @@ func AddRequiredImports(pkg []FileContents) error {
 			existingImportSet,
 		)
 
-		for i := range importsToAdd {
-			pkg[iF].Imports = append(
-				pkg[iF].Imports,
-				ImportAndAlias{
-					Import: i,
-				},
-			)
+		importsToAdd[file.PackageImportPath] = false
+
+		for importPath, ok := range importsToAdd {
+			if ok {
+				pkg[iF].Imports = append(
+					pkg[iF].Imports,
+					ImportAndAlias{
+						Import: importPath,
+					},
+				)
+			}
 		}
 
 		sort.Slice(pkg[iF].Imports, func(i, j int) bool {

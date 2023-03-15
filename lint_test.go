@@ -305,6 +305,50 @@ func TestAddRequiredImports(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "doesn't add import if it matches the files package import path",
+			Pkg: []gopkg.FileContents{
+				{
+					PackageImportPath: "path/to/a",
+					Consts: []gopkg.DeclVar{
+						varTypeNamed("A", "path/to/a"),
+						varTypeNamed("B", "path/to/b"),
+					},
+				},
+				{
+					PackageImportPath: "path/to/b",
+					Vars: []gopkg.DeclVar{
+						varTypeNamed("One", "path/to/one"),
+						varTypeNamed("A", "path/to/a"),
+						varTypeNamed("B", "path/to/b"),
+					},
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					PackageImportPath: "path/to/a",
+					Imports: []gopkg.ImportAndAlias{
+						{Import: "path/to/b"},
+					},
+					Consts: []gopkg.DeclVar{
+						varTypeNamed("A", "path/to/a"),
+						varTypeNamed("B", "path/to/b"),
+					},
+				},
+				{
+					PackageImportPath: "path/to/b",
+					Imports: []gopkg.ImportAndAlias{
+						{Import: "path/to/a"},
+						{Import: "path/to/one"},
+					},
+					Vars: []gopkg.DeclVar{
+						varTypeNamed("One", "path/to/one"),
+						varTypeNamed("A", "path/to/a"),
+						varTypeNamed("B", "path/to/b"),
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {
