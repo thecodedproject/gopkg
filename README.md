@@ -1,3 +1,53 @@
+gopkg
+=====
+
+A toolkit for writing code generators in Golang.
+
+## Overview
+
+`gopkg` provides a simple, AST-like structure for representing code declarations - `FileContents`.
+
+It provides two main methods for interacting with this structure:
+
+* `Parse` takes a path to a package and returns the contents of each `.go` file as a slice of `FileContents` objects.
+
+* `Generate` takes a slice of `FileContents` objects and writes each object to `.go` file.
+
+E.g.
+```go
+  // pckContents has type `[]gopkg.FileContents`
+  pckContents, err := gopkg.Parse("./path/to/my/package")
+  // check err
+
+  err = gopkg.Generate(pkgContents)
+  // check err
+```
+
+### [`FileContents`](https://github.com/thecodedproject/gopkg/blob/main/types.go#L7) structure
+
+Contains all package level declaration contained within a `.go` file, as well as information about the path to the file and it's Golang import path.
+
+```go
+type FileContents struct {
+	Filepath string
+	PackageName string
+	PackageImportPath string
+	Imports []ImportAndAlias
+	Consts []DeclVar
+	Vars []DeclVar
+	Types []DeclType
+	Functions []DeclFunc
+}
+```
+
+## Examples:
+
+The [`example_genertors`](https://github.com/thecodedproject/gopkg/tree/main/example_generators) folder contains several toy examples of generator implementations.
+
+See also:
+
+[`servicegen`](https://github.com/thecodedproject/servicegen`) - A generator for creating service interfaces and tests.
+[`resourcegen`](https://github.com/thecodedproject/servicegen) - For generating interfaces required for dependency injection.
 
 
 ## TODO:
