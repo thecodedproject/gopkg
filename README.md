@@ -16,7 +16,7 @@ It provides two main methods for interacting with this structure:
 E.g.
 ```go
   // pckContents has type `[]gopkg.FileContents`
-  pckContents, err := gopkg.Parse("./path/to/my/package")
+  pkgContents, err := gopkg.Parse("./path/to/my/package")
   // check err
 
   err = gopkg.Generate(pkgContents)
@@ -42,7 +42,7 @@ type FileContents struct {
 
 ## Examples:
 
-The [`example_genertors`](https://github.com/thecodedproject/gopkg/tree/main/example_generators) folder contains several toy examples of generator implementations.
+The [`example_generators`](https://github.com/thecodedproject/gopkg/tree/main/example_generators) folder contains several toy examples of generator implementations.
 
 See also:
 
