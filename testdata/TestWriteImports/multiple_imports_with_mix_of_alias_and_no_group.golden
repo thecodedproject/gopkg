@@ -1,0 +1,7 @@
+import (
+	"animport"
+	some_alias "some/path/to/import"
+	another_alias "another/import"
+	"pkg"
+)
+

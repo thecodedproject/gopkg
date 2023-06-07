@@ -1,0 +1,6 @@
+import (
+	a_alias "aimport"
+	some_alias "some/import"
+	another_alias "another/import"
+)
+

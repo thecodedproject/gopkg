@@ -34,8 +34,8 @@ func TestWriteFileContents(t *testing.T) {
 			C: gopkg.FileContents{
 				PackageName: "struct_and_func",
 				Imports: []gopkg.ImportAndAlias{
-					{"context", "context"},
-					{"some/pkg/path", "pkg_path"},
+					{Import: "context", Alias: "context"},
+					{Import: "some/pkg/path", Alias: "pkg_path"},
 				},
 				Types: []gopkg.DeclType{
 					{
@@ -81,9 +81,9 @@ func TestWriteFileContents(t *testing.T) {
 			Name: "imports with single variable definaition and a type",
 			C: gopkg.FileContents{
 				PackageName: "global_vars",
-				Imports: []gopkg.ImportAndAlias{
-					{"flag", ""},
-				},
+				Imports: tmpl.UnnamedImports(
+					"flag",
+				),
 				Vars: []gopkg.DeclVar{
 					{
 						Name: "someArg",
@@ -103,9 +103,9 @@ func TestWriteFileContents(t *testing.T) {
 			Name: "imports with some const and variable definitions with a func",
 			C: gopkg.FileContents{
 				PackageName: "global_vars",
-				Imports: []gopkg.ImportAndAlias{
-					{"flag", ""},
-				},
+				Imports: tmpl.UnnamedImports(
+					"flag",
+				),
 				Vars: []gopkg.DeclVar{
 					{
 						Name: "someArg",

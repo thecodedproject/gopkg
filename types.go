@@ -23,6 +23,21 @@ type FileContents struct {
 type ImportAndAlias struct {
 	Import string
 	Alias string
+
+	// Group defines the _group_ which this import will sit within:
+	//  * Groups are seperated by a single, empty newline in the imports list
+	//	* Groups are ordered by the value of this `Group` property
+	//	* Group numbers do not need to be monotonically increasing (they are only compared with `<`)
+	// e.g:
+	// ```
+	// import (
+	//   "import1" <----- Group 0
+	//
+	//   "import2" <--\
+	//   "import3" <--|
+	//   "import4" <--+-- Group 1
+	// )
+	Group int64
 }
 
 type Type interface {

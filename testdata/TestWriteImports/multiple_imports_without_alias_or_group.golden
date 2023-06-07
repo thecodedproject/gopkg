@@ -1,0 +1,6 @@
+import (
+	"some"
+	"my/import"
+	"another/import"
+)
+

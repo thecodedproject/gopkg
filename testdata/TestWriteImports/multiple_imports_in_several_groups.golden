@@ -1,0 +1,11 @@
+import (
+	"group0/import1"
+	"group0/import2"
+
+	"group1/import1"
+	"group1/import2"
+
+	"group2/import1"
+	"group2/import2"
+)
+
