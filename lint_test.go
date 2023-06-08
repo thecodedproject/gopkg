@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/thecodedproject/gopkg"
+	"github.com/thecodedproject/gopkg/tmpl"
 )
 
 func TestLint(t *testing.T) {
@@ -537,6 +538,166 @@ func TestAddAliasToAllImports(t *testing.T) {
 	}
 }
 
+func TestGroupStdImportsFirst(t *testing.T) {
+
+	testCases := []struct{
+		Name string
+		Pkg []gopkg.FileContents
+		Expected []gopkg.FileContents
+	}{
+		{
+			Name: "empty input returns no error",
+		},
+		{
+			Name: "single file with only std imports not in group does nothing",
+			Pkg: []gopkg.FileContents{
+				{
+					Imports: tmpl.UnnamedImports(
+						"crypto",
+						"time",
+						"io",
+					),
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Imports: tmpl.UnnamedImports(
+						"crypto",
+						"time",
+						"io",
+					),
+				},
+			},
+		},
+		{
+			Name: "single file with only std imports in group removes grouping",
+			Pkg: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("time", "", 1),
+						iag("io", "", 2),
+					},
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("time", "", 0),
+						iag("io", "", 0),
+					},
+				},
+			},
+		},
+		{
+			Name: "single file with std imports and other imports not in group",
+			Pkg: []gopkg.FileContents{
+				{
+					Imports: tmpl.UnnamedImports(
+						"crypto",
+						"my/custom/import1",
+						"time",
+						"my/custom/import2",
+						"io",
+					),
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", -1),
+						iag("time", "", -1),
+						iag("io", "", -1),
+						iag("my/custom/import1", "", 0),
+						iag("my/custom/import2", "", 0),
+					},
+				},
+			},
+		},
+		{
+			Name: "single file with std imports and other imports in multiple groups",
+			Pkg: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("my/custom/import1", "", 2),
+						iag("my/custom/import2", "", 3),
+						iag("my/custom/import3", "", 4),
+						iag("crypto", "", 5),
+						iag("time", "", 6),
+						iag("io", "", 7),
+					},
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("time", "", 0),
+						iag("io", "", 0),
+						iag("my/custom/import1", "", 2),
+						iag("my/custom/import2", "", 3),
+						iag("my/custom/import3", "", 4),
+					},
+				},
+			},
+		},
+		{
+			Name: "multiple files with multiple imports",
+			Pkg: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("my/custom/import3", "", 4),
+						iag("crypto", "", 5),
+					},
+				},
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("path/filepath", "", 5),
+						iag("my/custom/import1", "", 4),
+					},
+				},
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("my/custom/import2", "", 0),
+						iag("testing", "", 0),
+						iag("my/custom/import1", "", 0),
+					},
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("my/custom/import3", "", 4),
+					},
+				},
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("path/filepath", "", 0),
+						iag("my/custom/import1", "", 4),
+					},
+				},
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("testing", "", -1),
+						iag("my/custom/import2", "", 0),
+						iag("my/custom/import1", "", 0),
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+			err := gopkg.GroupStdImportsFirst(test.Pkg)
+			require.NoError(t, err)
+			require.Equal(t, test.Expected, test.Pkg)
+		})
+	}
+}
+
 func importWithAlias(
 	importName string,
 	alias string,
@@ -545,6 +706,19 @@ func importWithAlias(
 	return gopkg.ImportAndAlias{
 		Import: importName,
 		Alias: alias,
+	}
+}
+
+func iag(
+	importName string,
+	alias string,
+	group int64,
+) gopkg.ImportAndAlias {
+
+	return gopkg.ImportAndAlias{
+		Import: importName,
+		Alias: alias,
+		Group: group,
 	}
 }
 
