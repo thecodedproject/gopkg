@@ -46,6 +46,21 @@ type Type interface {
 	RequiredImports() map[string]bool
 }
 
+type TypeAny struct {
+}
+
+func (t TypeAny) DefaultInit(importAliases map[string]string) (string, error) {
+	return "interface{}", nil
+}
+
+func (t TypeAny) FullType(importAliases map[string]string) (string, error) {
+	return "any", nil
+}
+
+func (t TypeAny) RequiredImports() map[string]bool {
+	return nil
+}
+
 type TypeArray struct {
 	ValueType Type
 }

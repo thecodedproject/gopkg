@@ -19,6 +19,10 @@ func TestTypeDefaultInit(t *testing.T) {
 		ExpectedErr error
 	}{
 		{
+			Def: gopkg.TypeAny{},
+			Expected: "interface{}",
+		},
+		{
 			Def: gopkg.TypeBool{},
 			Expected: "false",
 		},
@@ -159,6 +163,10 @@ func TestTypeFullType(t *testing.T) {
 		Expected string
 	}{
 		{
+			Def: gopkg.TypeAny{},
+			Expected: "any",
+		},
+		{
 			Def: gopkg.TypeBool{},
 			Expected: "bool",
 		},
@@ -271,12 +279,13 @@ func TestTypeFuncFullType(t *testing.T) {
 			Name: "func with built in unnamed args",
 			Def: gopkg.TypeFunc{
 				Args: tmpl.UnnamedReturnArgs(
+					gopkg.TypeAny{},
 					gopkg.TypeString{},
 					gopkg.TypeInt64{},
 					gopkg.TypeError{},
 				),
 			},
-			Expected: "func(string, int64, error)",
+			Expected: "func(any, string, int64, error)",
 		},
 		{
 			Name: "func with built in named args",
