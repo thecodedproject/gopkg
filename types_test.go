@@ -20,7 +20,7 @@ func TestTypeDefaultInit(t *testing.T) {
 	}{
 		{
 			Def: gopkg.TypeAny{},
-			Expected: "interface{}",
+			Expected: "nil",
 		},
 		{
 			Def: gopkg.TypeBool{},

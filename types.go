@@ -50,7 +50,7 @@ type TypeAny struct {
 }
 
 func (t TypeAny) DefaultInit(importAliases map[string]string) (string, error) {
-	return "interface{}", nil
+	return "nil", nil
 }
 
 func (t TypeAny) FullType(importAliases map[string]string) (string, error) {
