@@ -141,6 +141,31 @@ func GroupStdImportsFirst(pkg []FileContents) error {
 	return nil
 }
 
+func GroupModuleImportsLast(modulePath string) func([]FileContents) error {
+
+	return func(pkg []FileContents) error {
+
+		for iF, f := range pkg {
+			moduleImports := make([]ImportAndAlias, 0, len(f.Imports))
+			otherImports := make([]ImportAndAlias, 0, len(f.Imports))
+			for _, i := range f.Imports {
+				if strings.HasPrefix(i.Import, modulePath) {
+					i.Group = 1
+					moduleImports = append(moduleImports, i)
+				} else {
+					otherImports = append(otherImports, i)
+				}
+			}
+
+			otherImports = append(otherImports, moduleImports...)
+
+			pkg[iF].Imports = otherImports
+		}
+
+		return nil
+	}
+}
+
 func getFileRequiredTypeImports(f FileContents) map[string]bool {
 
 	requiredTypeImports := make(map[string]bool)

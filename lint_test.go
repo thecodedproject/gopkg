@@ -698,6 +698,85 @@ func TestGroupStdImportsFirst(t *testing.T) {
 	}
 }
 
+func TestGroupModuleImportsLast(t *testing.T) {
+
+	testCases := []struct{
+		Name string
+		ModulePath string
+		Pkg []gopkg.FileContents
+		Expected []gopkg.FileContents
+	}{
+		{
+			Name: "empty input returns no error",
+		},
+		{
+			Name: "single file with no module imports does nothing",
+			ModulePath: "my/module/path",
+			Pkg: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("time", "", 1),
+						iag("io", "", 2),
+						iag("otherImport", "alias", 2),
+					},
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("time", "", 1),
+						iag("io", "", 2),
+						iag("otherImport", "alias", 2),
+					},
+				},
+			},
+		},
+		{
+			Name: "single file with module imports and no groups",
+			ModulePath: "my/module/path",
+			Pkg: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("my/module/path", "path", 0),
+						iag("time", "", 0),
+						iag("my/module/path/subpath1", "", 0),
+						iag("io", "", 0),
+						iag("my/module/path/subpath2", "", 0),
+						iag("my/module/path/subpath2/subsubpath", "", 0),
+						iag("otherImport", "alias", 0),
+					},
+				},
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Imports: []gopkg.ImportAndAlias{
+						iag("crypto", "", 0),
+						iag("time", "", 0),
+						iag("io", "", 0),
+						iag("otherImport", "alias", 0),
+						iag("my/module/path", "path", 1),
+						iag("my/module/path/subpath1", "", 1),
+						iag("my/module/path/subpath2", "", 1),
+						iag("my/module/path/subpath2/subsubpath", "", 1),
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+			lintRule := gopkg.GroupModuleImportsLast(test.ModulePath)
+			err := lintRule(test.Pkg)
+			require.NoError(t, err)
+			require.Equal(t, test.Expected, test.Pkg)
+		})
+	}
+}
+
 func importWithAlias(
 	importName string,
 	alias string,
