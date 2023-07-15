@@ -300,7 +300,13 @@ func (t TypeStruct) FullType(importAliases map[string]string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		ret += "\t" + f.Name + " " + fieldFullType + "\n"
+		ret += "\t" + f.Name + " " + fieldFullType
+
+		if f.StructTag != "" {
+			ret += " `" + string(f.StructTag) + "`"
+		}
+
+		ret += "\n"
 	}
 
 	ret += "}"

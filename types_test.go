@@ -437,6 +437,28 @@ func TestTypeStructFullType(t *testing.T) {
 }`,
 		},
 		{
+			Name: "struct with tags",
+			Def: gopkg.TypeStruct{
+				Fields: []gopkg.DeclVar{
+					{
+						Name: "AField",
+						Type: gopkg.TypeBool{},
+						StructTag: "some_unconvensional_value",
+					},
+					{
+						Name: "bField",
+						Type: gopkg.TypeInt32{},
+						StructTag: "json:\"-\" key:\"other,tags\"",
+					},
+				},
+			},
+			Expected:
+`struct {
+	AField bool ` + "`some_unconvensional_value`" + `
+	bField int32 ` + "`json:\"-\" key:\"other,tags\"`" + `
+}`,
+		},
+		{
 			Name: "struct with embedded types only",
 			Def: gopkg.TypeStruct{
 				Embeds: []gopkg.Type{

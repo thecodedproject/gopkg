@@ -737,24 +737,24 @@ func TestParse(t *testing.T) {
 									{
 										Name: "Value",
 										Type: gopkg.TypeString{},
-										StructTag: "`protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"`",
+										StructTag: "protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"",
 									},
 									{
 										Name: "XXX_NoUnkeyedLiteral",
 										Type: gopkg.TypeStruct{},
-										StructTag: "`json:\"-\"`",
+										StructTag: "json:\"-\"",
 									},
 									{
 										Name: "XXX_unrecognized",
 										Type: gopkg.TypeArray{
 											ValueType: gopkg.TypeByte{},
 										},
-										StructTag: "`json:\"-\"`",
+										StructTag: "json:\"-\"",
 									},
 									{
 										Name: "XXX_sizecache",
 										Type: gopkg.TypeInt32{},
-										StructTag: "`json:\"-\"`",
+										StructTag: "json:\"-\"",
 									},
 								},
 							},
@@ -767,24 +767,24 @@ func TestParse(t *testing.T) {
 									{
 										Name: "Value",
 										Type: gopkg.TypeString{},
-										StructTag: "`protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"`",
+										StructTag: "protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"",
 									},
 									{
 										Name: "XXX_NoUnkeyedLiteral",
 										Type: gopkg.TypeStruct{},
-										StructTag: "`json:\"-\"`",
+										StructTag: "json:\"-\"",
 									},
 									{
 										Name: "XXX_unrecognized",
 										Type: gopkg.TypeArray{
 											ValueType: gopkg.TypeByte{},
 										},
-										StructTag: "`json:\"-\"`",
+										StructTag: "json:\"-\"",
 									},
 									{
 										Name: "XXX_sizecache",
 										Type: gopkg.TypeInt32{},
-										StructTag: "`json:\"-\"`",
+										StructTag: "json:\"-\"",
 									},
 								},
 							},
@@ -1023,17 +1023,17 @@ func TestParse(t *testing.T) {
 									{
 										Name: "AField",
 										Type: gopkg.TypeInt{},
-										StructTag: "`AKey:\"some_value\"`",
+										StructTag: "AKey:\"some_value\"",
 									},
 									{
 										Name: "BField",
 										Type: gopkg.TypeBool{},
-										StructTag: "`BKey:\"some_other_value\"`",
+										StructTag: "BKey:\"some_other_value\"",
 									},
 									{
 										Name: "privateField",
 										Type: gopkg.TypeFloat32{},
-										StructTag: "`CKey:\"some_third_value\"`",
+										StructTag: "CKey:\"some_third_value\"",
 									},
 								},
 							},

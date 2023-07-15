@@ -42,13 +42,17 @@ func TestWriteFileContents(t *testing.T) {
 						Name: "MyContainer",
 						Type: gopkg.TypeStruct{
 							Fields: []gopkg.DeclVar{
-								{Name: "Num", Type: gopkg.TypeInt64{}},
+								{
+									Name: "Num",
+									Type: gopkg.TypeInt64{},
+								},
 								{
 									Name: "OtherThing",
 									Type: gopkg.TypeNamed{
 										Name: "SomeOtherType",
 										Import: "some/pkg/path",
 									},
+									StructTag: "key:\"some,tag,values\"",
 								},
 							},
 						},

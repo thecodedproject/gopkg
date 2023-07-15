@@ -7,6 +7,7 @@ import (
 	"go/ast"
 	"path"
 	"sort"
+	"strings"
 	"reflect"
 )
 
@@ -179,9 +180,11 @@ func getDeclVarsFromFieldList(
 			return nil, err
 		}
 
-		var tag reflect.StructTag
+		var tag string
 		if f.Tag != nil {
-			tag = reflect.StructTag(f.Tag.Value)
+			tag = f.Tag.Value
+			tag = strings.TrimPrefix(tag, "`")
+			tag = strings.TrimSuffix(tag, "`")
 		}
 
 		if len(f.Names) == 0 {
@@ -193,7 +196,7 @@ func getDeclVarsFromFieldList(
 				typeList = append(typeList, DeclVar{
 					Name: name.String(),
 					Type: fieldType,
-					StructTag: tag,
+					StructTag: reflect.StructTag(tag),
 				})
 			}
 		}

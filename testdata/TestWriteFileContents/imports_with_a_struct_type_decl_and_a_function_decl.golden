@@ -7,7 +7,7 @@ import (
 
 type MyContainer struct {
 	Num int64
-	OtherThing pkg_path.SomeOtherType
+	OtherThing pkg_path.SomeOtherType `key:"some,tag,values"`
 }
 
 func MyMethod(ctx context.Context) (int32, error) {
