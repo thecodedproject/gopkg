@@ -52,13 +52,13 @@ See also:
 
 ## TODO:
 
-* Make linting method:
+* Make linting method to sort FileContents
 
-  * Include:
-    * Change Add required imports to not include the import for the current file import path
-    * Sort imports
-    * Check for TypeUnnamedLiteral (not in funcs/type defs)
-    * Sort FileContents
+* Remove leading whitespace from DeclFunc.BodyTmpl
+
+* Add DeclFunc.AdditionalImports field, which can be used to add imports at the function level
+
+* Add DeclFunc.DocString field
 
 * Add error checks for generation, e.g:
 
