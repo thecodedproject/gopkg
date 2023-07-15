@@ -1,6 +1,7 @@
 package gopkg
 
 import (
+	"reflect"
 )
 
 type DeclFunc struct {
@@ -36,6 +37,11 @@ type DeclVar struct {
 	//
 	// e.g. for `var MyVar int = 123`, LiteralValue will be `123`
 	LiteralValue string
+
+	// StructTag holds the tags for a struct field if this DeclVar represents a
+	// field within a struct.
+	// If this DeclVar is not within a struct then it is not used.
+	StructTag reflect.StructTag
 }
 
 func (d DeclFunc) RequiredImports() map[string]bool {

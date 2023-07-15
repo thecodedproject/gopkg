@@ -734,15 +734,28 @@ func TestParse(t *testing.T) {
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
-									{Name: "Value", Type: gopkg.TypeString{}},
-									{Name: "XXX_NoUnkeyedLiteral", Type: gopkg.TypeStruct{}},
+									{
+										Name: "Value",
+										Type: gopkg.TypeString{},
+										StructTag: "`protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"`",
+									},
+									{
+										Name: "XXX_NoUnkeyedLiteral",
+										Type: gopkg.TypeStruct{},
+										StructTag: "`json:\"-\"`",
+									},
 									{
 										Name: "XXX_unrecognized",
 										Type: gopkg.TypeArray{
 											ValueType: gopkg.TypeByte{},
 										},
+										StructTag: "`json:\"-\"`",
 									},
-									{Name: "XXX_sizecache", Type: gopkg.TypeInt32{}},
+									{
+										Name: "XXX_sizecache",
+										Type: gopkg.TypeInt32{},
+										StructTag: "`json:\"-\"`",
+									},
 								},
 							},
 						},
@@ -751,18 +764,28 @@ func TestParse(t *testing.T) {
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
-									{Name: "Value", Type: gopkg.TypeString{}},
+									{
+										Name: "Value",
+										Type: gopkg.TypeString{},
+										StructTag: "`protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"`",
+									},
 									{
 										Name: "XXX_NoUnkeyedLiteral",
 										Type: gopkg.TypeStruct{},
+										StructTag: "`json:\"-\"`",
 									},
 									{
 										Name: "XXX_unrecognized",
 										Type: gopkg.TypeArray{
 											ValueType: gopkg.TypeByte{},
 										},
+										StructTag: "`json:\"-\"`",
 									},
-									{Name: "XXX_sizecache", Type: gopkg.TypeInt32{}},
+									{
+										Name: "XXX_sizecache",
+										Type: gopkg.TypeInt32{},
+										StructTag: "`json:\"-\"`",
+									},
 								},
 							},
 						},
@@ -973,6 +996,45 @@ func TestParse(t *testing.T) {
 								{
 									Name: "k",
 									Type: gopkg.TypeError{},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "structs_with_tags",
+			PkgDir: "test_packages/struct_with_tags",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("myimport/struct_with_tags"),
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Filepath: "test_packages/struct_with_tags/acouple_of_structs.go",
+					PackageName: "struct_with_tags",
+					PackageImportPath: "myimport/struct_with_tags",
+					Types: []gopkg.DeclType{
+						{
+							Name: "AStruct",
+							Import: "myimport/struct_with_tags",
+							Type: gopkg.TypeStruct{
+								Fields: []gopkg.DeclVar{
+									{
+										Name: "AField",
+										Type: gopkg.TypeInt{},
+										StructTag: "`AKey:\"some_value\"`",
+									},
+									{
+										Name: "BField",
+										Type: gopkg.TypeBool{},
+										StructTag: "`BKey:\"some_other_value\"`",
+									},
+									{
+										Name: "privateField",
+										Type: gopkg.TypeFloat32{},
+										StructTag: "`CKey:\"some_third_value\"`",
+									},
 								},
 							},
 						},

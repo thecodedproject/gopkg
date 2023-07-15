@@ -7,6 +7,7 @@ import (
 	"go/ast"
 	"path"
 	"sort"
+	"reflect"
 )
 
 const CURRENT_PKG = "current_pkg_import"
@@ -178,6 +179,11 @@ func getDeclVarsFromFieldList(
 			return nil, err
 		}
 
+		var tag reflect.StructTag
+		if f.Tag != nil {
+			tag = reflect.StructTag(f.Tag.Value)
+		}
+
 		if len(f.Names) == 0 {
 			typeList = append(typeList, DeclVar{
 				Type: fieldType,
@@ -187,6 +193,7 @@ func getDeclVarsFromFieldList(
 				typeList = append(typeList, DeclVar{
 					Name: name.String(),
 					Type: fieldType,
+					StructTag: tag,
 				})
 			}
 		}
