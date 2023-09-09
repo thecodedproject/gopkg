@@ -1042,6 +1042,92 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "non_declaritive_elements",
+			PkgDir: "test_packages/non_declaritive_elements",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("myimport/non_declaritive_elements"),
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Filepath: "test_packages/non_declaritive_elements/docstrings.go",
+					PackageName: "non_declaritive_elements",
+					PackageImportPath: "myimport/non_declaritive_elements",
+					Vars: []gopkg.DeclVar{
+						{
+							Name: "singleVar",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeInt64{},
+						},
+					},
+					Types: []gopkg.DeclType{
+						{
+							Name: "adocumentedType",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeString{},
+						},
+					},
+					Functions: []gopkg.DeclFunc{
+						{
+							Name: "ExportedMethod",
+							Import: "myimport/non_declaritive_elements",
+						},
+						{
+							Name: "unexportedMethod",
+							Import: "myimport/non_declaritive_elements",
+						},
+					},
+				},
+				{
+					Filepath: "test_packages/non_declaritive_elements/function_contents.go",
+					PackageName: "non_declaritive_elements",
+					PackageImportPath: "myimport/non_declaritive_elements",
+					Types: []gopkg.DeclType{
+						{
+							Name: "someType",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeStruct{},
+						},
+					},
+					Functions: []gopkg.DeclFunc{
+						{
+							Name: "SomeFunc",
+							Import: "myimport/non_declaritive_elements",
+							ReturnArgs: tmpl.UnnamedReturnArgs(gopkg.TypeInt64{}),
+							BodyTmpl: `
+	// A comment...
+	var a int64
+	a = 1234
+	b := a
+	return c
+`,
+						},
+						{
+							Name: "receiverMethod",
+							Import: "myimport/non_declaritive_elements",
+							Receiver: gopkg.FuncReceiver{
+								VarName: "s",
+								TypeName: "someType",
+							},
+							ReturnArgs: tmpl.UnnamedReturnArgs(gopkg.TypeBool{}),
+							BodyTmpl: `
+	//some reciever method comment...
+	return true
+`,
+						},
+						{
+							Name: "unexportedFunc",
+							Import: "myimport/non_declaritive_elements",
+							ReturnArgs: tmpl.UnnamedReturnArgs(gopkg.TypeString{}),
+							BodyTmpl: `
+	// some other comment...
+	return "foobar"
+`,
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {

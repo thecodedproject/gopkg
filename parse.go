@@ -1,14 +1,18 @@
 package gopkg
 
 import (
-	"errors"
+	"go/ast"
 	"go/parser"
 	"go/token"
-	"go/ast"
+	"os"
 	"path"
+	"reflect"
 	"sort"
 	"strings"
-	"reflect"
+
+	"github.com/pkg/errors"
+
+	"fmt"
 )
 
 const CURRENT_PKG = "current_pkg_import"
@@ -43,12 +47,13 @@ func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
 
 	for _, pkg := range pkgs {
 
-
 		for filepath, fileNode := range pkg.Files {
 
 			fileContents, err := fileContentsFromAstFile(
 				parseOptions.pkgImportPath,
+				filepath,
 				fileNode,
+				fset,
 			)
 			if err != nil {
 				return nil, err
@@ -74,8 +79,17 @@ func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
 
 func fileContentsFromAstFile(
 	pkgImportPath string,
+	filepath string,
 	f *ast.File,
+	fileSet *token.FileSet,
 ) (FileContents, error) {
+
+	fp, err := os.Open(filepath)
+	if err != nil {
+		return FileContents{}, err
+	}
+	defer fp.Close()
+
 
 	fileImports := make(map[string]string)
 	fileImports[CURRENT_PKG] = pkgImportPath
@@ -108,6 +122,31 @@ func fileContentsFromAstFile(
 				Receiver: receiver,
 				Args: args,
 				ReturnArgs: retArgs,
+			}
+
+
+			if decl.Body != nil {
+
+				//_, err = fp.Seek(0,0)
+				//if err != nil {
+				//	return FileContents{}, err
+				//}
+
+				fmt.Println("DeclFunc readt at:", f.Name, decl.Body.Lbrace, decl.Body.Rbrace)
+
+				fsFile := fileSet.File(decl.Body.Rbrace)
+				if fp == nil {
+					return FileContents{}, errors.New("no file in file set")
+				}
+
+				fmt.Println("fsFile base", fsFile.Base())
+
+				buf := make([]byte, int64(decl.Body.Rbrace - decl.Body.Lbrace - 1))
+				_, err := fp.ReadAt(buf, int64(decl.Body.Lbrace) + 1 - int64(fsFile.Base()))
+				if err != nil {
+					return FileContents{}, errors.Wrapf(err, "ReadAt - L: %d - R: %d", decl.Body.Lbrace, decl.Body.Rbrace)
+				}
+				f.BodyTmpl = string(buf)
 			}
 
 			contents.Functions = append(contents.Functions, f)
