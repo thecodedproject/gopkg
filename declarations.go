@@ -9,7 +9,6 @@ type DeclFunc struct {
 	Import string
 	Receiver FuncReceiver
 	Args []DeclVar
-	// TODO make ReturnArgs a []DeclVar type and allow parsing/generating named return args
 	ReturnArgs []DeclVar
 	BodyTmpl string
 	BodyData any

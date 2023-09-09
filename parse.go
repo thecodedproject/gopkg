@@ -11,8 +11,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-
-	"fmt"
 )
 
 const CURRENT_PKG = "current_pkg_import"
@@ -90,7 +88,6 @@ func fileContentsFromAstFile(
 	}
 	defer fp.Close()
 
-
 	fileImports := make(map[string]string)
 	fileImports[CURRENT_PKG] = pkgImportPath
 	for _, importSpec := range f.Imports {
@@ -101,54 +98,10 @@ func fileContentsFromAstFile(
 	for _, d := range f.Decls {
 		switch decl := d.(type) {
 		case *ast.FuncDecl:
-			receiver, err := getFuncReceiverFromFieldList(decl.Recv)
+			f, err := getDeclFunc(pkgImportPath, fileSet, fileImports, fp, decl)
 			if err != nil {
 				return FileContents{}, err
 			}
-
-			args, err := getDeclVarsFromFieldList(fileImports, decl.Type.Params)
-			if err != nil {
-				return FileContents{}, err
-			}
-
-			retArgs, err := getDeclVarsFromFieldList(fileImports, decl.Type.Results)
-			if err != nil {
-				return FileContents{}, err
-			}
-
-			f := DeclFunc{
-				Name: decl.Name.String(),
-				Import: pkgImportPath,
-				Receiver: receiver,
-				Args: args,
-				ReturnArgs: retArgs,
-			}
-
-
-			if decl.Body != nil {
-
-				//_, err = fp.Seek(0,0)
-				//if err != nil {
-				//	return FileContents{}, err
-				//}
-
-				fmt.Println("DeclFunc readt at:", f.Name, decl.Body.Lbrace, decl.Body.Rbrace)
-
-				fsFile := fileSet.File(decl.Body.Rbrace)
-				if fp == nil {
-					return FileContents{}, errors.New("no file in file set")
-				}
-
-				fmt.Println("fsFile base", fsFile.Base())
-
-				buf := make([]byte, int64(decl.Body.Rbrace - decl.Body.Lbrace - 1))
-				_, err := fp.ReadAt(buf, int64(decl.Body.Lbrace) + 1 - int64(fsFile.Base()))
-				if err != nil {
-					return FileContents{}, errors.Wrapf(err, "ReadAt - L: %d - R: %d", decl.Body.Lbrace, decl.Body.Rbrace)
-				}
-				f.BodyTmpl = string(buf)
-			}
-
 			contents.Functions = append(contents.Functions, f)
 
 		case *ast.GenDecl:
@@ -193,6 +146,61 @@ func fileContentsFromAstFile(
 
 	return contents, nil
 }
+
+func getDeclFunc(
+	pkgImportPath string,
+	fileSet *token.FileSet,
+	fileImports map[string]string,
+	fp *os.File,
+	decl *ast.FuncDecl,
+) (DeclFunc, error) {
+
+	receiver, err := getFuncReceiverFromFieldList(decl.Recv)
+	if err != nil {
+		return DeclFunc{}, err
+	}
+
+	args, err := getDeclVarsFromFieldList(fileImports, decl.Type.Params)
+	if err != nil {
+		return DeclFunc{}, err
+	}
+
+	retArgs, err := getDeclVarsFromFieldList(fileImports, decl.Type.Results)
+	if err != nil {
+		return DeclFunc{}, err
+	}
+
+	f := DeclFunc{
+		Name: decl.Name.String(),
+		Import: pkgImportPath,
+		Receiver: receiver,
+		Args: args,
+		ReturnArgs: retArgs,
+	}
+
+
+	if decl.Body != nil {
+
+		fsFile := fileSet.File(decl.Body.Rbrace)
+		if fp == nil {
+			return DeclFunc{}, errors.New("no file in file set")
+		}
+
+		buf := make([]byte, int64(decl.Body.Rbrace - decl.Body.Lbrace - 1))
+		_, err := fp.ReadAt(buf, int64(decl.Body.Lbrace) + 1 - int64(fsFile.Base()))
+		if err != nil {
+			return DeclFunc{}, errors.Wrapf(err, "ReadAt - L: %d - R: %d", decl.Body.Lbrace, decl.Body.Rbrace)
+		}
+		f.BodyTmpl = string(buf)
+
+		if f.BodyTmpl == "\n" {
+			f.BodyTmpl = ""
+		}
+	}
+
+	return f, nil
+}
+
 
 // getDeclVarsFromFieldList returns an ordered list of declared variables
 //
