@@ -12,6 +12,7 @@ type DeclFunc struct {
 	ReturnArgs []DeclVar
 	BodyTmpl string
 	BodyData any
+	DocString string
 }
 
 type FuncReceiver struct {

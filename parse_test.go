@@ -1071,10 +1071,12 @@ func TestParse(t *testing.T) {
 						{
 							Name: "ExportedMethod",
 							Import: "myimport/non_declaritive_elements",
+							DocString: "// a docstring not starting with the method name",
 						},
 						{
 							Name: "unexportedMethod",
 							Import: "myimport/non_declaritive_elements",
+							DocString: "// unexported method docstring",
 						},
 					},
 				},

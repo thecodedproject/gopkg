@@ -35,7 +35,7 @@ func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
 		fset,
 		pkgDir,
 		nil,
-		0,
+		parser.ParseComments,
 	)
 	if err != nil {
 		return nil, err
@@ -180,25 +180,48 @@ func getDeclFunc(
 
 
 	if decl.Body != nil {
-
-		fsFile := fileSet.File(decl.Body.Rbrace)
-		if fp == nil {
-			return DeclFunc{}, errors.New("no file in file set")
-		}
-
-		buf := make([]byte, int64(decl.Body.Rbrace - decl.Body.Lbrace - 1))
-		_, err := fp.ReadAt(buf, int64(decl.Body.Lbrace) + 1 - int64(fsFile.Base()))
+		body, err := readFromFileSet(fp, fileSet, decl.Body.Lbrace+1, decl.Body.Rbrace)
 		if err != nil {
-			return DeclFunc{}, errors.Wrapf(err, "ReadAt - L: %d - R: %d", decl.Body.Lbrace, decl.Body.Rbrace)
+			return DeclFunc{}, err
 		}
-		f.BodyTmpl = string(buf)
-
-		if f.BodyTmpl == "\n" {
-			f.BodyTmpl = ""
+		if body != "\n" {
+			f.BodyTmpl = body
 		}
 	}
 
+	if decl.Doc != nil {
+		docString, err := readFromFileSet(fp, fileSet, decl.Doc.Pos(), decl.Doc.End())
+		if err != nil {
+			return DeclFunc{}, err
+		}
+		f.DocString = docString
+	}
+
 	return f, nil
+}
+
+// readFromFileSet read bytes from the open *os.File, `fp`, from the
+// the byte at position `from` in the fileset upto, but not including, the
+// byte at `to` in the fileset.
+func readFromFileSet(
+	fp *os.File,
+	fileSet *token.FileSet,
+	from token.Pos,
+	to token.Pos,
+) (string, error) {
+
+	fsFile := fileSet.File(from)
+	if fsFile == nil {
+		return "", errors.New("position is not in the fileset")
+	}
+
+	buf := make([]byte, int64(to - from))
+	_, err := fp.ReadAt(buf, int64(from) - int64(fsFile.Base()))
+	if err != nil {
+		return "", err
+	}
+
+	return string(buf), nil
 }
 
 
