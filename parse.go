@@ -95,6 +95,14 @@ func fileContentsFromAstFile(
 	}
 
 	var contents FileContents
+	if f.Doc != nil {
+		var err error
+		contents.DocString, err = readFromFileSet(fp, fileSet, f.Doc.Pos(), f.Doc.End())
+		if err != nil {
+			return FileContents{}, err
+		}
+	}
+
 	for _, d := range f.Decls {
 		switch decl := d.(type) {
 		case *ast.FuncDecl:
@@ -105,6 +113,14 @@ func fileContentsFromAstFile(
 			contents.Functions = append(contents.Functions, f)
 
 		case *ast.GenDecl:
+
+			var docString string
+			if decl.Doc != nil {
+				docString, err = readFromFileSet(fp, fileSet, decl.Doc.Pos(), decl.Doc.End())
+				if err != nil {
+					return FileContents{}, err
+				}
+			}
 
 			for _, declSpec := range decl.Specs {
 
@@ -122,6 +138,7 @@ func fileContentsFromAstFile(
 							Name: s.Name.Name,
 							Import: pkgImportPath,
 							Type: fullType,
+							DocString: docString,
 						},
 					)
 				case *ast.ValueSpec:
@@ -129,11 +146,20 @@ func fileContentsFromAstFile(
 					declVars, err := declVarsFromAstValueSpec(
 						pkgImportPath,
 						fileImports,
+						fp,
+						fileSet,
 						s,
 					)
 					if err != nil {
 						return FileContents{}, err
 					}
+
+					for i := range declVars {
+						if declVars[i].DocString == "" {
+							declVars[i].DocString = docString
+						}
+					}
+
 					if decl.Tok == token.VAR {
 						contents.Vars = append(contents.Vars, declVars...)
 					} else if decl.Tok == token.CONST {
@@ -573,6 +599,8 @@ func typeFromString(t string) Type {
 func declVarsFromAstValueSpec(
 	pkgImportPath string,
 	imports map[string]string,
+	fp *os.File,
+	fileSet *token.FileSet,
 	spec *ast.ValueSpec,
 ) ([]DeclVar, error) {
 
@@ -582,6 +610,15 @@ func declVarsFromAstValueSpec(
 	} else {
 		var err error
 		sType, err = getFullType(imports, spec.Type)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var docString string
+	if spec.Doc != nil {
+		var err error
+		docString, err = readFromFileSet(fp, fileSet, spec.Doc.Pos(), spec.Doc.End())
 		if err != nil {
 			return nil, err
 		}
@@ -608,6 +645,7 @@ func declVarsFromAstValueSpec(
 				Import: pkgImportPath,
 				Type: sType,
 				LiteralValue: literalValue,
+				DocString: docString,
 			},
 		)
 	}

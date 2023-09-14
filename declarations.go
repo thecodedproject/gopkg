@@ -25,6 +25,7 @@ type DeclType struct {
 	Name string
 	Import string
 	Type Type
+	DocString string
 }
 
 type DeclVar struct {
@@ -42,6 +43,8 @@ type DeclVar struct {
 	// field within a struct.
 	// If this DeclVar is not within a struct then it is not used.
 	StructTag reflect.StructTag
+
+	DocString string
 }
 
 func (d DeclFunc) RequiredImports() map[string]bool {

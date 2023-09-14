@@ -18,6 +18,8 @@ type FileContents struct {
 	Vars []DeclVar
 	Types []DeclType
 	Functions []DeclFunc
+
+	DocString string
 }
 
 type ImportAndAlias struct {

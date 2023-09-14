@@ -1053,11 +1053,48 @@ func TestParse(t *testing.T) {
 					Filepath: "test_packages/non_declaritive_elements/docstrings.go",
 					PackageName: "non_declaritive_elements",
 					PackageImportPath: "myimport/non_declaritive_elements",
+
+					DocString: "// A package level doc string\n// with\n//\n// multiple lines",
+					Consts: []gopkg.DeclVar{
+						{
+							Name: "firstConstant",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeInt32{},
+							DocString: "// a doc string on a group of consts",
+						},
+						{
+							Name: "secondConstant",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeString{},
+							DocString: "// another with\n\t// several lines",
+						},
+						{
+							Name: "thirdC",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeUnnamedLiteral{},
+							LiteralValue: "10",
+							DocString: "// some comment on multiple values",
+						},
+						{
+							Name: "fourthC",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeUnnamedLiteral{},
+							LiteralValue: "12",
+							DocString: "// some comment on multiple values",
+						},
+					},
 					Vars: []gopkg.DeclVar{
 						{
 							Name: "singleVar",
 							Import: "myimport/non_declaritive_elements",
 							Type: gopkg.TypeInt64{},
+							DocString: "// singleVar has a docstring\n// with multiple lines",
+						},
+						{
+							Name: "someVar",
+							Import: "myimport/non_declaritive_elements",
+							Type: gopkg.TypeInt{},
+							DocString: "// only docstrings inside var groups are kept",
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -1065,6 +1102,7 @@ func TestParse(t *testing.T) {
 							Name: "adocumentedType",
 							Import: "myimport/non_declaritive_elements",
 							Type: gopkg.TypeString{},
+							DocString: "// adocumentedType with a docstring\n// and multiple lines\n// of text",
 						},
 					},
 					Functions: []gopkg.DeclFunc{
