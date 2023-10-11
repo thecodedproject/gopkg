@@ -76,6 +76,7 @@ func TestParse(t *testing.T) {
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeBool{},
 							),
+							BodyTmpl: "\n\n\treturn false\n",
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -162,6 +163,7 @@ func TestParse(t *testing.T) {
 								gopkg.TypeInt64{},
 								gopkg.TypeInt32{},
 							),
+							BodyTmpl: "\n\n\treturn a, b, c\n",
 						},
 						{
 							Name: "SomeFloats",
@@ -180,6 +182,7 @@ func TestParse(t *testing.T) {
 								gopkg.TypeFloat32{},
 								gopkg.TypeFloat64{},
 							),
+							BodyTmpl: "\n\n\treturn a, b\n",
 						},
 						{
 							Name: "SomeStrings",
@@ -193,6 +196,7 @@ func TestParse(t *testing.T) {
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeString{},
 							),
+							BodyTmpl: "\n\n\treturn \"\"\n",
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -254,6 +258,7 @@ func TestParse(t *testing.T) {
 									},
 								},
 							),
+							BodyTmpl: "\n\n\treturn nil\n",
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -348,6 +353,7 @@ func TestParse(t *testing.T) {
 									),
 								},
 							),
+							BodyTmpl: "\n\n\treturn nil\n",
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -438,6 +444,7 @@ func TestParse(t *testing.T) {
 									ValueType: gopkg.TypeString{},
 								},
 							),
+							BodyTmpl: "\n\n\treturn nil\n",
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -612,6 +619,7 @@ func TestParse(t *testing.T) {
 								gopkg.TypeInt{},
 								gopkg.TypeError{},
 							),
+							BodyTmpl: "\n\n\treturn strconv.Atoi(v.Value)\n",
 						},
 						{
 							Name: "IntAsStringToProto",
@@ -631,6 +639,12 @@ func TestParse(t *testing.T) {
 								},
 								gopkg.TypeError{},
 							),
+							BodyTmpl: `
+
+	return &IntAsString{
+		Value: strconv.Itoa(i),
+	}, nil
+`,
 						},
 						{
 							Name: "ShopspringDecimalFromProto",
@@ -653,6 +667,7 @@ func TestParse(t *testing.T) {
 								},
 								gopkg.TypeError{},
 							),
+							BodyTmpl: "\n\n\treturn shopspring_decimal.NewFromString(v.Value)\n",
 						},
 						{
 							Name: "ShopspringDecimalToProto",
@@ -675,6 +690,12 @@ func TestParse(t *testing.T) {
 								},
 								gopkg.TypeError{},
 							),
+							BodyTmpl: `
+
+	return &ShopspringDecimal{
+		Value: v.String(),
+	}, nil
+`,
 						},
 					},
 				},
@@ -687,6 +708,10 @@ func TestParse(t *testing.T) {
 							Name: "_",
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeUnnamedLiteral{},
+							DocString: `// This is a compile-time assertion to ensure that this generated file
+// is compatible with the proto package it is being compiled against.
+// A compilation error at this line likely means your copy of the
+// proto package needs to be updated.`,
 						},
 					},
 					Vars: []gopkg.DeclVar{
@@ -694,6 +719,7 @@ func TestParse(t *testing.T) {
 							Name: "_",
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeUnnamedLiteral{},
+							DocString: `// Reference imports to suppress errors if they are not otherwise used.`,
 						},
 						{
 							Name: "_",
@@ -817,6 +843,7 @@ func TestParse(t *testing.T) {
 								VarName: "m",
 								TypeName: "MyType",
 							},
+							BodyTmpl: "\n\treturn\n",
 						},
 						{
 							Name: "PointerRecFunc",
@@ -826,6 +853,7 @@ func TestParse(t *testing.T) {
 								TypeName: "MyType",
 								IsPointer: true,
 							},
+							BodyTmpl: "\n\treturn\n",
 						},
 						{
 							Name: "OtherPRecFunc",
@@ -835,6 +863,7 @@ func TestParse(t *testing.T) {
 								TypeName: "OtherType",
 								IsPointer: true,
 							},
+							BodyTmpl: "\n\treturn\n",
 						},
 						{
 							Name: "SomeOtherValRec",
@@ -843,6 +872,7 @@ func TestParse(t *testing.T) {
 								VarName: "o",
 								TypeName: "OtherType",
 							},
+							BodyTmpl: "\n\treturn\n",
 						},
 					},
 					Types: []gopkg.DeclType{
@@ -888,6 +918,7 @@ func TestParse(t *testing.T) {
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeInt{},
 							),
+							BodyTmpl: "\n\treturn i + j\n",
 						},
 					},
 				},
@@ -910,6 +941,35 @@ func TestParse(t *testing.T) {
 									},
 								},
 							},
+							BodyTmpl: `
+
+	testCases := []struct{
+		Name string
+		I int
+		J int
+		Expected int
+	}{
+		{
+			Name: "empty returns zero",
+		},
+		{
+			Name: "adds inputs together",
+			I: 1,
+			J: 2,
+			Expected: 3,
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+			require.Equal(
+				t,
+				test.Expected,
+				pkg_with_tests.MyCoolLogic(test.I, test.J),
+			)
+		})
+	}
+`,
 						},
 					},
 				},
@@ -980,6 +1040,7 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeInt32{},
 								},
 							},
+							BodyTmpl: "\n\n\treturn 0, 0, 0\n",
 						},
 						{
 							Name: "MyOtherMethod",
@@ -998,6 +1059,7 @@ func TestParse(t *testing.T) {
 									Type: gopkg.TypeError{},
 								},
 							},
+							BodyTmpl: "\n\n\treturn 0, 0, nil\n",
 						},
 					},
 				},
@@ -1185,25 +1247,30 @@ func protoConversionPackageFuncs() []gopkg.DeclFunc {
 
 	ret := make([]gopkg.DeclFunc, 0)
 
-	ret = append(ret, protoTypeFuncs("IntAsString")...)
+	ret = append(ret, protoTypeFuncs("IntAsString", "0")...)
 
-	ret = append(ret, protoTypeFuncs("ShopspringDecimal")...)
+	ret = append(ret, protoTypeFuncs("ShopspringDecimal", "1")...)
 
 	ret = append(ret, []gopkg.DeclFunc{
 		{
 			Name: "init",
 			Import: "some/import/proto_conversion",
+			BodyTmpl: `
+	proto.RegisterType((*IntAsString)(nil), "proto_conversion.IntAsString")
+	proto.RegisterType((*ShopspringDecimal)(nil), "proto_conversion.ShopspringDecimal")
+`,
 		},
 		{
 			Name: "init",
 			Import: "some/import/proto_conversion",
+			BodyTmpl: ` proto.RegisterFile("def.proto", fileDescriptor_76fb0470a3b910d8) `,
 		},
 	}...)
 
 	return ret
 }
 
-func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
+func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 
 	return []gopkg.DeclFunc{
 		{
@@ -1214,6 +1281,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				TypeName: typeName,
 				IsPointer: true,
 			},
+			BodyTmpl: " *m = " + typeName + "{} ",
 		},
 		{
 			Name: "String",
@@ -1226,6 +1294,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeString{},
 			),
+			BodyTmpl: " return proto.CompactTextString(m) ",
 		},
 		{
 			Name: "ProtoMessage",
@@ -1246,6 +1315,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
 				gopkg.TypeArray{ValueType: gopkg.TypeInt{}},
 			),
+			BodyTmpl: "\n\treturn fileDescriptor_76fb0470a3b910d8, []int{" + typeIndex + "}\n",
 		},
 		{
 			Name: "XXX_Unmarshal",
@@ -1264,6 +1334,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeError{},
 			),
+			BodyTmpl: "\n\treturn xxx_messageInfo_" + typeName + ".Unmarshal(m, b)\n",
 		},
 		{
 			Name: "XXX_Marshal",
@@ -1287,6 +1358,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				gopkg.TypeArray{ValueType: gopkg.TypeByte{}},
 				gopkg.TypeError{},
 			),
+			BodyTmpl: "\n\treturn xxx_messageInfo_" + typeName + ".Marshal(b, m, deterministic)\n",
 		},
 		{
 			Name: "XXX_Merge",
@@ -1305,6 +1377,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 					},
 				},
 			},
+			BodyTmpl: "\n\txxx_messageInfo_" + typeName + ".Merge(m, src)\n",
 		},
 		{
 			Name: "XXX_Size",
@@ -1317,6 +1390,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeInt{},
 			),
+			BodyTmpl: "\n\treturn xxx_messageInfo_" + typeName + ".Size(m)\n",
 		},
 		{
 			Name: "XXX_DiscardUnknown",
@@ -1326,6 +1400,7 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 				TypeName: typeName,
 				IsPointer: true,
 			},
+			BodyTmpl: "\n\txxx_messageInfo_" + typeName + ".DiscardUnknown(m)\n",
 		},
 		{
 			Name: "GetValue",
@@ -1338,6 +1413,12 @@ func protoTypeFuncs(typeName string) []gopkg.DeclFunc {
 			ReturnArgs: tmpl.UnnamedReturnArgs(
 				gopkg.TypeString{},
 			),
+			BodyTmpl: `
+	if m != nil {
+		return m.Value
+	}
+	return ""
+`,
 		},
 	}
 }
