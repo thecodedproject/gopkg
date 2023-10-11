@@ -10,7 +10,7 @@ func SomeFunc() int64 {
 	var a int64
 	a = 1234
 	b := a
-	return c
+	return b
 }
 
 func (s someType) receiverMethod() bool {

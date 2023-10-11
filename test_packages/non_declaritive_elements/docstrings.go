@@ -13,10 +13,10 @@ var singleVar int64
 
 const (
 	// a doc string on a group of consts
-	firstConstant int32
+	firstConstant int32 = 1
 	// another with
 	// several lines
-	secondConstant string
+	secondConstant string  = "hello"
 	// some comment on multiple values
 	thirdC, fourthC = 10, 12
 )

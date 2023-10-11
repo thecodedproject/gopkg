@@ -1122,12 +1122,14 @@ func TestParse(t *testing.T) {
 							Name: "firstConstant",
 							Import: "myimport/non_declaritive_elements",
 							Type: gopkg.TypeInt32{},
+							LiteralValue: "1",
 							DocString: "// a doc string on a group of consts",
 						},
 						{
 							Name: "secondConstant",
 							Import: "myimport/non_declaritive_elements",
 							Type: gopkg.TypeString{},
+							LiteralValue: `"hello"`,
 							DocString: "// another with\n\t// several lines",
 						},
 						{
@@ -1201,7 +1203,7 @@ func TestParse(t *testing.T) {
 	var a int64
 	a = 1234
 	b := a
-	return c
+	return b
 `,
 						},
 						{
