@@ -43,7 +43,6 @@ func PackageImportPath(path string) (string, error) {
 		path = filepath.Dir(path)
 	}
 
-
 	absPath, err := filepath.Abs(path)
 	if err != nil {
 		return "", err

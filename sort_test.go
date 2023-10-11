@@ -10,9 +10,9 @@ import (
 
 func TestSortFuncs(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Funcs []gopkg.DeclFunc
+	testCases := []struct {
+		Name     string
+		Funcs    []gopkg.DeclFunc
 		Expected []gopkg.DeclFunc
 	}{
 		{
@@ -55,14 +55,14 @@ func TestSortFuncs(t *testing.T) {
 				{
 					Name: "AFunc",
 					Receiver: gopkg.FuncReceiver{
-						TypeName: "AType",
+						TypeName:  "AType",
 						IsPointer: true,
 					},
 				},
 				{
 					Name: "BFunc",
 					Receiver: gopkg.FuncReceiver{
-						TypeName: "BType",
+						TypeName:  "BType",
 						IsPointer: true,
 					},
 				},
@@ -71,7 +71,7 @@ func TestSortFuncs(t *testing.T) {
 				{
 					Name: "AFunc",
 					Receiver: gopkg.FuncReceiver{
-						TypeName: "AType",
+						TypeName:  "AType",
 						IsPointer: true,
 					},
 				},
@@ -84,7 +84,7 @@ func TestSortFuncs(t *testing.T) {
 				{
 					Name: "BFunc",
 					Receiver: gopkg.FuncReceiver{
-						TypeName: "BType",
+						TypeName:  "BType",
 						IsPointer: true,
 					},
 				},
@@ -104,7 +104,7 @@ func TestSortFuncs(t *testing.T) {
 				{
 					Name: "bFunc",
 					Receiver: gopkg.FuncReceiver{
-						TypeName: "AType",
+						TypeName:  "AType",
 						IsPointer: true,
 					},
 				},
@@ -125,7 +125,7 @@ func TestSortFuncs(t *testing.T) {
 				{
 					Name: "bFunc",
 					Receiver: gopkg.FuncReceiver{
-						TypeName: "AType",
+						TypeName:  "AType",
 						IsPointer: true,
 					},
 				},

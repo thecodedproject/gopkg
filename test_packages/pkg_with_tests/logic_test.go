@@ -10,19 +10,19 @@ import (
 
 func TestMyCoolLogic(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		I int
-		J int
+	testCases := []struct {
+		Name     string
+		I        int
+		J        int
 		Expected int
 	}{
 		{
 			Name: "empty returns zero",
 		},
 		{
-			Name: "adds inputs together",
-			I: 1,
-			J: 2,
+			Name:     "adds inputs together",
+			I:        1,
+			J:        2,
 			Expected: 3,
 		},
 	}

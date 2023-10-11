@@ -1,12 +1,12 @@
 package main_test
 
 import (
-	"testing"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
+	"testing"
 
 	"github.com/sebdah/goldie/v2"
 	"github.com/stretchr/testify/require"
@@ -42,7 +42,7 @@ func runGenerateAndGetGeneratedFileBuffers(
 	initalFiles, err := listFilesRecursively(testDir)
 	require.NoError(t, err)
 
-	cmd := exec.Command("go", "generate", "./" + testDir)
+	cmd := exec.Command("go", "generate", "./"+testDir)
 
 	_, err = cmd.Output()
 	// TODO output cmd stderr output if fails
@@ -69,7 +69,7 @@ func runGoTestAndCheckOutput(
 	testDir string,
 ) {
 
-	testCmd := exec.Command("go", "test", "-v", "-count=1", "./" + testDir)
+	testCmd := exec.Command("go", "test", "-v", "-count=1", "./"+testDir)
 
 	testOutput, err := testCmd.Output()
 	require.NoError(t, err)
@@ -108,8 +108,8 @@ func checkGeneratedFilePaths(
 	}
 
 	t.Run("generated_file_paths", func(t *testing.T) {
-			g := goldie.New(t)
-			g.Assert(t, t.Name(), []byte(generatedFilesBuffer))
+		g := goldie.New(t)
+		g.Assert(t, t.Name(), []byte(generatedFilesBuffer))
 	})
 }
 

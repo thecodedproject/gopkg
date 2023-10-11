@@ -85,12 +85,12 @@ func makeStringerImplFile(
 
 	ret := gopkg.FileContents{
 		PackageName: pkgName,
-		Filepath: strcase.ToSnake(enumName) + "_string.go",
+		Filepath:    strcase.ToSnake(enumName) + "_string.go",
 		Functions: []gopkg.DeclFunc{
 			{
 				Name: "String",
 				Receiver: gopkg.FuncReceiver{
-					VarName: varName,
+					VarName:  varName,
 					TypeName: enumName,
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
@@ -123,28 +123,28 @@ func makeTestFile(
 
 	testCases := make([]interface{}, 0, len(enumConsts))
 	for _, c := range enumConsts {
-		testCases = append(testCases, struct{
-			Name string
-			Enum string
+		testCases = append(testCases, struct {
+			Name     string
+			Enum     string
 			Expected string
 		}{
-			Name: c,
-			Enum: c,
+			Name:     c,
+			Enum:     c,
 			Expected: c,
 		})
 	}
 
 	ret := gopkg.FileContents{
 		PackageName: pkgName + "_test",
-		Filepath: strcase.ToSnake(enumName) + "_string_test.go",
+		Filepath:    strcase.ToSnake(enumName) + "_string_test.go",
 		Imports: []gopkg.ImportAndAlias{
 			{
 				Import: "github.com/stretchr/testify/require",
-				Alias: "require",
+				Alias:  "require",
 			},
 			{
 				Import: pkgImportPath,
-				Alias: pkgName,
+				Alias:  pkgName,
 			},
 		},
 		Functions: []gopkg.DeclFunc{
@@ -155,7 +155,7 @@ func makeTestFile(
 						Name: "t",
 						Type: gopkg.TypePointer{
 							ValueType: gopkg.TypeNamed{
-								Name: "T",
+								Name:   "T",
 								Import: "testing",
 							},
 						},

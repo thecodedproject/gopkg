@@ -14,11 +14,10 @@ func WriteImports(
 		return nil
 	}
 
-	if len(imports) == 1  && imports[0].Alias == ""{
+	if len(imports) == 1 && imports[0].Alias == "" {
 		w.Write([]byte("import \"" + imports[0].Import + "\"\n\n"))
 		return nil
 	}
-
 
 	w.Write([]byte("import (\n"))
 	lastImportGroup := imports[0].Group

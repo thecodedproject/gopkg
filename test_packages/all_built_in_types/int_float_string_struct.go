@@ -1,18 +1,17 @@
 package all_built_in_types
 
 const (
-	MyConst, AnotherConst = "some val", "other val"
-	RealNumberConst float64 = 1.234
+	MyConst, AnotherConst         = "some val", "other val"
+	RealNumberConst       float64 = 1.234
 )
 
 var (
 	OneInt, TwoInt int = 1, 2
-	SomeFloat float32
-	SomeUntyped = "a string"
+	SomeFloat      float32
+	SomeUntyped    = "a string"
 )
 
-type SomeStruct struct{
-
+type SomeStruct struct {
 	IA int
 	IB int32
 	IC int64

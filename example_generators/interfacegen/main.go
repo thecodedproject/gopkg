@@ -11,7 +11,7 @@ import (
 
 var (
 	interfaceName = flag.String("interface", "", "name of the interface to generate impl for")
-	typeName = flag.String("type", "", "name of the type to generate the impl for")
+	typeName      = flag.String("type", "", "name of the type to generate the impl for")
 )
 
 func main() {
@@ -70,7 +70,7 @@ func makeImplFile(
 
 	ret := gopkg.FileContents{
 		PackageName: pkgName,
-		Filepath: strcase.ToSnake(typeName) + "_impl.go",
+		Filepath:    strcase.ToSnake(typeName) + "_impl.go",
 	}
 
 	ret.Types = []gopkg.DeclType{
@@ -88,7 +88,7 @@ func makeImplFile(
 	for _, iFunc := range iType.Funcs {
 
 		iFunc.Receiver = gopkg.FuncReceiver{
-			VarName: strings.ToLower(string(typeName[0])),
+			VarName:  strings.ToLower(string(typeName[0])),
 			TypeName: typeName,
 		}
 
@@ -109,14 +109,13 @@ func makeTestFile(
 	iDecl gopkg.DeclType,
 ) gopkg.FileContents {
 
-
 	ret := gopkg.FileContents{
 		PackageName: pkgName + "_test",
-		Filepath: strcase.ToSnake(typeName) + "_impl_test.go",
+		Filepath:    strcase.ToSnake(typeName) + "_impl_test.go",
 		Imports: []gopkg.ImportAndAlias{
 			{
 				Import: pkgImportPath,
-				Alias: pkgName,
+				Alias:  pkgName,
 			},
 		},
 	}
@@ -135,7 +134,7 @@ func makeTestFile(
 					Name: "t",
 					Type: gopkg.TypePointer{
 						ValueType: gopkg.TypeNamed{
-							Name: "T",
+							Name:   "T",
 							Import: "testing",
 						},
 					},

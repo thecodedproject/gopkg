@@ -12,68 +12,68 @@ import (
 
 func TestTypeDefaultInit(t *testing.T) {
 
-	testCases := []struct{
-		Def gopkg.Type
+	testCases := []struct {
+		Def           gopkg.Type
 		ImportAliases map[string]string
-		Expected string
-		ExpectedErr error
+		Expected      string
+		ExpectedErr   error
 	}{
 		{
-			Def: gopkg.TypeAny{},
+			Def:      gopkg.TypeAny{},
 			Expected: "nil",
 		},
 		{
-			Def: gopkg.TypeBool{},
+			Def:      gopkg.TypeBool{},
 			Expected: "false",
 		},
 		{
-			Def: gopkg.TypeByte{},
+			Def:      gopkg.TypeByte{},
 			Expected: "0",
 		},
 		{
-			Def: gopkg.TypeError{},
+			Def:      gopkg.TypeError{},
 			Expected: "nil",
 		},
 		{
-			Def: gopkg.TypeFloat32{},
+			Def:      gopkg.TypeFloat32{},
 			Expected: "0",
 		},
 		{
-			Def: gopkg.TypeFloat64{},
+			Def:      gopkg.TypeFloat64{},
 			Expected: "0",
 		},
 		{
-			Def: gopkg.TypeFunc{},
+			Def:      gopkg.TypeFunc{},
 			Expected: "nil",
 		},
 		{
-			Def: gopkg.TypeInt{},
+			Def:      gopkg.TypeInt{},
 			Expected: "0",
 		},
 		{
-			Def: gopkg.TypeInt32{},
+			Def:      gopkg.TypeInt32{},
 			Expected: "0",
 		},
 		{
-			Def: gopkg.TypeInt64{},
+			Def:      gopkg.TypeInt64{},
 			Expected: "0",
 		},
 		{
-			Def: gopkg.TypeString{},
+			Def:      gopkg.TypeString{},
 			Expected: "\"\"",
 		},
 		{
-			Def: gopkg.TypeInterface{},
+			Def:      gopkg.TypeInterface{},
 			Expected: "nil",
 		},
 		{
-			Def: gopkg.TypeStruct{},
+			Def:      gopkg.TypeStruct{},
 			Expected: "{}",
 		},
 		{
 			Def: gopkg.TypeArray{
 				ValueType: gopkg.TypeNamed{
-					Name: "SomeType",
+					Name:   "SomeType",
 					Import: "some/import",
 				},
 			},
@@ -90,13 +90,13 @@ func TestTypeDefaultInit(t *testing.T) {
 		{
 			Def: gopkg.TypeMap{
 				KeyType: gopkg.TypeNamed{
-					Name: "MyType",
+					Name:   "MyType",
 					Import: "my/import/path",
 				},
 				ValueType: gopkg.TypePointer{
 					ValueType: gopkg.TypeArray{
 						ValueType: gopkg.TypeNamed{
-							Name: "MyOtherType",
+							Name:   "MyOtherType",
 							Import: "other/import",
 						},
 					},
@@ -106,13 +106,13 @@ func TestTypeDefaultInit(t *testing.T) {
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "MyType",
+				Name:   "MyType",
 				Import: "my/import/path",
 			},
 			ExpectedErr: errors.New("cannot deduce default init for named type with no value type"),
 		},
 		{
-			Def: gopkg.TypeUnnamedLiteral{},
+			Def:         gopkg.TypeUnnamedLiteral{},
 			ExpectedErr: errors.New("no default init for unnamed literal"),
 		},
 	}
@@ -135,77 +135,77 @@ func TestTypeDefaultInit(t *testing.T) {
 		})
 
 		t.Run(
-			"TypeUnknownNamed_with_value_type" + testName,
+			"TypeUnknownNamed_with_value_type"+testName,
 			func(t *testing.T) {
 
-			namedType := gopkg.TypeNamed{
-				ValueType: test.Def,
-			}
+				namedType := gopkg.TypeNamed{
+					ValueType: test.Def,
+				}
 
-			actual, err := namedType.DefaultInit(test.ImportAliases)
+				actual, err := namedType.DefaultInit(test.ImportAliases)
 
-			if test.ExpectedErr != nil {
-				require.Equal(t, test.ExpectedErr, err)
-				return
-			}
+				if test.ExpectedErr != nil {
+					require.Equal(t, test.ExpectedErr, err)
+					return
+				}
 
-			require.NoError(t, err)
-			require.Equal(t, test.Expected, actual)
-		})
+				require.NoError(t, err)
+				require.Equal(t, test.Expected, actual)
+			})
 	}
 }
 
 func TestTypeFullType(t *testing.T) {
 
-	testCases := []struct{
-		Def gopkg.Type
+	testCases := []struct {
+		Def           gopkg.Type
 		ImportAliases map[string]string
-		Expected string
+		Expected      string
 	}{
 		{
-			Def: gopkg.TypeAny{},
+			Def:      gopkg.TypeAny{},
 			Expected: "any",
 		},
 		{
-			Def: gopkg.TypeBool{},
+			Def:      gopkg.TypeBool{},
 			Expected: "bool",
 		},
 		{
-			Def: gopkg.TypeByte{},
+			Def:      gopkg.TypeByte{},
 			Expected: "byte",
 		},
 		{
-			Def: gopkg.TypeError{},
+			Def:      gopkg.TypeError{},
 			Expected: "error",
 		},
 		{
-			Def: gopkg.TypeFloat32{},
+			Def:      gopkg.TypeFloat32{},
 			Expected: "float32",
 		},
 		{
-			Def: gopkg.TypeFloat64{},
+			Def:      gopkg.TypeFloat64{},
 			Expected: "float64",
 		},
 		{
-			Def: gopkg.TypeInt{},
+			Def:      gopkg.TypeInt{},
 			Expected: "int",
 		},
 		{
-			Def: gopkg.TypeInt32{},
+			Def:      gopkg.TypeInt32{},
 			Expected: "int32",
 		},
 		{
-			Def: gopkg.TypeInt64{},
+			Def:      gopkg.TypeInt64{},
 			Expected: "int64",
 		},
 		{
-			Def: gopkg.TypeString{},
+			Def:      gopkg.TypeString{},
 			Expected: "string",
 		},
 		{
 			Def: gopkg.TypeArray{
 				ValueType: gopkg.TypeNamed{
-					Name: "SomeType",
+					Name:   "SomeType",
 					Import: "some/import",
 				},
 			},
@@ -225,13 +225,13 @@ func TestTypeFullType(t *testing.T) {
 		{
 			Def: gopkg.TypeMap{
 				KeyType: gopkg.TypeNamed{
-					Name: "MyType",
+					Name:   "MyType",
 					Import: "my/import/path",
 				},
 				ValueType: gopkg.TypePointer{
 					ValueType: gopkg.TypeArray{
 						ValueType: gopkg.TypeNamed{
-							Name: "MyOtherType",
+							Name:   "MyOtherType",
 							Import: "other/import",
 						},
 					},
@@ -239,12 +239,12 @@ func TestTypeFullType(t *testing.T) {
 			},
 			ImportAliases: map[string]string{
 				"my/import/path": "path_alias",
-				"other/import": "other_alias",
+				"other/import":   "other_alias",
 			},
 			Expected: "map[path_alias.MyType]*[]other_alias.MyOtherType",
 		},
 		{
-			Def: gopkg.TypeUnnamedLiteral{},
+			Def:      gopkg.TypeUnnamedLiteral{},
 			Expected: "",
 		},
 	}
@@ -263,16 +263,16 @@ func TestTypeFullType(t *testing.T) {
 // types
 func TestTypeFuncFullType(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Def gopkg.TypeFunc
+	testCases := []struct {
+		Name          string
+		Def           gopkg.TypeFunc
 		ImportAliases map[string]string
-		Expected string
-		ExpectedErr error
+		Expected      string
+		ExpectedErr   error
 	}{
 		{
-			Name: "empty func",
-			Def: gopkg.TypeFunc{},
+			Name:     "empty func",
+			Def:      gopkg.TypeFunc{},
 			Expected: "func()",
 		},
 		{
@@ -339,14 +339,14 @@ func TestTypeFuncFullType(t *testing.T) {
 					{
 						Name: "first",
 						Type: gopkg.TypeNamed{
-							Name: "SomeType",
+							Name:   "SomeType",
 							Import: "some/path",
 						},
 					},
 					{
 						Name: "second",
 						Type: gopkg.TypeNamed{
-							Name: "SomeOtherType",
+							Name:   "SomeOtherType",
 							Import: "some/other",
 						},
 					},
@@ -355,14 +355,14 @@ func TestTypeFuncFullType(t *testing.T) {
 					{
 						Name: "retVal",
 						Type: gopkg.TypeNamed{
-							Name: "SomeThirdType",
+							Name:   "SomeThirdType",
 							Import: "some/third",
 						},
 					},
 				},
 			},
 			ImportAliases: map[string]string{
-				"some/path": "path",
+				"some/path":  "path",
 				"some/other": "otheralias",
 				"some/third": "third",
 			},
@@ -405,15 +405,15 @@ func TestTypeFuncFullType(t *testing.T) {
 // types
 func TestTypeStructFullType(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Def gopkg.TypeStruct
+	testCases := []struct {
+		Name          string
+		Def           gopkg.TypeStruct
 		ImportAliases map[string]string
-		Expected string
+		Expected      string
 	}{
 		{
-			Name: "empty struct",
-			Def: gopkg.TypeStruct{},
+			Name:     "empty struct",
+			Def:      gopkg.TypeStruct{},
 			Expected: "struct {}",
 		},
 		{
@@ -430,8 +430,7 @@ func TestTypeStructFullType(t *testing.T) {
 					},
 				},
 			},
-			Expected:
-`struct {
+			Expected: `struct {
 	SomeValue int
 	SomeOtherValue string
 }`,
@@ -441,19 +440,18 @@ func TestTypeStructFullType(t *testing.T) {
 			Def: gopkg.TypeStruct{
 				Fields: []gopkg.DeclVar{
 					{
-						Name: "AField",
-						Type: gopkg.TypeBool{},
+						Name:      "AField",
+						Type:      gopkg.TypeBool{},
 						StructTag: "some_unconvensional_value",
 					},
 					{
-						Name: "bField",
-						Type: gopkg.TypeInt32{},
+						Name:      "bField",
+						Type:      gopkg.TypeInt32{},
 						StructTag: "json:\"-\" key:\"other,tags\"",
 					},
 				},
 			},
-			Expected:
-`struct {
+			Expected: `struct {
 	AField bool ` + "`some_unconvensional_value`" + `
 	bField int32 ` + "`json:\"-\" key:\"other,tags\"`" + `
 }`,
@@ -463,22 +461,21 @@ func TestTypeStructFullType(t *testing.T) {
 			Def: gopkg.TypeStruct{
 				Embeds: []gopkg.Type{
 					gopkg.TypeNamed{
-						Name: "MyType",
+						Name:   "MyType",
 						Import: "github.com/myrepo",
 					},
 					gopkg.TypeNamed{
-						Name: "MyTypeTwo",
+						Name:   "MyTypeTwo",
 						Import: "github.com/myotherrepo",
 					},
 					gopkg.TypeError{},
 				},
 			},
 			ImportAliases: map[string]string{
-				"github.com/myrepo": "myrepo_alias",
+				"github.com/myrepo":      "myrepo_alias",
 				"github.com/myotherrepo": "myotherrepo_alias",
 			},
-			Expected:
-`struct {
+			Expected: `struct {
 	myrepo_alias.MyType
 	myotherrepo_alias.MyTypeTwo
 	error
@@ -491,7 +488,7 @@ func TestTypeStructFullType(t *testing.T) {
 					{
 						Name: "MyVal",
 						Type: gopkg.TypeNamed{
-							Name: "SomeImportedType",
+							Name:   "SomeImportedType",
 							Import: "github.com/myrepo",
 						},
 					},
@@ -499,7 +496,7 @@ func TestTypeStructFullType(t *testing.T) {
 						Name: "MyOtherVal",
 						Type: gopkg.TypePointer{
 							ValueType: gopkg.TypeNamed{
-								Name: "SomeOtherImportedType",
+								Name:   "SomeOtherImportedType",
 								Import: "github.com/myotherrepo",
 							},
 						},
@@ -507,11 +504,10 @@ func TestTypeStructFullType(t *testing.T) {
 				},
 			},
 			ImportAliases: map[string]string{
-				"github.com/myrepo": "myrepo",
+				"github.com/myrepo":      "myrepo",
 				"github.com/myotherrepo": "myotherrepo",
 			},
-			Expected:
-`struct {
+			Expected: `struct {
 	MyVal myrepo.SomeImportedType
 	MyOtherVal *myotherrepo.SomeOtherImportedType
 }`,
@@ -527,7 +523,7 @@ func TestTypeStructFullType(t *testing.T) {
 					{
 						Name: "MyVal",
 						Type: gopkg.TypeNamed{
-							Name: "SomeImportedType",
+							Name:   "SomeImportedType",
 							Import: "github.com/myrepo",
 						},
 					},
@@ -535,7 +531,7 @@ func TestTypeStructFullType(t *testing.T) {
 						Name: "MyOtherVal",
 						Type: gopkg.TypePointer{
 							ValueType: gopkg.TypeNamed{
-								Name: "SomeOtherImportedType",
+								Name:   "SomeOtherImportedType",
 								Import: "github.com/myotherrepo",
 							},
 						},
@@ -543,11 +539,10 @@ func TestTypeStructFullType(t *testing.T) {
 				},
 			},
 			ImportAliases: map[string]string{
-				"github.com/myrepo": "myrepo",
+				"github.com/myrepo":      "myrepo",
 				"github.com/myotherrepo": "myotherrepo",
 			},
-			Expected:
-`struct {
+			Expected: `struct {
 	int32
 	error
 
@@ -571,15 +566,15 @@ func TestTypeStructFullType(t *testing.T) {
 // types
 func TestTypeInterfaceFullType(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Def gopkg.TypeInterface
+	testCases := []struct {
+		Name          string
+		Def           gopkg.TypeInterface
 		ImportAliases map[string]string
-		Expected string
+		Expected      string
 	}{
 		{
-			Name: "empty interface",
-			Def: gopkg.TypeInterface{},
+			Name:     "empty interface",
+			Def:      gopkg.TypeInterface{},
 			Expected: "interface{}",
 		},
 		{
@@ -613,8 +608,7 @@ func TestTypeInterfaceFullType(t *testing.T) {
 					},
 				},
 			},
-			Expected:
-`interface {
+			Expected: `interface {
 	FirstMethod(a int32, b float64) (string, error)
 	SecondMethod() MyType
 }`,
@@ -629,14 +623,14 @@ func TestTypeInterfaceFullType(t *testing.T) {
 							{
 								Name: "val",
 								Type: gopkg.TypeNamed{
-									Name: "AStruct",
+									Name:   "AStruct",
 									Import: "some/path/toa",
 								},
 							},
 						},
 						ReturnArgs: tmpl.UnnamedReturnArgs(
 							gopkg.TypeNamed{
-								Name: "BStruct",
+								Name:   "BStruct",
 								Import: "some/other/path/tob",
 							},
 							gopkg.TypeError{},
@@ -646,7 +640,7 @@ func TestTypeInterfaceFullType(t *testing.T) {
 						Name: "OtherMethod",
 						ReturnArgs: tmpl.UnnamedReturnArgs(
 							gopkg.TypeNamed{
-								Name: "CStruct",
+								Name:   "CStruct",
 								Import: "some/third/path/toc",
 							},
 						),
@@ -654,12 +648,11 @@ func TestTypeInterfaceFullType(t *testing.T) {
 				},
 			},
 			ImportAliases: map[string]string{
-				"some/path/toa": "alias_a",
+				"some/path/toa":       "alias_a",
 				"some/other/path/tob": "alias_b",
 				"some/third/path/toc": "alias_c",
 			},
-			Expected:
-`interface {
+			Expected: `interface {
 	MyMethod(val alias_a.AStruct) (alias_b.BStruct, error)
 	OtherMethod() alias_c.CStruct
 }`,
@@ -670,21 +663,20 @@ func TestTypeInterfaceFullType(t *testing.T) {
 				Embeds: []gopkg.Type{
 					gopkg.TypeString{},
 					gopkg.TypeNamed{
-						Name: "SomeT",
+						Name:   "SomeT",
 						Import: "path/to/some",
 					},
 					gopkg.TypeNamed{
-						Name: "Other",
+						Name:   "Other",
 						Import: "path/to/other",
 					},
 				},
 			},
 			ImportAliases: map[string]string{
-				"path/to/some": "alias_some",
+				"path/to/some":  "alias_some",
 				"path/to/other": "other",
 			},
-			Expected:
-`interface {
+			Expected: `interface {
 	string
 	alias_some.SomeT
 	other.Other
@@ -717,11 +709,10 @@ func TestTypeInterfaceFullType(t *testing.T) {
 				},
 			},
 			ImportAliases: map[string]string{
-				"path/to/some": "alias_some",
+				"path/to/some":  "alias_some",
 				"path/to/other": "other",
 			},
-			Expected:
-`interface {
+			Expected: `interface {
 	string
 	bool
 
@@ -739,7 +730,7 @@ func TestTypeInterfaceFullType(t *testing.T) {
 							{
 								Name: "val",
 								Type: gopkg.TypeNamed{
-									Name: "BStruct",
+									Name:   "BStruct",
 									Import: "some/other/path/tob",
 								},
 							},
@@ -755,7 +746,7 @@ func TestTypeInterfaceFullType(t *testing.T) {
 							{
 								Name: "secondVal",
 								Type: gopkg.TypeNamed{
-									Name: "CStruct",
+									Name:   "CStruct",
 									Import: "some/third/path/toc",
 								},
 							},
@@ -764,12 +755,11 @@ func TestTypeInterfaceFullType(t *testing.T) {
 				},
 			},
 			ImportAliases: map[string]string{
-				"some/path/toa": "alias_a",
+				"some/path/toa":       "alias_a",
 				"some/other/path/tob": "alias_b",
 				"some/third/path/toc": "alias_c",
 			},
-			Expected:
-`interface {
+			Expected: `interface {
 	One() (val alias_b.BStruct, err error)
 	Two() (secondVal alias_c.CStruct)
 }`,
@@ -787,80 +777,80 @@ func TestTypeInterfaceFullType(t *testing.T) {
 
 func TestTypeUnknownNamedDefaultInit(t *testing.T) {
 
-	testCases := []struct{
+	testCases := []struct {
 		// TODO add names to these tests
-		Def gopkg.TypeNamed
+		Def           gopkg.TypeNamed
 		ImportAliases map[string]string
-		Expected string
-		ExpectedErr error
+		Expected      string
+		ExpectedErr   error
 	}{
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeByte{},
 			},
 			Expected: "0",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeError{},
 			},
 			Expected: "nil",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeFloat32{},
 			},
 			Expected: "0",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeFloat64{},
 			},
 			Expected: "0",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeInt{},
 			},
 			Expected: "0",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeInt32{},
 			},
 			Expected: "0",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeInt64{},
 			},
 			Expected: "0",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeString{},
 			},
 			Expected: "\"\"",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeInterface{},
 			},
 			Expected: "nil",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeNameWithImport",
-				Import: "some/other/import",
+				Name:      "SomeNameWithImport",
+				Import:    "some/other/import",
 				ValueType: gopkg.TypeInterface{},
 			},
 			ImportAliases: map[string]string{
@@ -870,15 +860,15 @@ func TestTypeUnknownNamedDefaultInit(t *testing.T) {
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeName",
+				Name:      "SomeName",
 				ValueType: gopkg.TypeStruct{},
 			},
 			Expected: "SomeName{}",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeOtherName",
-				Import: "github.com/somepkg",
+				Name:      "SomeOtherName",
+				Import:    "github.com/somepkg",
 				ValueType: gopkg.TypeStruct{},
 			},
 			ImportAliases: map[string]string{
@@ -888,28 +878,28 @@ func TestTypeUnknownNamedDefaultInit(t *testing.T) {
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeType",
+				Name:      "SomeType",
 				ValueType: gopkg.TypeArray{},
 			},
 			Expected: "nil",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeType",
+				Name:      "SomeType",
 				ValueType: gopkg.TypePointer{},
 			},
 			Expected: "nil",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "SomeType",
+				Name:      "SomeType",
 				ValueType: gopkg.TypeMap{},
 			},
 			Expected: "nil",
 		},
 		{
 			Def: gopkg.TypeNamed{
-				Name: "MyType",
+				Name:   "MyType",
 				Import: "my/import/path",
 			},
 			ExpectedErr: errors.New("cannot deduce default init for named type with no value type"),
@@ -965,9 +955,9 @@ func TestTypeRequiredImports_SimpleTypes(t *testing.T) {
 
 func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Def gopkg.Type
+	testCases := []struct {
+		Name     string
+		Def      gopkg.Type
 		Expected map[string]bool
 	}{
 		{
@@ -990,7 +980,7 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 				},
 			},
 			Expected: map[string]bool{
-				"array/an/import": true,
+				"array/an/import":    true,
 				"array/other/import": true,
 			},
 		},
@@ -1014,14 +1004,14 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 				},
 			},
 			Expected: map[string]bool{
-				"pointer/an/import": true,
+				"pointer/an/import":    true,
 				"pointer/other/import": true,
 			},
 		},
 		{
 			Name: "map with simple types",
 			Def: gopkg.TypeMap{
-				KeyType: gopkg.TypeInt{},
+				KeyType:   gopkg.TypeInt{},
 				ValueType: gopkg.TypeString{},
 			},
 			Expected: map[string]bool(nil),
@@ -1037,13 +1027,13 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 				},
 			},
 			Expected: map[string]bool{
-				"an/import": true,
+				"an/import":    true,
 				"other/import": true,
 			},
 		},
 		{
-			Name: "named without import",
-			Def: gopkg.TypeNamed{},
+			Name:     "named without import",
+			Def:      gopkg.TypeNamed{},
 			Expected: map[string]bool(nil),
 		},
 		{
@@ -1056,8 +1046,8 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 			},
 		},
 		{
-			Name: "struct without fields",
-			Def: gopkg.TypeStruct{},
+			Name:     "struct without fields",
+			Def:      gopkg.TypeStruct{},
 			Expected: map[string]bool(nil),
 		},
 		{
@@ -1103,8 +1093,8 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 			},
 		},
 		{
-			Name: "interface without funcs",
-			Def: gopkg.TypeInterface{},
+			Name:     "interface without funcs",
+			Def:      gopkg.TypeInterface{},
 			Expected: map[string]bool(nil),
 		},
 		{
@@ -1164,7 +1154,7 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 		},
 		{
 			Name: "TypeFunc empty",
-			Def: gopkg.TypeFunc{},
+			Def:  gopkg.TypeFunc{},
 		},
 		{
 			Name: "TypeFunc with built in type args and return args",
@@ -1184,21 +1174,21 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 			Def: gopkg.TypeFunc{
 				Args: tmpl.UnnamedReturnArgs(
 					gopkg.TypeNamed{
-						Name: "A",
+						Name:   "A",
 						Import: "import/aaa",
 					},
 					gopkg.TypeNamed{
-						Name: "B",
+						Name:   "B",
 						Import: "import/bbb",
 					},
 				),
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeNamed{
-						Name: "A",
+						Name:   "A",
 						Import: "import/ccc",
 					},
 					gopkg.TypeNamed{
-						Name: "B",
+						Name:   "B",
 						Import: "import/ddd",
 					},
 				),
@@ -1217,7 +1207,7 @@ func TestTypeRequiredImports_CompositeTypes(t *testing.T) {
 
 			actual := test.Def.RequiredImports()
 
-			if len(test.Expected) == 0 && len(actual) == 0{
+			if len(test.Expected) == 0 && len(actual) == 0 {
 				// Allow actual to be either nil or an empty map
 				return
 			}

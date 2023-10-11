@@ -12,60 +12,60 @@ import (
 
 func TestParse(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		PkgDir string
+	testCases := []struct {
+		Name         string
+		PkgDir       string
 		ParseOptions []gopkg.ParseOption
-		Expected []gopkg.FileContents
+		Expected     []gopkg.FileContents
 	}{
 		{
-			Name: "no options will auto-detect pkg import dir",
+			Name:   "no options will auto-detect pkg import dir",
 			PkgDir: "test_packages/very_simple",
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/very_simple/very_simple.go",
-					PackageName: "very_simple",
+					Filepath:          "test_packages/very_simple/very_simple.go",
+					PackageName:       "very_simple",
 					PackageImportPath: "github.com/thecodedproject/gopkg/test_packages/very_simple",
 					Vars: []gopkg.DeclVar{
 						{
-							Name: "MyVar",
+							Name:   "MyVar",
 							Import: "github.com/thecodedproject/gopkg/test_packages/very_simple",
-							Type: gopkg.TypeInt{},
+							Type:   gopkg.TypeInt{},
 						},
 					},
 				},
 			},
 		},
 		{
-			Name: "all_built_in_golang_types",
+			Name:   "all_built_in_golang_types",
 			PkgDir: "test_packages/all_built_in_types",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("some/import/all_built_in_types"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/all_built_in_types/bools.go",
-					PackageName: "all_built_in_types",
+					Filepath:          "test_packages/all_built_in_types/bools.go",
+					PackageName:       "all_built_in_types",
 					PackageImportPath: "some/import/all_built_in_types",
 					Consts: []gopkg.DeclVar{
 						{
-							Name: "AConstant",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeBool{},
+							Name:         "AConstant",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeBool{},
 							LiteralValue: "false",
 						},
 					},
 					Vars: []gopkg.DeclVar{
 						{
-							Name: "SomeDefaultVar",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeBool{},
+							Name:         "SomeDefaultVar",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeBool{},
 							LiteralValue: "true",
 						},
 					},
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "MyBoolFunc",
+							Name:   "MyBoolFunc",
 							Import: "some/import/all_built_in_types",
 							Args: []gopkg.DeclVar{
 								{
@@ -81,7 +81,7 @@ func TestParse(t *testing.T) {
 					},
 					Types: []gopkg.DeclType{
 						{
-							Name: "MyBoolStruct",
+							Name:   "MyBoolStruct",
 							Import: "some/import/all_built_in_types",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
@@ -92,57 +92,57 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Filepath: "test_packages/all_built_in_types/int_float_string_struct.go",
-					PackageName: "all_built_in_types",
+					Filepath:          "test_packages/all_built_in_types/int_float_string_struct.go",
+					PackageName:       "all_built_in_types",
 					PackageImportPath: "some/import/all_built_in_types",
 					Consts: []gopkg.DeclVar{
 						{
-							Name: "MyConst",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Name:         "MyConst",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeUnnamedLiteral{},
 							LiteralValue: "\"some val\"",
 						},
 						{
-							Name: "AnotherConst",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Name:         "AnotherConst",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeUnnamedLiteral{},
 							LiteralValue: "\"other val\"",
 						},
 						{
-							Name: "RealNumberConst",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeFloat64{},
+							Name:         "RealNumberConst",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeFloat64{},
 							LiteralValue: "1.234",
 						},
 					},
 					Vars: []gopkg.DeclVar{
 						{
-							Name: "OneInt",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeInt{},
+							Name:         "OneInt",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeInt{},
 							LiteralValue: "1",
 						},
 						{
-							Name: "TwoInt",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeInt{},
+							Name:         "TwoInt",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeInt{},
 							LiteralValue: "2",
 						},
 						{
-							Name: "SomeFloat",
+							Name:   "SomeFloat",
 							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeFloat32{},
+							Type:   gopkg.TypeFloat32{},
 						},
 						{
-							Name: "SomeUntyped",
-							Import: "some/import/all_built_in_types",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Name:         "SomeUntyped",
+							Import:       "some/import/all_built_in_types",
+							Type:         gopkg.TypeUnnamedLiteral{},
 							LiteralValue: "\"a string\"",
 						},
 					},
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "SomeInts",
+							Name:   "SomeInts",
 							Import: "some/import/all_built_in_types",
 							Args: []gopkg.DeclVar{
 								{
@@ -166,7 +166,7 @@ func TestParse(t *testing.T) {
 							BodyTmpl: "\n\n\treturn a, b, c\n",
 						},
 						{
-							Name: "SomeFloats",
+							Name:   "SomeFloats",
 							Import: "some/import/all_built_in_types",
 							Args: []gopkg.DeclVar{
 								{
@@ -185,7 +185,7 @@ func TestParse(t *testing.T) {
 							BodyTmpl: "\n\n\treturn a, b\n",
 						},
 						{
-							Name: "SomeStrings",
+							Name:   "SomeStrings",
 							Import: "some/import/all_built_in_types",
 							Args: []gopkg.DeclVar{
 								{
@@ -201,7 +201,7 @@ func TestParse(t *testing.T) {
 					},
 					Types: []gopkg.DeclType{
 						{
-							Name: "SomeStruct",
+							Name:   "SomeStruct",
 							Import: "some/import/all_built_in_types",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
@@ -219,26 +219,26 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			Name: "composite_types",
+			Name:   "composite_types",
 			PkgDir: "test_packages/composite_types",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("some/import/composite_types"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/composite_types/arrays.go",
-					PackageName: "composite_types",
+					Filepath:          "test_packages/composite_types/arrays.go",
+					PackageName:       "composite_types",
 					PackageImportPath: "some/import/composite_types",
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "SomeArrayFunc",
+							Name:   "SomeArrayFunc",
 							Import: "some/import/composite_types",
 							Args: []gopkg.DeclVar{
 								{
 									Name: "a",
 									Type: gopkg.TypeArray{
 										ValueType: gopkg.TypeNamed{
-											Name: "Decimal",
+											Name:   "Decimal",
 											Import: "github.com/shopspring/decimal",
 										},
 									},
@@ -253,7 +253,7 @@ func TestParse(t *testing.T) {
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeArray{
 									ValueType: gopkg.TypeNamed{
-										Name: "SomeArrayStruct",
+										Name:   "SomeArrayStruct",
 										Import: "some/import/composite_types",
 									},
 								},
@@ -263,7 +263,7 @@ func TestParse(t *testing.T) {
 					},
 					Types: []gopkg.DeclType{
 						{
-							Name: "SomeArrayStruct",
+							Name:   "SomeArrayStruct",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
@@ -285,7 +285,7 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
-							Name: "MyCustomArrayType",
+							Name:   "MyCustomArrayType",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeArray{
 								ValueType: gopkg.TypeArray{
@@ -296,7 +296,7 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
-							Name: "SomeArrayInterface",
+							Name:   "SomeArrayInterface",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeInterface{
 								Funcs: []gopkg.DeclFunc{
@@ -318,12 +318,12 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Filepath: "test_packages/composite_types/function_types.go",
-					PackageName: "composite_types",
+					Filepath:          "test_packages/composite_types/function_types.go",
+					PackageName:       "composite_types",
 					PackageImportPath: "some/import/composite_types",
 					Vars: []gopkg.DeclVar{
 						{
-							Name: "SomeVar",
+							Name:   "SomeVar",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeFunc{
 								Args: tmpl.UnnamedReturnArgs(
@@ -337,7 +337,7 @@ func TestParse(t *testing.T) {
 					},
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "SomeFunc",
+							Name:   "SomeFunc",
 							Import: "some/import/composite_types",
 							Args: []gopkg.DeclVar{
 								{
@@ -358,7 +358,7 @@ func TestParse(t *testing.T) {
 					},
 					Types: []gopkg.DeclType{
 						{
-							Name: "SomeType",
+							Name:   "SomeType",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeFunc{
 								ReturnArgs: tmpl.UnnamedReturnArgs(
@@ -367,7 +367,7 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
-							Name: "SomeStruct",
+							Name:   "SomeStruct",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
@@ -415,12 +415,12 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Filepath: "test_packages/composite_types/pointers.go",
-					PackageName: "composite_types",
+					Filepath:          "test_packages/composite_types/pointers.go",
+					PackageName:       "composite_types",
 					PackageImportPath: "some/import/composite_types",
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "SomePointerFunc",
+							Name:   "SomePointerFunc",
 							Import: "some/import/composite_types",
 							Args: []gopkg.DeclVar{
 								{
@@ -433,7 +433,7 @@ func TestParse(t *testing.T) {
 									Name: "b",
 									Type: gopkg.TypePointer{
 										ValueType: gopkg.TypeNamed{
-											Name: "SomePointerStruct",
+											Name:   "SomePointerStruct",
 											Import: "some/import/composite_types",
 										},
 									},
@@ -449,7 +449,7 @@ func TestParse(t *testing.T) {
 					},
 					Types: []gopkg.DeclType{
 						{
-							Name: "MyCustomPointer",
+							Name:   "MyCustomPointer",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypePointer{
 								ValueType: gopkg.TypePointer{
@@ -458,7 +458,7 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
-							Name: "SomePointerInterface",
+							Name:   "SomePointerInterface",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeInterface{
 								Funcs: []gopkg.DeclFunc{
@@ -490,7 +490,7 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
-							Name: "SomePointerStruct",
+							Name:   "SomePointerStruct",
 							Import: "some/import/composite_types",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
@@ -508,31 +508,31 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			Name: "custom_types",
+			Name:   "custom_types",
 			PkgDir: "test_packages/custom_types",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("some/import/custom_types"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/custom_types/embedded_types.go",
-					PackageName: "custom_types",
+					Filepath:          "test_packages/custom_types/embedded_types.go",
+					PackageName:       "custom_types",
 					PackageImportPath: "some/import/custom_types",
 					Types: []gopkg.DeclType{
 						{
-							Name: "SingleEmbed",
+							Name:   "SingleEmbed",
 							Import: "some/import/custom_types",
 							Type: gopkg.TypeStruct{
 								Embeds: []gopkg.Type{
 									gopkg.TypeNamed{
-										Name: "Context",
+										Name:   "Context",
 										Import: "context",
 									},
 								},
 							},
 						},
 						{
-							Name: "InterfaceEmbed",
+							Name:   "InterfaceEmbed",
 							Import: "some/import/custom_types",
 							Type: gopkg.TypeInterface{
 								Embeds: []gopkg.Type{
@@ -544,13 +544,13 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
-							Name: "ManyEmbeds",
+							Name:   "ManyEmbeds",
 							Import: "some/import/custom_types",
 							Type: gopkg.TypeStruct{
 								Embeds: []gopkg.Type{
 									gopkg.TypeError{},
 									gopkg.TypeNamed{
-										Name: "Context",
+										Name:   "Context",
 										Import: "context",
 									},
 									gopkg.TypeInt32{},
@@ -564,20 +564,20 @@ func TestParse(t *testing.T) {
 							},
 						},
 						{
-							Name: "InterfaceManyEmbeds",
+							Name:   "InterfaceManyEmbeds",
 							Import: "some/import/custom_types",
 							Type: gopkg.TypeInterface{
 								Embeds: []gopkg.Type{
 									gopkg.TypeNamed{
-										Name: "SingleEmbed",
+										Name:   "SingleEmbed",
 										Import: "some/import/custom_types",
 									},
 									gopkg.TypeNamed{
-										Name: "InterfaceEmbed",
+										Name:   "InterfaceEmbed",
 										Import: "some/import/custom_types",
 									},
 									gopkg.TypeNamed{
-										Name: "Context",
+										Name:   "Context",
 										Import: "context",
 									},
 									gopkg.TypeError{},
@@ -590,26 +590,26 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			Name: "proto_conversion_package",
+			Name:   "proto_conversion_package",
 			PkgDir: "test_packages/proto_conversion",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("some/import/proto_conversion"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/proto_conversion/converters.go",
-					PackageName: "proto_conversion",
+					Filepath:          "test_packages/proto_conversion/converters.go",
+					PackageName:       "proto_conversion",
 					PackageImportPath: "some/import/proto_conversion",
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "IntAsStringFromProto",
+							Name:   "IntAsStringFromProto",
 							Import: "some/import/proto_conversion",
 							Args: []gopkg.DeclVar{
 								{
 									Name: "v",
 									Type: gopkg.TypePointer{
 										ValueType: gopkg.TypeNamed{
-											Name: "IntAsString",
+											Name:   "IntAsString",
 											Import: "some/import/proto_conversion",
 										},
 									},
@@ -622,7 +622,7 @@ func TestParse(t *testing.T) {
 							BodyTmpl: "\n\n\treturn strconv.Atoi(v.Value)\n",
 						},
 						{
-							Name: "IntAsStringToProto",
+							Name:   "IntAsStringToProto",
 							Import: "some/import/proto_conversion",
 							Args: []gopkg.DeclVar{
 								{
@@ -633,7 +633,7 @@ func TestParse(t *testing.T) {
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypePointer{
 									ValueType: gopkg.TypeNamed{
-										Name: "IntAsString",
+										Name:   "IntAsString",
 										Import: "some/import/proto_conversion",
 									},
 								},
@@ -647,14 +647,14 @@ func TestParse(t *testing.T) {
 `,
 						},
 						{
-							Name: "ShopspringDecimalFromProto",
+							Name:   "ShopspringDecimalFromProto",
 							Import: "some/import/proto_conversion",
 							Args: []gopkg.DeclVar{
 								{
 									Name: "v",
 									Type: gopkg.TypePointer{
 										ValueType: gopkg.TypeNamed{
-											Name: "ShopspringDecimal",
+											Name:   "ShopspringDecimal",
 											Import: "some/import/proto_conversion",
 										},
 									},
@@ -662,7 +662,7 @@ func TestParse(t *testing.T) {
 							},
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypeNamed{
-									Name: "Decimal",
+									Name:   "Decimal",
 									Import: "github.com/shopspring/decimal",
 								},
 								gopkg.TypeError{},
@@ -670,13 +670,13 @@ func TestParse(t *testing.T) {
 							BodyTmpl: "\n\n\treturn shopspring_decimal.NewFromString(v.Value)\n",
 						},
 						{
-							Name: "ShopspringDecimalToProto",
+							Name:   "ShopspringDecimalToProto",
 							Import: "some/import/proto_conversion",
 							Args: []gopkg.DeclVar{
 								{
 									Name: "v",
 									Type: gopkg.TypeNamed{
-										Name: "Decimal",
+										Name:   "Decimal",
 										Import: "github.com/shopspring/decimal",
 									},
 								},
@@ -684,7 +684,7 @@ func TestParse(t *testing.T) {
 							ReturnArgs: tmpl.UnnamedReturnArgs(
 								gopkg.TypePointer{
 									ValueType: gopkg.TypeNamed{
-										Name: "ShopspringDecimal",
+										Name:   "ShopspringDecimal",
 										Import: "some/import/proto_conversion",
 									},
 								},
@@ -700,14 +700,14 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Filepath: "test_packages/proto_conversion/def.pb.go",
-					PackageName: "proto_conversion",
+					Filepath:          "test_packages/proto_conversion/def.pb.go",
+					PackageName:       "proto_conversion",
 					PackageImportPath: "some/import/proto_conversion",
 					Consts: []gopkg.DeclVar{
 						{
-							Name: "_",
+							Name:   "_",
 							Import: "some/import/proto_conversion",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Type:   gopkg.TypeUnnamedLiteral{},
 							DocString: `// This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
@@ -716,58 +716,58 @@ func TestParse(t *testing.T) {
 					},
 					Vars: []gopkg.DeclVar{
 						{
-							Name: "_",
-							Import: "some/import/proto_conversion",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Name:      "_",
+							Import:    "some/import/proto_conversion",
+							Type:      gopkg.TypeUnnamedLiteral{},
 							DocString: `// Reference imports to suppress errors if they are not otherwise used.`,
 						},
 						{
-							Name: "_",
+							Name:   "_",
 							Import: "some/import/proto_conversion",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Type:   gopkg.TypeUnnamedLiteral{},
 						},
 						{
-							Name: "_",
+							Name:   "_",
 							Import: "some/import/proto_conversion",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Type:   gopkg.TypeUnnamedLiteral{},
 						},
 						{
-							Name: "xxx_messageInfo_IntAsString",
+							Name:   "xxx_messageInfo_IntAsString",
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeNamed{
-								Name: "InternalMessageInfo",
+								Name:   "InternalMessageInfo",
 								Import: "github.com/golang/protobuf/proto",
 							},
 						},
 						{
-							Name: "xxx_messageInfo_ShopspringDecimal",
+							Name:   "xxx_messageInfo_ShopspringDecimal",
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeNamed{
-								Name: "InternalMessageInfo",
+								Name:   "InternalMessageInfo",
 								Import: "github.com/golang/protobuf/proto",
 							},
 						},
 						{
-							Name: "fileDescriptor_76fb0470a3b910d8",
+							Name:   "fileDescriptor_76fb0470a3b910d8",
 							Import: "some/import/proto_conversion",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Type:   gopkg.TypeUnnamedLiteral{},
 						},
 					},
 					Functions: protoConversionPackageFuncs(),
 					Types: []gopkg.DeclType{
 						{
-							Name: "IntAsString",
+							Name:   "IntAsString",
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
 									{
-										Name: "Value",
-										Type: gopkg.TypeString{},
+										Name:      "Value",
+										Type:      gopkg.TypeString{},
 										StructTag: "protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"",
 									},
 									{
-										Name: "XXX_NoUnkeyedLiteral",
-										Type: gopkg.TypeStruct{},
+										Name:      "XXX_NoUnkeyedLiteral",
+										Type:      gopkg.TypeStruct{},
 										StructTag: "json:\"-\"",
 									},
 									{
@@ -778,26 +778,26 @@ func TestParse(t *testing.T) {
 										StructTag: "json:\"-\"",
 									},
 									{
-										Name: "XXX_sizecache",
-										Type: gopkg.TypeInt32{},
+										Name:      "XXX_sizecache",
+										Type:      gopkg.TypeInt32{},
 										StructTag: "json:\"-\"",
 									},
 								},
 							},
 						},
 						{
-							Name: "ShopspringDecimal",
+							Name:   "ShopspringDecimal",
 							Import: "some/import/proto_conversion",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
 									{
-										Name: "Value",
-										Type: gopkg.TypeString{},
+										Name:      "Value",
+										Type:      gopkg.TypeString{},
 										StructTag: "protobuf:\"bytes,1,opt,name=value,proto3\" json:\"value,omitempty\"",
 									},
 									{
-										Name: "XXX_NoUnkeyedLiteral",
-										Type: gopkg.TypeStruct{},
+										Name:      "XXX_NoUnkeyedLiteral",
+										Type:      gopkg.TypeStruct{},
 										StructTag: "json:\"-\"",
 									},
 									{
@@ -808,8 +808,8 @@ func TestParse(t *testing.T) {
 										StructTag: "json:\"-\"",
 									},
 									{
-										Name: "XXX_sizecache",
-										Type: gopkg.TypeInt32{},
+										Name:      "XXX_sizecache",
+										Type:      gopkg.TypeInt32{},
 										StructTag: "json:\"-\"",
 									},
 								},
@@ -818,58 +818,58 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Filepath: "test_packages/proto_conversion/generate.go",
-					PackageName: "proto_conversion",
+					Filepath:          "test_packages/proto_conversion/generate.go",
+					PackageName:       "proto_conversion",
 					PackageImportPath: "some/import/proto_conversion",
 				},
 			},
 		},
 		{
-			Name: "receiver_funcs",
+			Name:   "receiver_funcs",
 			PkgDir: "test_packages/receiver_funcs",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("some/import/receiver_funcs"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/receiver_funcs/receiver_funcs.go",
-					PackageName: "receiver_funcs",
+					Filepath:          "test_packages/receiver_funcs/receiver_funcs.go",
+					PackageName:       "receiver_funcs",
 					PackageImportPath: "some/import/receiver_funcs",
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "ValueReceiverFunc",
+							Name:   "ValueReceiverFunc",
 							Import: "some/import/receiver_funcs",
 							Receiver: gopkg.FuncReceiver{
-								VarName: "m",
+								VarName:  "m",
 								TypeName: "MyType",
 							},
 							BodyTmpl: "\n\treturn\n",
 						},
 						{
-							Name: "PointerRecFunc",
+							Name:   "PointerRecFunc",
 							Import: "some/import/receiver_funcs",
 							Receiver: gopkg.FuncReceiver{
-								VarName: "m",
-								TypeName: "MyType",
+								VarName:   "m",
+								TypeName:  "MyType",
 								IsPointer: true,
 							},
 							BodyTmpl: "\n\treturn\n",
 						},
 						{
-							Name: "OtherPRecFunc",
+							Name:   "OtherPRecFunc",
 							Import: "some/import/receiver_funcs",
 							Receiver: gopkg.FuncReceiver{
-								VarName: "o",
-								TypeName: "OtherType",
+								VarName:   "o",
+								TypeName:  "OtherType",
 								IsPointer: true,
 							},
 							BodyTmpl: "\n\treturn\n",
 						},
 						{
-							Name: "SomeOtherValRec",
+							Name:   "SomeOtherValRec",
 							Import: "some/import/receiver_funcs",
 							Receiver: gopkg.FuncReceiver{
-								VarName: "o",
+								VarName:  "o",
 								TypeName: "OtherType",
 							},
 							BodyTmpl: "\n\treturn\n",
@@ -877,33 +877,33 @@ func TestParse(t *testing.T) {
 					},
 					Types: []gopkg.DeclType{
 						{
-							Name: "MyType",
+							Name:   "MyType",
 							Import: "some/import/receiver_funcs",
-							Type: gopkg.TypeStruct{},
+							Type:   gopkg.TypeStruct{},
 						},
 						{
-							Name: "OtherType",
+							Name:   "OtherType",
 							Import: "some/import/receiver_funcs",
-							Type: gopkg.TypeBool{},
+							Type:   gopkg.TypeBool{},
 						},
 					},
 				},
 			},
 		},
 		{
-			Name: "pkg_with_tests",
+			Name:   "pkg_with_tests",
 			PkgDir: "test_packages/pkg_with_tests",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("some/import/pkg_with_tests"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/pkg_with_tests/logic.go",
-					PackageName: "pkg_with_tests",
+					Filepath:          "test_packages/pkg_with_tests/logic.go",
+					PackageName:       "pkg_with_tests",
 					PackageImportPath: "some/import/pkg_with_tests",
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "MyCoolLogic",
+							Name:   "MyCoolLogic",
 							Import: "some/import/pkg_with_tests",
 							Args: []gopkg.DeclVar{
 								{
@@ -923,19 +923,19 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
-					Filepath: "test_packages/pkg_with_tests/logic_test.go",
-					PackageName: "pkg_with_tests_test",
+					Filepath:          "test_packages/pkg_with_tests/logic_test.go",
+					PackageName:       "pkg_with_tests_test",
 					PackageImportPath: "some/import/pkg_with_tests",
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "TestMyCoolLogic",
+							Name:   "TestMyCoolLogic",
 							Import: "some/import/pkg_with_tests",
 							Args: []gopkg.DeclVar{
 								{
 									Name: "t",
 									Type: gopkg.TypePointer{
 										ValueType: gopkg.TypeNamed{
-											Name: "T",
+											Name:   "T",
 											Import: "testing",
 										},
 									},
@@ -943,19 +943,19 @@ func TestParse(t *testing.T) {
 							},
 							BodyTmpl: `
 
-	testCases := []struct{
-		Name string
-		I int
-		J int
+	testCases := []struct {
+		Name     string
+		I        int
+		J        int
 		Expected int
 	}{
 		{
 			Name: "empty returns zero",
 		},
 		{
-			Name: "adds inputs together",
-			I: 1,
-			J: 2,
+			Name:     "adds inputs together",
+			I:        1,
+			J:        2,
 			Expected: 3,
 		},
 	}
@@ -976,19 +976,19 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			Name: "named_return_args",
+			Name:   "named_return_args",
 			PkgDir: "test_packages/named_return_args",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("myimport/named_return_args"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/named_return_args/named_return_args.go",
-					PackageName: "named_return_args",
+					Filepath:          "test_packages/named_return_args/named_return_args.go",
+					PackageName:       "named_return_args",
 					PackageImportPath: "myimport/named_return_args",
 					Types: []gopkg.DeclType{
 						{
-							Name: "SomeInterface",
+							Name:   "SomeInterface",
 							Import: "myimport/named_return_args",
 							Type: gopkg.TypeInterface{
 								Funcs: []gopkg.DeclFunc{
@@ -1024,7 +1024,7 @@ func TestParse(t *testing.T) {
 					},
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "MyMethod",
+							Name:   "MyMethod",
 							Import: "myimport/named_return_args",
 							ReturnArgs: []gopkg.DeclVar{
 								{
@@ -1043,7 +1043,7 @@ func TestParse(t *testing.T) {
 							BodyTmpl: "\n\n\treturn 0, 0, 0\n",
 						},
 						{
-							Name: "MyOtherMethod",
+							Name:   "MyOtherMethod",
 							Import: "myimport/named_return_args",
 							ReturnArgs: []gopkg.DeclVar{
 								{
@@ -1066,35 +1066,35 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			Name: "structs_with_tags",
+			Name:   "structs_with_tags",
 			PkgDir: "test_packages/struct_with_tags",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("myimport/struct_with_tags"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/struct_with_tags/acouple_of_structs.go",
-					PackageName: "struct_with_tags",
+					Filepath:          "test_packages/struct_with_tags/acouple_of_structs.go",
+					PackageName:       "struct_with_tags",
 					PackageImportPath: "myimport/struct_with_tags",
 					Types: []gopkg.DeclType{
 						{
-							Name: "AStruct",
+							Name:   "AStruct",
 							Import: "myimport/struct_with_tags",
 							Type: gopkg.TypeStruct{
 								Fields: []gopkg.DeclVar{
 									{
-										Name: "AField",
-										Type: gopkg.TypeInt{},
+										Name:      "AField",
+										Type:      gopkg.TypeInt{},
 										StructTag: "AKey:\"some_value\"",
 									},
 									{
-										Name: "BField",
-										Type: gopkg.TypeBool{},
+										Name:      "BField",
+										Type:      gopkg.TypeBool{},
 										StructTag: "BKey:\"some_other_value\"",
 									},
 									{
-										Name: "privateField",
-										Type: gopkg.TypeFloat32{},
+										Name:      "privateField",
+										Type:      gopkg.TypeFloat32{},
 										StructTag: "CKey:\"some_third_value\"",
 									},
 								},
@@ -1105,98 +1105,98 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			Name: "non_declaritive_elements",
+			Name:   "non_declaritive_elements",
 			PkgDir: "test_packages/non_declaritive_elements",
 			ParseOptions: []gopkg.ParseOption{
 				gopkg.ParseWithPkgImportPath("myimport/non_declaritive_elements"),
 			},
 			Expected: []gopkg.FileContents{
 				{
-					Filepath: "test_packages/non_declaritive_elements/docstrings.go",
-					PackageName: "non_declaritive_elements",
+					Filepath:          "test_packages/non_declaritive_elements/docstrings.go",
+					PackageName:       "non_declaritive_elements",
 					PackageImportPath: "myimport/non_declaritive_elements",
 
 					DocString: "// A package level doc string\n// with\n//\n// multiple lines",
 					Consts: []gopkg.DeclVar{
 						{
-							Name: "firstConstant",
-							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeInt32{},
+							Name:         "firstConstant",
+							Import:       "myimport/non_declaritive_elements",
+							Type:         gopkg.TypeInt32{},
 							LiteralValue: "1",
-							DocString: "// a doc string on a group of consts",
+							DocString:    "// a doc string on a group of consts",
 						},
 						{
-							Name: "secondConstant",
-							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeString{},
+							Name:         "secondConstant",
+							Import:       "myimport/non_declaritive_elements",
+							Type:         gopkg.TypeString{},
 							LiteralValue: `"hello"`,
-							DocString: "// another with\n\t// several lines",
+							DocString:    "// another with\n\t// several lines",
 						},
 						{
-							Name: "thirdC",
-							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Name:         "thirdC",
+							Import:       "myimport/non_declaritive_elements",
+							Type:         gopkg.TypeUnnamedLiteral{},
 							LiteralValue: "10",
-							DocString: "// some comment on multiple values",
+							DocString:    "// some comment on multiple values",
 						},
 						{
-							Name: "fourthC",
-							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeUnnamedLiteral{},
+							Name:         "fourthC",
+							Import:       "myimport/non_declaritive_elements",
+							Type:         gopkg.TypeUnnamedLiteral{},
 							LiteralValue: "12",
-							DocString: "// some comment on multiple values",
+							DocString:    "// some comment on multiple values",
 						},
 					},
 					Vars: []gopkg.DeclVar{
 						{
-							Name: "singleVar",
-							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeInt64{},
+							Name:      "singleVar",
+							Import:    "myimport/non_declaritive_elements",
+							Type:      gopkg.TypeInt64{},
 							DocString: "// singleVar has a docstring\n// with multiple lines",
 						},
 						{
-							Name: "someVar",
-							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeInt{},
+							Name:      "someVar",
+							Import:    "myimport/non_declaritive_elements",
+							Type:      gopkg.TypeInt{},
 							DocString: "// only docstrings inside var groups are kept",
 						},
 					},
 					Types: []gopkg.DeclType{
 						{
-							Name: "adocumentedType",
-							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeString{},
+							Name:      "adocumentedType",
+							Import:    "myimport/non_declaritive_elements",
+							Type:      gopkg.TypeString{},
 							DocString: "// adocumentedType with a docstring\n// and multiple lines\n// of text",
 						},
 					},
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "ExportedMethod",
-							Import: "myimport/non_declaritive_elements",
+							Name:      "ExportedMethod",
+							Import:    "myimport/non_declaritive_elements",
 							DocString: "// a docstring not starting with the method name",
 						},
 						{
-							Name: "unexportedMethod",
-							Import: "myimport/non_declaritive_elements",
+							Name:      "unexportedMethod",
+							Import:    "myimport/non_declaritive_elements",
 							DocString: "// unexported method docstring",
 						},
 					},
 				},
 				{
-					Filepath: "test_packages/non_declaritive_elements/function_contents.go",
-					PackageName: "non_declaritive_elements",
+					Filepath:          "test_packages/non_declaritive_elements/function_contents.go",
+					PackageName:       "non_declaritive_elements",
 					PackageImportPath: "myimport/non_declaritive_elements",
 					Types: []gopkg.DeclType{
 						{
-							Name: "someType",
+							Name:   "someType",
 							Import: "myimport/non_declaritive_elements",
-							Type: gopkg.TypeStruct{},
+							Type:   gopkg.TypeStruct{},
 						},
 					},
 					Functions: []gopkg.DeclFunc{
 						{
-							Name: "SomeFunc",
-							Import: "myimport/non_declaritive_elements",
+							Name:       "SomeFunc",
+							Import:     "myimport/non_declaritive_elements",
 							ReturnArgs: tmpl.UnnamedReturnArgs(gopkg.TypeInt64{}),
 							BodyTmpl: `
 	// A comment...
@@ -1207,10 +1207,10 @@ func TestParse(t *testing.T) {
 `,
 						},
 						{
-							Name: "receiverMethod",
+							Name:   "receiverMethod",
 							Import: "myimport/non_declaritive_elements",
 							Receiver: gopkg.FuncReceiver{
-								VarName: "s",
+								VarName:  "s",
 								TypeName: "someType",
 							},
 							ReturnArgs: tmpl.UnnamedReturnArgs(gopkg.TypeBool{}),
@@ -1220,8 +1220,8 @@ func TestParse(t *testing.T) {
 `,
 						},
 						{
-							Name: "unexportedFunc",
-							Import: "myimport/non_declaritive_elements",
+							Name:       "unexportedFunc",
+							Import:     "myimport/non_declaritive_elements",
 							ReturnArgs: tmpl.UnnamedReturnArgs(gopkg.TypeString{}),
 							BodyTmpl: `
 	// some other comment...
@@ -1255,7 +1255,7 @@ func protoConversionPackageFuncs() []gopkg.DeclFunc {
 
 	ret = append(ret, []gopkg.DeclFunc{
 		{
-			Name: "init",
+			Name:   "init",
 			Import: "some/import/proto_conversion",
 			BodyTmpl: `
 	proto.RegisterType((*IntAsString)(nil), "proto_conversion.IntAsString")
@@ -1263,8 +1263,8 @@ func protoConversionPackageFuncs() []gopkg.DeclFunc {
 `,
 		},
 		{
-			Name: "init",
-			Import: "some/import/proto_conversion",
+			Name:     "init",
+			Import:   "some/import/proto_conversion",
 			BodyTmpl: ` proto.RegisterFile("def.proto", fileDescriptor_76fb0470a3b910d8) `,
 		},
 	}...)
@@ -1276,21 +1276,21 @@ func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 
 	return []gopkg.DeclFunc{
 		{
-			Name: "Reset",
+			Name:   "Reset",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			BodyTmpl: " *m = " + typeName + "{} ",
 		},
 		{
-			Name: "String",
+			Name:   "String",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			ReturnArgs: tmpl.UnnamedReturnArgs(
@@ -1299,18 +1299,18 @@ func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 			BodyTmpl: " return proto.CompactTextString(m) ",
 		},
 		{
-			Name: "ProtoMessage",
+			Name:   "ProtoMessage",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				TypeName: typeName,
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 		},
 		{
-			Name: "Descriptor",
+			Name:   "Descriptor",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				TypeName: typeName,
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			ReturnArgs: tmpl.UnnamedReturnArgs(
@@ -1320,11 +1320,11 @@ func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 			BodyTmpl: "\n\treturn fileDescriptor_76fb0470a3b910d8, []int{" + typeIndex + "}\n",
 		},
 		{
-			Name: "XXX_Unmarshal",
+			Name:   "XXX_Unmarshal",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			Args: []gopkg.DeclVar{
@@ -1339,11 +1339,11 @@ func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 			BodyTmpl: "\n\treturn xxx_messageInfo_" + typeName + ".Unmarshal(m, b)\n",
 		},
 		{
-			Name: "XXX_Marshal",
+			Name:   "XXX_Marshal",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			Args: []gopkg.DeclVar{
@@ -1363,18 +1363,18 @@ func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 			BodyTmpl: "\n\treturn xxx_messageInfo_" + typeName + ".Marshal(b, m, deterministic)\n",
 		},
 		{
-			Name: "XXX_Merge",
+			Name:   "XXX_Merge",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			Args: []gopkg.DeclVar{
 				{
 					Name: "src",
 					Type: gopkg.TypeNamed{
-						Name: "Message",
+						Name:   "Message",
 						Import: "github.com/golang/protobuf/proto",
 					},
 				},
@@ -1382,11 +1382,11 @@ func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 			BodyTmpl: "\n\txxx_messageInfo_" + typeName + ".Merge(m, src)\n",
 		},
 		{
-			Name: "XXX_Size",
+			Name:   "XXX_Size",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			ReturnArgs: tmpl.UnnamedReturnArgs(
@@ -1395,21 +1395,21 @@ func protoTypeFuncs(typeName string, typeIndex string) []gopkg.DeclFunc {
 			BodyTmpl: "\n\treturn xxx_messageInfo_" + typeName + ".Size(m)\n",
 		},
 		{
-			Name: "XXX_DiscardUnknown",
+			Name:   "XXX_DiscardUnknown",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			BodyTmpl: "\n\txxx_messageInfo_" + typeName + ".DiscardUnknown(m)\n",
 		},
 		{
-			Name: "GetValue",
+			Name:   "GetValue",
 			Import: "some/import/proto_conversion",
 			Receiver: gopkg.FuncReceiver{
-				VarName: "m",
-				TypeName: typeName,
+				VarName:   "m",
+				TypeName:  typeName,
 				IsPointer: true,
 			},
 			ReturnArgs: tmpl.UnnamedReturnArgs(

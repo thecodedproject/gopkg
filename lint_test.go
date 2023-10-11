@@ -11,9 +11,9 @@ import (
 
 func TestLint(t *testing.T) {
 
-	testCases := []struct{
+	testCases := []struct {
 		Name string
-		Pkg []gopkg.FileContents
+		Pkg  []gopkg.FileContents
 	}{
 		{
 			Name: "empty inputs returns no error",
@@ -30,9 +30,9 @@ func TestLint(t *testing.T) {
 
 func TestAddRequiredImports(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Pkg []gopkg.FileContents
+	testCases := []struct {
+		Name     string
+		Pkg      []gopkg.FileContents
 		Expected []gopkg.FileContents
 	}{
 		{
@@ -364,9 +364,9 @@ func TestAddRequiredImports(t *testing.T) {
 
 func TestAddAliasToAllImports(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Pkg []gopkg.FileContents
+	testCases := []struct {
+		Name     string
+		Pkg      []gopkg.FileContents
 		Expected []gopkg.FileContents
 	}{
 		{
@@ -540,9 +540,9 @@ func TestAddAliasToAllImports(t *testing.T) {
 
 func TestGroupStdImportsFirst(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Pkg []gopkg.FileContents
+	testCases := []struct {
+		Name     string
+		Pkg      []gopkg.FileContents
 		Expected []gopkg.FileContents
 	}{
 		{
@@ -700,17 +700,17 @@ func TestGroupStdImportsFirst(t *testing.T) {
 
 func TestGroupModuleImportsLast(t *testing.T) {
 
-	testCases := []struct{
-		Name string
+	testCases := []struct {
+		Name       string
 		ModulePath string
-		Pkg []gopkg.FileContents
-		Expected []gopkg.FileContents
+		Pkg        []gopkg.FileContents
+		Expected   []gopkg.FileContents
 	}{
 		{
 			Name: "empty input returns no error",
 		},
 		{
-			Name: "single file with no module imports does nothing",
+			Name:       "single file with no module imports does nothing",
 			ModulePath: "my/module/path",
 			Pkg: []gopkg.FileContents{
 				{
@@ -734,7 +734,7 @@ func TestGroupModuleImportsLast(t *testing.T) {
 			},
 		},
 		{
-			Name: "single file with module imports and no groups",
+			Name:       "single file with module imports and no groups",
 			ModulePath: "my/module/path",
 			Pkg: []gopkg.FileContents{
 				{
@@ -784,7 +784,7 @@ func importWithAlias(
 
 	return gopkg.ImportAndAlias{
 		Import: importName,
-		Alias: alias,
+		Alias:  alias,
 	}
 }
 
@@ -796,8 +796,8 @@ func iag(
 
 	return gopkg.ImportAndAlias{
 		Import: importName,
-		Alias: alias,
-		Group: group,
+		Alias:  alias,
+		Group:  group,
 	}
 }
 
@@ -809,7 +809,7 @@ func varTypeNamed(
 	return gopkg.DeclVar{
 		Name: "My" + typeName,
 		Type: gopkg.TypeNamed{
-			Name: typeName,
+			Name:   typeName,
 			Import: importName,
 		},
 	}

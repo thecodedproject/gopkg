@@ -14,14 +14,14 @@ import (
 
 func TestWriteDeclType(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		T gopkg.DeclType
+	testCases := []struct {
+		Name          string
+		T             gopkg.DeclType
 		ImportAliases map[string]string
-		ExpectedErr error
+		ExpectedErr   error
 	}{
 		{
-			Name: "empty name return error",
+			Name:        "empty name return error",
 			ExpectedErr: errors.New("type decl name cannot be empty"),
 		},
 		{
@@ -78,7 +78,7 @@ func TestWriteDeclType(t *testing.T) {
 							Type: gopkg.TypeMap{
 								KeyType: gopkg.TypeString{},
 								ValueType: gopkg.TypeNamed{
-									Name: "CustomContainer",
+									Name:   "CustomContainer",
 									Import: "some/pkgpath",
 								},
 							},
@@ -86,7 +86,7 @@ func TestWriteDeclType(t *testing.T) {
 						{
 							Name: "OtherThing",
 							Type: gopkg.TypeNamed{
-								Name: "ThingType",
+								Name:   "ThingType",
 								Import: "some/otherimport",
 							},
 						},
@@ -95,7 +95,7 @@ func TestWriteDeclType(t *testing.T) {
 			},
 			ImportAliases: map[string]string{
 				"some/otherimport": "otherimport",
-				"some/pkgpath": "pkgpath",
+				"some/pkgpath":     "pkgpath",
 			},
 		},
 		{
@@ -105,7 +105,7 @@ func TestWriteDeclType(t *testing.T) {
 				Type: gopkg.TypeMap{
 					KeyType: gopkg.TypeString{},
 					ValueType: gopkg.TypeNamed{
-						Name: "CustomContainer",
+						Name:   "CustomContainer",
 						Import: "some/pkgpath",
 					},
 				},

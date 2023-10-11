@@ -5,7 +5,7 @@ import (
 )
 
 type SomeArrayStruct struct {
-	AOfInts []int64
+	AOfInts       []int64
 	AOfPToStrings []*string
 }
 
@@ -14,7 +14,6 @@ type MyCustomArrayType [][][]float64
 type SomeArrayInterface interface {
 	ArrayMaker(n int64, vals string) []string
 }
-
 
 func SomeArrayFunc(
 	a []shopspring_decimal.Decimal,

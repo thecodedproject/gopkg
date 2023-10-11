@@ -4,9 +4,9 @@ package enum_stringer
 type MyEnum int
 
 const (
-	MyEnumUnknown MyEnum = 0
-	MyEnumOne MyEnum = 1
-	MyEnumTwo MyEnum = 2
-	MyEnumThree MyEnum = 3
+	MyEnumUnknown  MyEnum = 0
+	MyEnumOne      MyEnum = 1
+	MyEnumTwo      MyEnum = 2
+	MyEnumThree    MyEnum = 3
 	MyEnumSentinal MyEnum = 5
 )

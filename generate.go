@@ -27,7 +27,7 @@ func Generate(files []FileContents) error {
 
 func LintAndGenerate(
 	files []FileContents,
-	extraLintRules ...func([]FileContents)error,
+	extraLintRules ...func([]FileContents) error,
 ) error {
 
 	err := Lint(files, extraLintRules...)

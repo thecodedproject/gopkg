@@ -1,7 +1,6 @@
 package non_declaritive_elements
 
-import (
-)
+import ()
 
 type someType struct{}
 

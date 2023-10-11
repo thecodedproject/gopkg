@@ -14,26 +14,25 @@ import (
 
 func TestWriteDeclVars(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		Keyword string
-		Vars []gopkg.DeclVar
+	testCases := []struct {
+		Name          string
+		Keyword       string
+		Vars          []gopkg.DeclVar
 		ImportAliases map[string]string
-		ExpectedErr error
+		ExpectedErr   error
 	}{
 		{
 			Name: "empty vars writes nothing",
 		},
 		{
-			Name: "one var with empty name returns error",
+			Name:        "one var with empty name returns error",
 			ExpectedErr: errors.New("WriteDeclVar: DeclVar.Name cannot be empty"),
 			Vars: []gopkg.DeclVar{
 				{
 					Name: "a",
 					Type: gopkg.TypeInt{},
 				},
-				{
-				},
+				{},
 			},
 		},
 		{
@@ -50,7 +49,7 @@ func TestWriteDeclVars(t *testing.T) {
 			ExpectedErr: errors.New("WriteDeclVar: one of DeclVar.Type and DeclVar.LiteralValue must be set"),
 		},
 		{
-			Name: "single var with built in type",
+			Name:    "single var with built in type",
 			Keyword: "var",
 			Vars: []gopkg.DeclVar{
 				{
@@ -60,13 +59,13 @@ func TestWriteDeclVars(t *testing.T) {
 			},
 		},
 		{
-			Name: "single var with named type and import alias",
+			Name:    "single var with named type and import alias",
 			Keyword: "var",
 			Vars: []gopkg.DeclVar{
 				{
 					Name: "a",
 					Type: gopkg.TypeNamed{
-						Name: "MyStruct",
+						Name:   "MyStruct",
 						Import: "some/import/pkg",
 					},
 				},
@@ -76,43 +75,43 @@ func TestWriteDeclVars(t *testing.T) {
 			},
 		},
 		{
-			Name: "single var with no type and literal value",
+			Name:    "single var with no type and literal value",
 			Keyword: "var",
 			Vars: []gopkg.DeclVar{
 				{
-					Name: "myVal",
+					Name:         "myVal",
 					LiteralValue: "123",
 				},
 			},
 		},
 		{
-			Name: "single var with unknown literal type and literal value",
+			Name:    "single var with unknown literal type and literal value",
 			Keyword: "var",
 			Vars: []gopkg.DeclVar{
 				{
-					Name: "aVar",
-					Type: gopkg.TypeUnnamedLiteral{},
+					Name:         "aVar",
+					Type:         gopkg.TypeUnnamedLiteral{},
 					LiteralValue: `"my string"`,
 				},
 			},
 		},
 		{
-			Name: "single var with type and literal value",
+			Name:    "single var with type and literal value",
 			Keyword: "var",
 			Vars: []gopkg.DeclVar{
 				{
-					Name: "myOtherVal",
-					Type: gopkg.TypeString{},
+					Name:         "myOtherVal",
+					Type:         gopkg.TypeString{},
 					LiteralValue: `"hello world"`,
 				},
 			},
 		},
 		{
-			Name: "multiple vars",
+			Name:    "multiple vars",
 			Keyword: "var",
 			Vars: []gopkg.DeclVar{
 				{
-					Name: "myVal",
+					Name:         "myVal",
 					LiteralValue: "123",
 				},
 				{
@@ -122,7 +121,7 @@ func TestWriteDeclVars(t *testing.T) {
 				{
 					Name: "cmdArg",
 					Type: gopkg.TypeNamed{
-						Name: "flag",
+						Name:   "flag",
 						Import: "flag",
 					},
 					LiteralValue: `flag.String("some_arg", "", "set an arg")`,
@@ -130,11 +129,11 @@ func TestWriteDeclVars(t *testing.T) {
 			},
 		},
 		{
-			Name: "multiple consts",
+			Name:    "multiple consts",
 			Keyword: "const",
 			Vars: []gopkg.DeclVar{
 				{
-					Name: "myVal",
+					Name:         "myVal",
 					LiteralValue: "123",
 				},
 				{
@@ -144,7 +143,7 @@ func TestWriteDeclVars(t *testing.T) {
 				{
 					Name: "cmdArg",
 					Type: gopkg.TypeNamed{
-						Name: "flag",
+						Name:   "flag",
 						Import: "flag",
 					},
 					LiteralValue: `flag.String("some_arg", "", "set an arg")`,

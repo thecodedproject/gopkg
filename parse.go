@@ -135,9 +135,9 @@ func fileContentsFromAstFile(
 					contents.Types = append(
 						contents.Types,
 						DeclType{
-							Name: s.Name.Name,
-							Import: pkgImportPath,
-							Type: fullType,
+							Name:      s.Name.Name,
+							Import:    pkgImportPath,
+							Type:      fullType,
 							DocString: docString,
 						},
 					)
@@ -197,13 +197,12 @@ func getDeclFunc(
 	}
 
 	f := DeclFunc{
-		Name: decl.Name.String(),
-		Import: pkgImportPath,
-		Receiver: receiver,
-		Args: args,
+		Name:       decl.Name.String(),
+		Import:     pkgImportPath,
+		Receiver:   receiver,
+		Args:       args,
 		ReturnArgs: retArgs,
 	}
-
 
 	if decl.Body != nil {
 		body, err := readFromFileSet(fp, fileSet, decl.Body.Lbrace+1, decl.Body.Rbrace)
@@ -241,15 +240,14 @@ func readFromFileSet(
 		return "", errors.New("position is not in the fileset")
 	}
 
-	buf := make([]byte, int64(to - from))
-	_, err := fp.ReadAt(buf, int64(from) - int64(fsFile.Base()))
+	buf := make([]byte, int64(to-from))
+	_, err := fp.ReadAt(buf, int64(from)-int64(fsFile.Base()))
 	if err != nil {
 		return "", err
 	}
 
 	return string(buf), nil
 }
-
 
 // getDeclVarsFromFieldList returns an ordered list of declared variables
 //
@@ -290,8 +288,8 @@ func getDeclVarsFromFieldList(
 		} else {
 			for _, name := range f.Names {
 				typeList = append(typeList, DeclVar{
-					Name: name.String(),
-					Type: fieldType,
+					Name:      name.String(),
+					Type:      fieldType,
 					StructTag: reflect.StructTag(tag),
 				})
 			}
@@ -335,8 +333,8 @@ func getDeclFuncsFromFieldList(
 				}
 
 				funcs = append(funcs, DeclFunc{
-					Name: name.String(),
-					Args: args,
+					Name:       name.String(),
+					Args:       args,
 					ReturnArgs: retArgs,
 				})
 			}
@@ -395,130 +393,130 @@ func getFullType(
 	//fmt.Println("******", reflect.TypeOf(t))
 
 	switch t := t.(type) {
-		case *ast.ArrayType:
-			if t.Len != nil {
-				return nil, errors.New("[...]T array types not supported")
+	case *ast.ArrayType:
+		if t.Len != nil {
+			return nil, errors.New("[...]T array types not supported")
+		}
+		fullType, err := getFullType(imports, t.Elt)
+		if err != nil {
+			return nil, err
+		}
+		return TypeArray{
+			ValueType: fullType,
+		}, nil
+
+	case *ast.Ident:
+		if isBuiltInType(t.Name) {
+			return typeFromString(t.Name), nil
+		}
+
+		importPath := imports[CURRENT_PKG]
+		return TypeNamed{
+			Name:   t.Name,
+			Import: importPath,
+		}, nil
+
+	case *ast.StarExpr:
+		fullType, err := getFullType(imports, t.X)
+		if err != nil {
+			return nil, err
+		}
+		return TypePointer{
+			ValueType: fullType,
+		}, nil
+
+	// i.e. an expression selecting something from another package
+	//	`some_pkg.SomeType`
+	case *ast.SelectorExpr:
+		imp, ok := t.X.(*ast.Ident)
+
+		if !ok {
+			return nil, errors.New("uknown selector X")
+		}
+
+		importPath, ok := imports[imp.Name]
+		if !ok {
+			return nil, errors.New("unknown import path " + imp.Name)
+		}
+
+		//fmt.Println("****** Type:", importPath, importPrefix + "." + t.Sel.Name)
+
+		return TypeNamed{
+			Name:   t.Sel.Name,
+			Import: importPath,
+		}, nil
+
+	case *ast.StructType:
+
+		structFieldsAndEmbeds, err := getDeclVarsFromFieldList(
+			imports,
+			t.Fields,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		var s TypeStruct
+		for _, f := range structFieldsAndEmbeds {
+			if f.Name == "" {
+				s.Embeds = append(s.Embeds, f.Type)
+			} else {
+				s.Fields = append(s.Fields, f)
 			}
-			fullType, err := getFullType(imports, t.Elt)
-			if err != nil {
-				return nil, err
+		}
+
+		return s, nil
+
+	case *ast.InterfaceType:
+
+		interfaceFuncs, err := getDeclFuncsFromFieldList(
+			imports,
+			t.Methods,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		i := TypeInterface{
+			Funcs: interfaceFuncs,
+		}
+
+		// Embedded types or interfaces will appear in the field list
+		// without any name
+		possibleEmbeds, err := getDeclVarsFromFieldList(
+			imports,
+			t.Methods,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, f := range possibleEmbeds {
+			if f.Name == "" {
+				i.Embeds = append(i.Embeds, f.Type)
 			}
-			return TypeArray{
-				ValueType: fullType,
-			}, nil
+		}
 
-		case *ast.Ident:
-			if isBuiltInType(t.Name) {
-				return typeFromString(t.Name), nil
-			}
+		return i, nil
 
-			importPath := imports[CURRENT_PKG]
-			return TypeNamed{
-				Name: t.Name,
-				Import: importPath,
-			}, nil
+	case *ast.FuncType:
 
-		case *ast.StarExpr:
-			fullType, err := getFullType(imports, t.X)
-			if err != nil {
-				return nil, err
-			}
-			return TypePointer{
-				ValueType: fullType,
-			}, nil
+		args, err := getDeclVarsFromFieldList(imports, t.Params)
+		if err != nil {
+			return nil, err
+		}
+		retArgs, err := getDeclVarsFromFieldList(imports, t.Results)
+		if err != nil {
+			return nil, err
+		}
 
-		// i.e. an expression selecting something from another package
-		//	`some_pkg.SomeType`
-		case *ast.SelectorExpr:
-			imp, ok := t.X.(*ast.Ident)
+		return TypeFunc{
+			Args:       args,
+			ReturnArgs: retArgs,
+		}, nil
 
-			if !ok {
-				return nil, errors.New("uknown selector X")
-			}
-
-			importPath, ok := imports[imp.Name]
-			if !ok {
-				return nil, errors.New("unknown import path " + imp.Name)
-			}
-
-			//fmt.Println("****** Type:", importPath, importPrefix + "." + t.Sel.Name)
-
-			return TypeNamed{
-				Name: t.Sel.Name,
-				Import: importPath,
-			}, nil
-
-		case *ast.StructType:
-
-			structFieldsAndEmbeds, err := getDeclVarsFromFieldList(
-				imports,
-				t.Fields,
-			)
-			if err != nil {
-				return nil, err
-			}
-
-			var s TypeStruct
-			for _, f := range structFieldsAndEmbeds {
-				if f.Name == "" {
-					s.Embeds = append(s.Embeds, f.Type)
-				} else {
-					s.Fields = append(s.Fields, f)
-				}
-			}
-
-			return s, nil
-
-		case *ast.InterfaceType:
-
-			interfaceFuncs, err := getDeclFuncsFromFieldList(
-				imports,
-				t.Methods,
-			)
-			if err != nil {
-				return nil, err
-			}
-
-			i := TypeInterface{
-				Funcs: interfaceFuncs,
-			}
-
-			// Embedded types or interfaces will appear in the field list
-			// without any name
-			possibleEmbeds, err := getDeclVarsFromFieldList(
-				imports,
-				t.Methods,
-			)
-			if err != nil {
-				return nil, err
-			}
-
-			for _, f := range possibleEmbeds {
-				if f.Name == "" {
-					i.Embeds = append(i.Embeds, f.Type)
-				}
-			}
-
-			return i, nil
-
-		case *ast.FuncType:
-
-			args, err := getDeclVarsFromFieldList(imports, t.Params)
-			if err != nil {
-				return nil, err
-			}
-			retArgs, err := getDeclVarsFromFieldList(imports, t.Results)
-			if err != nil {
-				return nil, err
-			}
-
-			return TypeFunc{
-				Args: args,
-				ReturnArgs: retArgs,
-			}, nil
-
-		default:
-			return nil, errors.New("unknown field type")
+	default:
+		return nil, errors.New("unknown field type")
 	}
 }
 
@@ -556,15 +554,15 @@ func addImport(
 func isBuiltInType(t string) bool {
 
 	builtInTypes := map[string]struct{}{
-		"bool": {},
-		"byte": {},
-		"error": {},
+		"bool":    {},
+		"byte":    {},
+		"error":   {},
 		"float32": {},
 		"float64": {},
-		"int": {},
-		"int32": {},
-		"int64": {},
-		"string": {},
+		"int":     {},
+		"int32":   {},
+		"int64":   {},
+		"string":  {},
 	}
 
 	_, ok := builtInTypes[t]
@@ -641,11 +639,11 @@ func declVarsFromAstValueSpec(
 		declVars = append(
 			declVars,
 			DeclVar{
-				Name: spec.Names[iDecl].String(),
-				Import: pkgImportPath,
-				Type: sType,
+				Name:         spec.Names[iDecl].String(),
+				Import:       pkgImportPath,
+				Type:         sType,
 				LiteralValue: literalValue,
-				DocString: docString,
+				DocString:    docString,
 			},
 		)
 	}
@@ -653,7 +651,7 @@ func declVarsFromAstValueSpec(
 	return declVars, nil
 }
 
-type ParseOption func(parseOptions)parseOptions
+type ParseOption func(parseOptions) parseOptions
 
 type parseOptions struct {
 	pkgImportPath string

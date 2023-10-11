@@ -14,13 +14,13 @@ import (
 
 func TestWriteFileContents(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		C gopkg.FileContents
+	testCases := []struct {
+		Name        string
+		C           gopkg.FileContents
 		ExpectedErr error
 	}{
 		{
-			Name: "empty contents returns error",
+			Name:        "empty contents returns error",
 			ExpectedErr: errors.New("package name cannot be empty"),
 		},
 		{
@@ -49,7 +49,7 @@ func TestWriteFileContents(t *testing.T) {
 								{
 									Name: "OtherThing",
 									Type: gopkg.TypeNamed{
-										Name: "SomeOtherType",
+										Name:   "SomeOtherType",
 										Import: "some/pkg/path",
 									},
 									StructTag: "key:\"some,tag,values\"",
@@ -65,7 +65,7 @@ func TestWriteFileContents(t *testing.T) {
 							{
 								Name: "ctx",
 								Type: gopkg.TypeNamed{
-									Name: "Context",
+									Name:   "Context",
 									Import: "context",
 								},
 							},
@@ -90,8 +90,8 @@ func TestWriteFileContents(t *testing.T) {
 				),
 				Vars: []gopkg.DeclVar{
 					{
-						Name: "someArg",
-						Type: gopkg.TypeUnnamedLiteral{},
+						Name:         "someArg",
+						Type:         gopkg.TypeUnnamedLiteral{},
 						LiteralValue: `flag.String("some_arg", "", "set an arg")`,
 					},
 				},
@@ -112,24 +112,24 @@ func TestWriteFileContents(t *testing.T) {
 				),
 				Vars: []gopkg.DeclVar{
 					{
-						Name: "someArg",
-						Type: gopkg.TypeUnnamedLiteral{},
+						Name:         "someArg",
+						Type:         gopkg.TypeUnnamedLiteral{},
 						LiteralValue: `flag.String("some_arg", "", "set an arg")`,
 					},
 					{
-						Name: "someOtherArg",
-						Type: gopkg.TypeUnnamedLiteral{},
+						Name:         "someOtherArg",
+						Type:         gopkg.TypeUnnamedLiteral{},
 						LiteralValue: `flag.String("some_other_arg", "", "set an arg")`,
 					},
 				},
 				Consts: []gopkg.DeclVar{
 					{
-						Name: "SomeConst",
+						Name:         "SomeConst",
 						LiteralValue: `123`,
 					},
 					{
-						Name: "SomeOtherConst",
-						Type: gopkg.TypeString{},
+						Name:         "SomeOtherConst",
+						Type:         gopkg.TypeString{},
 						LiteralValue: `"hello world"`,
 					},
 				},

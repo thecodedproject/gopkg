@@ -5,32 +5,32 @@ import (
 )
 
 type DeclFunc struct {
-	Name string
-	Import string
-	Receiver FuncReceiver
-	Args []DeclVar
+	Name       string
+	Import     string
+	Receiver   FuncReceiver
+	Args       []DeclVar
 	ReturnArgs []DeclVar
-	BodyTmpl string
-	BodyData any
-	DocString string
+	BodyTmpl   string
+	BodyData   any
+	DocString  string
 }
 
 type FuncReceiver struct {
-	VarName string
-	TypeName string
+	VarName   string
+	TypeName  string
 	IsPointer bool
 }
 
 type DeclType struct {
-	Name string
-	Import string
-	Type Type
+	Name      string
+	Import    string
+	Type      Type
 	DocString string
 }
 
 type DeclVar struct {
 	Type
-	Name string
+	Name   string
 	Import string
 
 	// LiteralValue is the value of the literal assigned to this variable declaration

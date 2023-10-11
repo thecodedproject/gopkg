@@ -178,11 +178,11 @@ func funcBaseTemplate(
 ) *template.Template {
 
 	return template.New("").Funcs(map[string]interface{}{
-		"FuncReturnDefaults": funcReturnDefaults(decl, importAliases, false),
+		"FuncReturnDefaults":        funcReturnDefaults(decl, importAliases, false),
 		"FuncReturnDefaultsWithErr": funcReturnDefaults(decl, importAliases, true),
-		"ToCamel": strcase.ToCamel,
-		"ToLowerCamel": strcase.ToLowerCamel,
-		"ToSnake": strcase.ToSnake,
+		"ToCamel":                   strcase.ToCamel,
+		"ToLowerCamel":              strcase.ToLowerCamel,
+		"ToSnake":                   strcase.ToSnake,
 	})
 }
 
@@ -219,4 +219,3 @@ func funcReturnDefaults(
 		return statement, nil
 	}
 }
-

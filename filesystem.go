@@ -1,8 +1,8 @@
 package gopkg
 
 import (
-	path "path/filepath"
 	"os"
+	path "path/filepath"
 )
 
 // CreatePathAndOpen creats all contains directors in filepath if they do not

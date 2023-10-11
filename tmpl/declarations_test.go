@@ -11,11 +11,11 @@ import (
 
 func TestFuncWithContextAndError(t *testing.T) {
 
-	testCases := []struct{
-		Name string
+	testCases := []struct {
+		Name     string
 		FuncName string
-		Args []gopkg.DeclVar
-		RetArgs []gopkg.DeclVar
+		Args     []gopkg.DeclVar
+		RetArgs  []gopkg.DeclVar
 		Expected gopkg.DeclFunc
 	}{
 		{
@@ -25,8 +25,8 @@ func TestFuncWithContextAndError(t *testing.T) {
 					{
 						Name: "ctx",
 						Type: gopkg.TypeNamed{
-							Name: "Context",
-							Import: "context",
+							Name:      "Context",
+							Import:    "context",
 							ValueType: gopkg.TypeInterface{},
 						},
 					},
@@ -39,7 +39,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 			},
 		},
 		{
-			Name: "with some args and unnamed return args",
+			Name:     "with some args and unnamed return args",
 			FuncName: "MyMethod",
 			Args: []gopkg.DeclVar{
 				{
@@ -65,8 +65,8 @@ func TestFuncWithContextAndError(t *testing.T) {
 					{
 						Name: "ctx",
 						Type: gopkg.TypeNamed{
-							Name: "Context",
-							Import: "context",
+							Name:      "Context",
+							Import:    "context",
 							ValueType: gopkg.TypeInterface{},
 						},
 					},
@@ -93,7 +93,7 @@ func TestFuncWithContextAndError(t *testing.T) {
 			},
 		},
 		{
-			Name: "with named return args",
+			Name:     "with named return args",
 			FuncName: "MyMethod",
 			RetArgs: []gopkg.DeclVar{
 				{
@@ -107,8 +107,8 @@ func TestFuncWithContextAndError(t *testing.T) {
 					{
 						Name: "ctx",
 						Type: gopkg.TypeNamed{
-							Name: "Context",
-							Import: "context",
+							Name:      "Context",
+							Import:    "context",
 							ValueType: gopkg.TypeInterface{},
 						},
 					},
@@ -144,13 +144,13 @@ func TestFuncWithContextAndError(t *testing.T) {
 
 func TestUnnamedReturnArgs(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		RetArgs []gopkg.Type
+	testCases := []struct {
+		Name     string
+		RetArgs  []gopkg.Type
 		Expected []gopkg.DeclVar
 	}{
 		{
-			Name: "empty returns empty list",
+			Name:     "empty returns empty list",
 			Expected: []gopkg.DeclVar{},
 		},
 		{

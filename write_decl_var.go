@@ -33,7 +33,6 @@ func WriteDeclVars(
 		return nil
 	}
 
-
 	w.Write([]byte(keyword + " (\n"))
 	for _, d := range decls {
 		w.Write([]byte("\t"))

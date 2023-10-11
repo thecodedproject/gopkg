@@ -1,8 +1,8 @@
 package proto_conversion
 
 import (
-	"strconv"
 	shopspring_decimal "github.com/shopspring/decimal"
+	"strconv"
 )
 
 func IntAsStringFromProto(v *IntAsString) (int, error) {

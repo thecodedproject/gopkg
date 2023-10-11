@@ -1,7 +1,6 @@
 package receiver_funcs
 
-import (
-)
+import ()
 
 type MyType struct {
 }

@@ -14,11 +14,11 @@ import (
 
 func TestWriteDeclFunc(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		F gopkg.DeclFunc
+	testCases := []struct {
+		Name          string
+		F             gopkg.DeclFunc
 		ImportAliases map[string]string
-		ExpectedErr error
+		ExpectedErr   error
 	}{
 		{
 			Name: "no args or return or body",
@@ -31,7 +31,7 @@ func TestWriteDeclFunc(t *testing.T) {
 			F: gopkg.DeclFunc{
 				Name: "ANamedValueRecvFunc",
 				Receiver: gopkg.FuncReceiver{
-					VarName: "v",
+					VarName:  "v",
 					TypeName: "ValueType",
 				},
 			},
@@ -50,8 +50,8 @@ func TestWriteDeclFunc(t *testing.T) {
 			F: gopkg.DeclFunc{
 				Name: "ANamedPointerRecvFunc",
 				Receiver: gopkg.FuncReceiver{
-					VarName: "p",
-					TypeName: "PointerType",
+					VarName:   "p",
+					TypeName:  "PointerType",
 					IsPointer: true,
 				},
 			},
@@ -61,7 +61,7 @@ func TestWriteDeclFunc(t *testing.T) {
 			F: gopkg.DeclFunc{
 				Name: "AUnnamedPointerRecvFunc",
 				Receiver: gopkg.FuncReceiver{
-					TypeName: "ValueType",
+					TypeName:  "ValueType",
 					IsPointer: true,
 				},
 			},
@@ -93,13 +93,13 @@ func TestWriteDeclFunc(t *testing.T) {
 					{
 						Name: "myVar",
 						Type: gopkg.TypeNamed{
-								Name: "int32",
+							Name: "int32",
 						},
 					},
 					{
 						Name: "myOtherVar",
 						Type: gopkg.TypeNamed{
-								Name: "string",
+							Name: "string",
 						},
 					},
 				},
@@ -116,13 +116,13 @@ func TestWriteDeclFunc(t *testing.T) {
 					{
 						Name: "a",
 						Type: gopkg.TypeNamed{
-								Name: "int",
+							Name: "int",
 						},
 					},
 					{
 						Name: "b",
 						Type: gopkg.TypeNamed{
-								Name: "int",
+							Name: "int",
 						},
 					},
 				},
@@ -141,20 +141,20 @@ func TestWriteDeclFunc(t *testing.T) {
 					{
 						Name: "a",
 						Type: gopkg.TypeNamed{
-								Name: "MyType",
-								Import: "some/import/path",
+							Name:   "MyType",
+							Import: "some/import/path",
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeNamed{
-						Name: "OtherType",
+						Name:   "OtherType",
 						Import: "other/import/path",
 					},
 				),
 			},
 			ImportAliases: map[string]string{
-				"some/import/path": "some_path",
+				"some/import/path":  "some_path",
 				"other/import/path": "other_path",
 			},
 		},
@@ -182,20 +182,20 @@ func TestWriteDeclFunc(t *testing.T) {
 					{
 						Name: "myVar",
 						Type: gopkg.TypeNamed{
-							Name: "MyType",
+							Name:   "MyType",
 							Import: "/some/path/tomypkg",
 						},
 					},
 				},
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeNamed{
-						Name: "OtherType",
+						Name:   "OtherType",
 						Import: "github.com/otherpackage",
 					},
 				),
 			},
 			ImportAliases: map[string]string{
-				"/some/path/tomypkg": "my_pkg",
+				"/some/path/tomypkg":      "my_pkg",
 				"github.com/otherpackage": "someotherpkg",
 			},
 		},
@@ -279,7 +279,7 @@ func TestWriteDeclFunc(t *testing.T) {
 					gopkg.TypeFloat64{},
 					gopkg.TypeString{},
 					gopkg.TypeNamed{
-						Name: "MyStruct",
+						Name:      "MyStruct",
 						ValueType: gopkg.TypeStruct{},
 					},
 					gopkg.TypePointer{
@@ -300,13 +300,13 @@ func TestWriteDeclFunc(t *testing.T) {
 				Name: "MyFunction",
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeNamed{
-						Name: "MyStruct",
-						Import: "github.com/some/nice_package",
+						Name:      "MyStruct",
+						Import:    "github.com/some/nice_package",
 						ValueType: gopkg.TypeStruct{},
 					},
 					gopkg.TypeNamed{
-						Name: "OtherStruct",
-						Import: "github.com/some/other_package",
+						Name:      "OtherStruct",
+						Import:    "github.com/some/other_package",
 						ValueType: gopkg.TypeStruct{},
 					},
 				),
@@ -315,7 +315,7 @@ func TestWriteDeclFunc(t *testing.T) {
 `,
 			},
 			ImportAliases: map[string]string{
-				"github.com/some/nice_package": "nice_package",
+				"github.com/some/nice_package":  "nice_package",
 				"github.com/some/other_package": "other_package",
 			},
 		},
@@ -325,13 +325,13 @@ func TestWriteDeclFunc(t *testing.T) {
 				Name: "MyFunction",
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeNamed{
-						Name: "AStruct",
-						Import: "github.com/some/nice_package",
+						Name:      "AStruct",
+						Import:    "github.com/some/nice_package",
 						ValueType: gopkg.TypeStruct{},
 					},
 					gopkg.TypeNamed{
-						Name: "OtherStruct",
-						Import: "github.com/some/other_package",
+						Name:      "OtherStruct",
+						Import:    "github.com/some/other_package",
 						ValueType: gopkg.TypeStruct{},
 					},
 					gopkg.TypeError{},
@@ -341,7 +341,7 @@ func TestWriteDeclFunc(t *testing.T) {
 `,
 			},
 			ImportAliases: map[string]string{
-				"github.com/some/nice_package": "nice_package",
+				"github.com/some/nice_package":  "nice_package",
 				"github.com/some/other_package": "other_package",
 			},
 		},
@@ -351,13 +351,13 @@ func TestWriteDeclFunc(t *testing.T) {
 				Name: "MyFunction",
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeNamed{
-						Name: "AStruct",
-						Import: "github.com/some/nice_package",
+						Name:      "AStruct",
+						Import:    "github.com/some/nice_package",
 						ValueType: gopkg.TypeStruct{},
 					},
 					gopkg.TypeNamed{
-						Name: "OtherStruct",
-						Import: "github.com/some/other_package",
+						Name:      "OtherStruct",
+						Import:    "github.com/some/other_package",
 						ValueType: gopkg.TypeStruct{},
 					},
 					gopkg.TypeInt32{},
@@ -367,7 +367,7 @@ func TestWriteDeclFunc(t *testing.T) {
 `,
 			},
 			ImportAliases: map[string]string{
-				"github.com/some/nice_package": "nice_package",
+				"github.com/some/nice_package":  "nice_package",
 				"github.com/some/other_package": "other_package",
 			},
 		},
@@ -379,7 +379,7 @@ func TestWriteDeclFunc(t *testing.T) {
 					{
 						Name: "ctx",
 						Type: gopkg.TypeNamed{
-							Name: "Context",
+							Name:   "Context",
 							Import: "context",
 						},
 					},
@@ -395,7 +395,7 @@ func TestWriteDeclFunc(t *testing.T) {
 				ReturnArgs: tmpl.UnnamedReturnArgs(
 					gopkg.TypeInt32{},
 					gopkg.TypeNamed{
-						Name: "MyStruct",
+						Name:   "MyStruct",
 						Import: "package/to/wrap",
 					},
 					gopkg.TypeError{},
@@ -409,7 +409,7 @@ func TestWriteDeclFunc(t *testing.T) {
 `,
 			},
 			ImportAliases: map[string]string{
-				"context": "context",
+				"context":         "context",
 				"package/to/wrap": "wrap",
 			},
 		},
@@ -421,7 +421,7 @@ func TestWriteDeclFunc(t *testing.T) {
 					{
 						Name: "ctx",
 						Type: gopkg.TypeNamed{
-							Name: "Context",
+							Name:   "Context",
 							Import: "context",
 						},
 					},
@@ -458,12 +458,12 @@ func TestWriteDeclFunc(t *testing.T) {
 			Name: "using strcase mathods",
 			F: gopkg.DeclFunc{
 				Name: "StringCasing",
-				BodyData: struct{
-					Snake string
+				BodyData: struct {
+					Snake      string
 					LowerCamel string
 					UpperCamel string
 				}{
-					Snake: "some_snake_case_str",
+					Snake:      "some_snake_case_str",
 					LowerCamel: "someLowerCamelStr",
 					UpperCamel: "SomeUpperCamelStr",
 				},

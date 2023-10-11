@@ -5,7 +5,6 @@ import (
 )
 
 type FileContents struct {
-
 	Filepath string
 
 	PackageName string
@@ -14,9 +13,9 @@ type FileContents struct {
 
 	Imports []ImportAndAlias
 
-	Consts []DeclVar
-	Vars []DeclVar
-	Types []DeclType
+	Consts    []DeclVar
+	Vars      []DeclVar
+	Types     []DeclType
 	Functions []DeclFunc
 
 	DocString string
@@ -24,7 +23,7 @@ type FileContents struct {
 
 type ImportAndAlias struct {
 	Import string
-	Alias string
+	Alias  string
 
 	// Group defines the _group_ which this import will sit within:
 	//  * Groups are seperated by a single, empty newline in the imports list
@@ -85,7 +84,7 @@ func (t TypeArray) RequiredImports() map[string]bool {
 	return t.ValueType.RequiredImports()
 }
 
-type TypeBool struct {}
+type TypeBool struct{}
 
 func (t TypeBool) DefaultInit(importAliases map[string]string) (string, error) {
 	return "false", nil
@@ -99,7 +98,7 @@ func (t TypeBool) RequiredImports() map[string]bool {
 	return nil
 }
 
-type TypeByte struct {}
+type TypeByte struct{}
 
 func (t TypeByte) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
@@ -113,7 +112,7 @@ func (t TypeByte) RequiredImports() map[string]bool {
 	return nil
 }
 
-type TypeError struct {}
+type TypeError struct{}
 
 func (t TypeError) DefaultInit(importAliases map[string]string) (string, error) {
 	return "nil", nil
@@ -127,7 +126,7 @@ func (t TypeError) RequiredImports() map[string]bool {
 	return nil
 }
 
-type TypeFloat32 struct {}
+type TypeFloat32 struct{}
 
 func (t TypeFloat32) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
@@ -141,7 +140,7 @@ func (t TypeFloat32) RequiredImports() map[string]bool {
 	return nil
 }
 
-type TypeFloat64 struct {}
+type TypeFloat64 struct{}
 
 func (t TypeFloat64) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
@@ -155,7 +154,7 @@ func (t TypeFloat64) RequiredImports() map[string]bool {
 	return nil
 }
 
-type TypeInt struct {}
+type TypeInt struct{}
 
 func (t TypeInt) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
@@ -171,7 +170,7 @@ func (t TypeInt) RequiredImports() map[string]bool {
 
 type TypeInterface struct {
 	Embeds []Type
-	Funcs []DeclFunc
+	Funcs  []DeclFunc
 }
 
 func (t TypeInterface) DefaultInit(importAliases map[string]string) (string, error) {
@@ -228,7 +227,7 @@ func (t TypeInterface) RequiredImports() map[string]bool {
 	return ret
 }
 
-type TypeInt32 struct {}
+type TypeInt32 struct{}
 
 func (t TypeInt32) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
@@ -242,7 +241,7 @@ func (t TypeInt32) RequiredImports() map[string]bool {
 	return nil
 }
 
-type TypeInt64 struct {}
+type TypeInt64 struct{}
 
 func (t TypeInt64) DefaultInit(importAliases map[string]string) (string, error) {
 	return "0", nil
@@ -256,7 +255,7 @@ func (t TypeInt64) RequiredImports() map[string]bool {
 	return nil
 }
 
-type TypeString struct {}
+type TypeString struct{}
 
 func (t TypeString) DefaultInit(importAliases map[string]string) (string, error) {
 	return "\"\"", nil
@@ -329,8 +328,8 @@ func (t TypeStruct) RequiredImports() map[string]bool {
 
 // TODO rename to something more approriate - maybe TypeNamed (or TypeAlias)
 type TypeNamed struct {
-	Name string
-	Import string
+	Name      string
+	Import    string
 	ValueType Type
 }
 
@@ -365,7 +364,7 @@ func (t TypeNamed) FullType(importAliases map[string]string) (string, error) {
 
 func (t TypeNamed) RequiredImports() map[string]bool {
 	if t.Import != "" {
-		return map[string]bool {
+		return map[string]bool{
 			t.Import: true,
 		}
 	}
@@ -373,7 +372,7 @@ func (t TypeNamed) RequiredImports() map[string]bool {
 }
 
 type TypeMap struct {
-	KeyType Type
+	KeyType   Type
 	ValueType Type
 }
 
@@ -425,7 +424,7 @@ func (t TypePointer) RequiredImports() map[string]bool {
 	return t.ValueType.RequiredImports()
 }
 
-type TypeUnnamedLiteral struct {}
+type TypeUnnamedLiteral struct{}
 
 func (t TypeUnnamedLiteral) DefaultInit(importAliases map[string]string) (string, error) {
 	return "", errors.New("no default init for unnamed literal")
@@ -440,7 +439,7 @@ func (t TypeUnnamedLiteral) RequiredImports() map[string]bool {
 }
 
 type TypeFunc struct {
-	Args []DeclVar
+	Args       []DeclVar
 	ReturnArgs []DeclVar
 }
 

@@ -12,11 +12,11 @@ import (
 
 func TestAppendFileContents(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		F []gopkg.FileContents
-		Methods []func() ([]gopkg.FileContents, error)
-		Expected []gopkg.FileContents
+	testCases := []struct {
+		Name        string
+		F           []gopkg.FileContents
+		Methods     []func() ([]gopkg.FileContents, error)
+		Expected    []gopkg.FileContents
 		ExpectedErr error
 	}{
 		{
@@ -42,18 +42,17 @@ func TestAppendFileContents(t *testing.T) {
 				{Filepath: "b"},
 				{Filepath: "c"},
 			},
-			Methods: []func()([]gopkg.FileContents, error){
-				func()([]gopkg.FileContents, error){
+			Methods: []func() ([]gopkg.FileContents, error){
+				func() ([]gopkg.FileContents, error) {
 					return []gopkg.FileContents{
 						{Filepath: "d"},
 						{Filepath: "e"},
 					}, nil
 				},
-				func()([]gopkg.FileContents, error){
-					return []gopkg.FileContents{
-					}, nil
+				func() ([]gopkg.FileContents, error) {
+					return []gopkg.FileContents{}, nil
 				},
-				func()([]gopkg.FileContents, error){
+				func() ([]gopkg.FileContents, error) {
 					return []gopkg.FileContents{
 						{Filepath: "f"},
 					}, nil
@@ -75,16 +74,15 @@ func TestAppendFileContents(t *testing.T) {
 				{Filepath: "b"},
 				{Filepath: "c"},
 			},
-			Methods: []func()([]gopkg.FileContents, error){
-				func()([]gopkg.FileContents, error){
+			Methods: []func() ([]gopkg.FileContents, error){
+				func() ([]gopkg.FileContents, error) {
 					return []gopkg.FileContents{
 						{Filepath: "d"},
 						{Filepath: "e"},
 					}, nil
 				},
-				func()([]gopkg.FileContents, error){
-					return []gopkg.FileContents{
-					}, errors.New("someerror")
+				func() ([]gopkg.FileContents, error) {
+					return []gopkg.FileContents{}, errors.New("someerror")
 				},
 			},
 			ExpectedErr: errors.New("someerror"),

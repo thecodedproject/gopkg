@@ -11,9 +11,9 @@ import (
 
 func TestDeclFunc_RequiredImports(t *testing.T) {
 
-	testCases := []struct{
-		Name string
-		F gopkg.DeclFunc
+	testCases := []struct {
+		Name     string
+		F        gopkg.DeclFunc
 		Expected map[string]bool
 	}{
 		{
@@ -55,7 +55,7 @@ func TestDeclFunc_RequiredImports(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			actual := test.F.RequiredImports()
 
-			if len(test.Expected) == 0 && len(actual) == 0{
+			if len(test.Expected) == 0 && len(actual) == 0 {
 				// Allow actual to be either nil or an empty map
 				return
 			}

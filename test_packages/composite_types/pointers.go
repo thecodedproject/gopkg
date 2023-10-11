@@ -1,7 +1,6 @@
 package composite_types
 
-import (
-)
+import ()
 
 type MyCustomPointer **float32
 

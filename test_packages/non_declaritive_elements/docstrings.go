@@ -4,8 +4,7 @@
 // multiple lines
 package non_declaritive_elements
 
-import (
-)
+import ()
 
 // singleVar has a docstring
 // with multiple lines
@@ -16,7 +15,7 @@ const (
 	firstConstant int32 = 1
 	// another with
 	// several lines
-	secondConstant string  = "hello"
+	secondConstant string = "hello"
 	// some comment on multiple values
 	thirdC, fourthC = 10, 12
 )
