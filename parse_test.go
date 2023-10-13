@@ -229,6 +229,12 @@ func TestParse(t *testing.T) {
 					Filepath:          "test_packages/composite_types/arrays.go",
 					PackageName:       "composite_types",
 					PackageImportPath: "some/import/composite_types",
+					Imports: []gopkg.ImportAndAlias{
+						{
+							Import: "github.com/shopspring/decimal",
+							Alias: "shopspring_decimal",
+						},
+					},
 					Functions: []gopkg.DeclFunc{
 						{
 							Name:   "SomeArrayFunc",
@@ -418,6 +424,11 @@ func TestParse(t *testing.T) {
 					Filepath:          "test_packages/composite_types/maps.go",
 					PackageName:       "composite_types",
 					PackageImportPath: "some/import/composite_types",
+					Imports: []gopkg.ImportAndAlias{
+						{
+							Import: "github.com/shopspring/decimal",
+						},
+					},
 					Functions: []gopkg.DeclFunc{
 						{
 							Name:   "SomeMapFunc",
@@ -629,6 +640,12 @@ func TestParse(t *testing.T) {
 					Filepath:          "test_packages/custom_types/embedded_types.go",
 					PackageName:       "custom_types",
 					PackageImportPath: "some/import/custom_types",
+					Imports: []gopkg.ImportAndAlias{
+						{
+							Import: "context",
+							Alias: "c",
+						},
+					},
 					Types: []gopkg.DeclType{
 						{
 							Name:   "SingleEmbed",
@@ -711,6 +728,15 @@ func TestParse(t *testing.T) {
 					Filepath:          "test_packages/proto_conversion/converters.go",
 					PackageName:       "proto_conversion",
 					PackageImportPath: "some/import/proto_conversion",
+					Imports: []gopkg.ImportAndAlias{
+						{
+							Import: "github.com/shopspring/decimal",
+							Alias: "shopspring_decimal",
+						},
+						{
+							Import: "strconv",
+						},
+					},
 					Functions: []gopkg.DeclFunc{
 						{
 							Name:   "IntAsStringFromProto",
@@ -814,6 +840,20 @@ func TestParse(t *testing.T) {
 					Filepath:          "test_packages/proto_conversion/def.pb.go",
 					PackageName:       "proto_conversion",
 					PackageImportPath: "some/import/proto_conversion",
+					Imports: []gopkg.ImportAndAlias{
+						{
+							Import: "fmt",
+							Alias: "fmt",
+						},
+						{
+							Import: "github.com/golang/protobuf/proto",
+							Alias: "proto",
+						},
+						{
+							Import: "math",
+							Alias: "math",
+						},
+					},
 					Consts: []gopkg.DeclVar{
 						{
 							Name:   "_",
@@ -1037,6 +1077,11 @@ func TestParse(t *testing.T) {
 					Filepath:          "test_packages/pkg_with_tests/logic_test.go",
 					PackageName:       "pkg_with_tests_test",
 					PackageImportPath: "some/import/pkg_with_tests",
+					Imports: tmpl.UnnamedImports(
+						"testing",
+						"github.com/stretchr/testify/require",
+						"github.com/thecodedproject/gopkg/test_packages/pkg_with_tests",
+					),
 					Functions: []gopkg.DeclFunc{
 						{
 							Name:   "TestMyCoolLogic",
@@ -1338,6 +1383,38 @@ func TestParse(t *testing.T) {
 	// some other comment...
 	return "foobar"
 `,
+						},
+					},
+				},
+				{
+					Filepath:          "test_packages/non_declaritive_elements/imports.go",
+					PackageName:       "non_declaritive_elements",
+					PackageImportPath: "myimport/non_declaritive_elements",
+					Imports: []gopkg.ImportAndAlias{
+						{
+							Import: "context",
+						},
+						{
+							Import: "github.com/thecodedproject/gopkg",
+							Alias: "aliased_import",
+						},
+					},
+					Vars: []gopkg.DeclVar{
+						{
+							Name:   "c",
+							Import: "myimport/non_declaritive_elements",
+							Type:   gopkg.TypeNamed{
+								Name: "Context",
+								Import: "context",
+							},
+						},
+						{
+							Name:   "t",
+							Import: "myimport/non_declaritive_elements",
+							Type:   gopkg.TypeNamed{
+								Name: "TypeInt",
+								Import: "github.com/thecodedproject/gopkg",
+							},
 						},
 					},
 				},

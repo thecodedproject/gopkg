@@ -90,12 +90,6 @@ func fileContentsFromAstFile(
 	}
 	defer fp.Close()
 
-	fileImports := make(map[string]string)
-	fileImports[CURRENT_PKG] = pkgImportPath
-	for _, importSpec := range f.Imports {
-		addImport(fileImports, importSpec)
-	}
-
 	var contents FileContents
 	if f.Doc != nil {
 		var err error
@@ -104,6 +98,16 @@ func fileContentsFromAstFile(
 			return FileContents{}, err
 		}
 	}
+
+	for _, importSpec := range f.Imports {
+		i, err := parseImportSpec(importSpec)
+		if err != nil {
+			return FileContents{}, err
+		}
+		contents.Imports = append(contents.Imports, i)
+	}
+
+	fileImports := buildFileAliasesAndImports(pkgImportPath, contents.Imports)
 
 	for _, d := range f.Decls {
 		switch decl := d.(type) {
@@ -173,6 +177,37 @@ func fileContentsFromAstFile(
 	}
 
 	return contents, nil
+}
+
+// buildFileAliasesAndImports builds a map of _local aliases_ to their imports.
+// A local alias is the alias used to reference any declaration from a given
+// import within a file - this is always non-empty for every import except
+// for the current package.
+// i.e. within a golang file, wherever a declarative element is used there is
+// an alias to indicate which package this element comes from.
+// If the package was imported without an explicit alias, then the local alias
+// assumed to be the last element of import path.
+// For the current package, a special constant `CURRENT_PKG` is used to indicate
+// that this is the current package.
+// This mapping is used to assign the correct import path to every parsed
+// declaration (the local aliases are not returned in the parsed FileContents
+// struct)
+func buildFileAliasesAndImports(
+	currentPkgImportPath string,
+	imports []ImportAndAlias,
+) map[string]string {
+	fileImports := make(map[string]string)
+	fileImports[CURRENT_PKG] = currentPkgImportPath
+	for _, i := range imports {
+		localAlias := i.Alias
+		if localAlias == "" {
+			_, localAlias = path.Split(i.Import)
+		}
+
+		fileImports[localAlias] = i.Import
+	}
+
+	return fileImports
 }
 
 func getDeclFunc(
@@ -550,24 +585,23 @@ func removeQuotes(s string) string {
 	return s
 }
 
-func addImport(
-	imports map[string]string,
+func parseImportSpec(
 	n *ast.ImportSpec,
-) {
+) (ImportAndAlias, error) {
 
 	importPath := removeQuotes(n.Path.Value)
-	var localName string
+	var alias string
 	if n.Name != nil {
-		localName = n.Name.String()
+		alias = n.Name.String()
 	}
-	if localName == "." {
-		panic("'.' imports are not supported")
-	}
-	if localName == "" {
-		_, localName = path.Split(importPath)
+	if alias == "." {
+		return ImportAndAlias{}, errors.New("'.' imports are not supported")
 	}
 
-	imports[localName] = importPath
+	return ImportAndAlias{
+		Import: importPath,
+		Alias: alias,
+	}, nil
 }
 
 func isBuiltInType(t string) bool {
