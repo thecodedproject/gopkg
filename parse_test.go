@@ -415,6 +415,117 @@ func TestParse(t *testing.T) {
 					},
 				},
 				{
+					Filepath:          "test_packages/composite_types/maps.go",
+					PackageName:       "composite_types",
+					PackageImportPath: "some/import/composite_types",
+					Functions: []gopkg.DeclFunc{
+						{
+							Name:   "SomeMapFunc",
+							Import: "some/import/composite_types",
+							Args: []gopkg.DeclVar{
+								{
+									Name: "a",
+									Type: gopkg.TypeMap{
+										KeyType: gopkg.TypeInt64{},
+										ValueType: gopkg.TypeNamed{
+											Name:   "Decimal",
+											Import: "github.com/shopspring/decimal",
+										},
+									},
+								},
+								{
+									Name: "b",
+									Type: gopkg.TypeMap{
+										KeyType: gopkg.TypePointer{
+											ValueType: gopkg.TypeString{},
+										},
+										ValueType: gopkg.TypeArray{
+											ValueType: gopkg.TypeFloat32{},
+										},
+									},
+								},
+							},
+							ReturnArgs: tmpl.UnnamedReturnArgs(
+								gopkg.TypeMap{
+									KeyType: gopkg.TypeString{},
+									ValueType: gopkg.TypeNamed{
+										Name:   "SomeMapStruct",
+										Import: "some/import/composite_types",
+									},
+								},
+							),
+							BodyTmpl: "\n\treturn nil\n",
+						},
+					},
+					Types: []gopkg.DeclType{
+						{
+							Name:   "SomeMapStruct",
+							Import: "some/import/composite_types",
+							Type: gopkg.TypeStruct{
+								Fields: []gopkg.DeclVar{
+									{
+										Name: "MOfInts",
+										Type: gopkg.TypeMap{
+											KeyType: gopkg.TypeInt64{},
+											ValueType: gopkg.TypeInt64{},
+										},
+									},
+									{
+										Name: "MOfPToStrings",
+										Type: gopkg.TypeMap{
+											KeyType: gopkg.TypeString{},
+											ValueType: gopkg.TypePointer{
+												ValueType: gopkg.TypeString{},
+											},
+										},
+									},
+									{
+										Name: "MOfDToArrayOfInt",
+										Type: gopkg.TypeMap{
+											KeyType: gopkg.TypeNamed{
+												Name:   "Decimal",
+												Import: "github.com/shopspring/decimal",
+											},
+											ValueType: gopkg.TypeArray{
+												ValueType: gopkg.TypeInt32{},
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							Name:   "MyCustomMapType",
+							Import: "some/import/composite_types",
+							Type: gopkg.TypeMap{
+								KeyType: gopkg.TypeInt{},
+								ValueType: gopkg.TypeFloat64{},
+							},
+						},
+						{
+							Name:   "SomeMapInterface",
+							Import: "some/import/composite_types",
+							Type: gopkg.TypeInterface{
+								Funcs: []gopkg.DeclFunc{
+									{
+										Name: "MapMaker",
+										Args: []gopkg.DeclVar{
+											{Name: "n", Type: gopkg.TypeInt64{}},
+											{Name: "vals", Type: gopkg.TypeString{}},
+										},
+										ReturnArgs: tmpl.UnnamedReturnArgs(
+											gopkg.TypeMap{
+												KeyType: gopkg.TypeInt64{},
+												ValueType: gopkg.TypeString{},
+											},
+										),
+									},
+								},
+							},
+						},
+					},
+				},
+				{
 					Filepath:          "test_packages/composite_types/pointers.go",
 					PackageName:       "composite_types",
 					PackageImportPath: "some/import/composite_types",

@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+
+	//"fmt"
 )
 
 const CURRENT_PKG = "current_pkg_import"
@@ -414,6 +416,23 @@ func getFullType(
 		return TypeNamed{
 			Name:   t.Name,
 			Import: importPath,
+		}, nil
+
+	case *ast.MapType:
+
+		keyType, err := getFullType(imports, t.Key)
+		if err != nil {
+			return nil, err
+		}
+
+		valueType, err := getFullType(imports, t.Value)
+		if err != nil {
+			return nil, err
+		}
+
+		return TypeMap{
+			KeyType: keyType,
+			ValueType: valueType,
 		}, nil
 
 	case *ast.StarExpr:
