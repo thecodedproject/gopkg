@@ -361,6 +361,36 @@ func TestParse(t *testing.T) {
 							),
 							BodyTmpl: "\n\n\treturn nil\n",
 						},
+						{
+							Name:   "SomeVariadicFunc",
+							Import: "some/import/composite_types",
+							Args: []gopkg.DeclVar{
+								{
+									Name: "a",
+									Type: gopkg.TypeInt{},
+								},
+							},
+							ReturnArgs: tmpl.UnnamedReturnArgs(
+								gopkg.TypeFunc{
+									Args: []gopkg.DeclVar{
+										{
+											Type: gopkg.TypeFloat32{},
+										},
+										{
+											Type: gopkg.TypePointer{
+												ValueType: gopkg.TypeString{},
+											},
+										},
+									},
+									ReturnArgs: tmpl.UnnamedReturnArgs(
+										gopkg.TypeInt{},
+									),
+									VariadicLastArg: true,
+								},
+							),
+							BodyTmpl: "\n\treturn nil\n",
+							VariadicLastArg: true,
+						},
 					},
 					Types: []gopkg.DeclType{
 						{
@@ -414,6 +444,44 @@ func TestParse(t *testing.T) {
 												},
 											},
 										},
+									},
+									{
+										Name: "VariadicFunctor",
+										Type: gopkg.TypeFunc{
+											Args: []gopkg.DeclVar{
+												{
+													Type: gopkg.TypeNamed{
+														Name: "SomeType",
+														Import: "some/import/composite_types",
+													},
+												},
+											},
+											VariadicLastArg: true,
+										},
+									},
+								},
+							},
+						},
+						{
+							Name:   "SomeInterface",
+							Import: "some/import/composite_types",
+							Type: gopkg.TypeInterface{
+								Funcs: []gopkg.DeclFunc{
+									{
+										Name: "AMethod",
+										Args: []gopkg.DeclVar{
+											{
+												Name: "one",
+												Type: gopkg.TypeInt{},
+											},
+											{
+												Name: "two",
+												Type: gopkg.TypeArray{
+													ValueType: gopkg.TypeString{},
+												},
+											},
+										},
+										VariadicLastArg: true,
 									},
 								},
 							},

@@ -223,6 +223,8 @@ func getDeclFunc(
 		return DeclFunc{}, err
 	}
 
+	variadicLastArg := handleVariadicLastArg(decl.Type.Params)
+
 	args, err := getDeclVarsFromFieldList(fileImports, decl.Type.Params)
 	if err != nil {
 		return DeclFunc{}, err
@@ -239,6 +241,7 @@ func getDeclFunc(
 		Receiver:   receiver,
 		Args:       args,
 		ReturnArgs: retArgs,
+		VariadicLastArg: variadicLastArg,
 	}
 
 	if decl.Body != nil {
@@ -359,6 +362,8 @@ func getDeclFuncsFromFieldList(
 					return nil, errors.New("bad func decl")
 				}
 
+				variadicLastArg := handleVariadicLastArg(funcType.Params)
+
 				args, err := getDeclVarsFromFieldList(imports, funcType.Params)
 				if err != nil {
 					return nil, err
@@ -373,12 +378,41 @@ func getDeclFuncsFromFieldList(
 					Name:       name.String(),
 					Args:       args,
 					ReturnArgs: retArgs,
+					VariadicLastArg: variadicLastArg,
 				})
 			}
 		}
 	}
 
 	return funcs, nil
+}
+
+// handleVariadicLastArg will detect if the last parameter of a func type is variadic
+//
+// If the last arg is variadic it will return true *and* will _strip_ the `ast.Ellipsis`
+// from the type of of the last arg in `funcParams` - this is so it can be passed as if
+// it is not variadic (i.e. with the same `getFullType` method)
+//
+// If the last arg is not variabic it will return false and `funcParams` will remain unchanged
+func handleVariadicLastArg(funcParams *ast.FieldList) bool {
+
+	// todo: implement
+
+	if len(funcParams.List) == 0 {
+		return false
+	}
+
+	p := funcParams.List[len(funcParams.List) - 1]
+
+	e, isVariadic := p.Type.(*ast.Ellipsis)
+
+	if !isVariadic {
+		return false
+	}
+
+	funcParams.List[len(funcParams.List) - 1].Type = e.Elt
+
+	return true
 }
 
 func getFuncReceiverFromFieldList(
@@ -555,6 +589,8 @@ func getFullType(
 
 	case *ast.FuncType:
 
+		variadicLastArg := handleVariadicLastArg(t.Params)
+
 		args, err := getDeclVarsFromFieldList(imports, t.Params)
 		if err != nil {
 			return nil, err
@@ -567,6 +603,7 @@ func getFullType(
 		return TypeFunc{
 			Args:       args,
 			ReturnArgs: retArgs,
+			VariadicLastArg: variadicLastArg,
 		}, nil
 
 	default:

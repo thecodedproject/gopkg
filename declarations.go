@@ -9,6 +9,7 @@ type DeclFunc struct {
 	Import     string
 	Receiver   FuncReceiver
 	Args       []DeclVar
+	VariadicLastArg bool
 	ReturnArgs []DeclVar
 	BodyTmpl   string
 	BodyData   any

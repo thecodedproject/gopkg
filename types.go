@@ -440,6 +440,7 @@ func (t TypeUnnamedLiteral) RequiredImports() map[string]bool {
 
 type TypeFunc struct {
 	Args       []DeclVar
+	VariadicLastArg bool
 	ReturnArgs []DeclVar
 }
 
