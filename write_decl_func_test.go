@@ -159,6 +159,21 @@ func TestWriteDeclFunc(t *testing.T) {
 			},
 		},
 		{
+			Name: "single variadic arg and no return or body",
+			F: gopkg.DeclFunc{
+				Name: "SingleVariadicArg",
+				Args: []gopkg.DeclVar{
+					{
+						Name: "a",
+						Type: gopkg.TypePointer{
+							ValueType: gopkg.TypeString{},
+						},
+					},
+				},
+				VariadicLastArg: true,
+			},
+		},
+		{
 			Name: "empty body no imports",
 			F: gopkg.DeclFunc{
 				Name: "MyFunction",

@@ -65,6 +65,7 @@ func fullFuncDecl(
 
 	argsAndRets, err := funcArgsAndRetArgs(
 		f.Args,
+		f.VariadicLastArg,
 		f.ReturnArgs,
 		importAliases,
 		true,
@@ -86,6 +87,7 @@ func fullFuncDecl(
 // is more than 1 argument in the args list)
 func funcArgsAndRetArgs(
 	args []DeclVar,
+	variadicLastArg bool,
 	returnArgs []DeclVar,
 	importAliases map[string]string,
 	addNewLinesToArgsList bool,
@@ -98,6 +100,7 @@ func funcArgsAndRetArgs(
 
 	argsList, err := funcArgsWithoutParenthesis(
 		args,
+		variadicLastArg,
 		importAliases,
 		addNewLinesToArgsList,
 	)
@@ -111,7 +114,7 @@ func funcArgsAndRetArgs(
 		return decl, nil
 	}
 
-	retArgsList, err := funcArgsWithoutParenthesis(returnArgs, importAliases, false)
+	retArgsList, err := funcArgsWithoutParenthesis(returnArgs, false, importAliases, false)
 	if err != nil {
 		return "", err
 	}
@@ -125,6 +128,7 @@ func funcArgsAndRetArgs(
 
 func funcArgsWithoutParenthesis(
 	args []DeclVar,
+	variadicLastArg bool,
 	importAliases map[string]string,
 	newlineDelimitted bool,
 ) (string, error) {
@@ -160,6 +164,10 @@ func funcArgsWithoutParenthesis(
 
 		if areNamedArgs {
 			argList += arg.Name + " "
+		}
+
+		if variadicLastArg && i==len(args)-1 {
+			argList += "..."
 		}
 
 		argList += retType

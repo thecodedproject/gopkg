@@ -201,6 +201,7 @@ func (t TypeInterface) FullType(importAliases map[string]string) (string, error)
 
 		argsAndRets, err := funcArgsAndRetArgs(
 			f.Args,
+			f.VariadicLastArg,
 			f.ReturnArgs,
 			importAliases,
 			false,
@@ -454,6 +455,7 @@ func (t TypeFunc) FullType(importAliases map[string]string) (string, error) {
 
 	argsAndRets, err := funcArgsAndRetArgs(
 		t.Args,
+		t.VariadicLastArg,
 		t.ReturnArgs,
 		importAliases,
 		false,

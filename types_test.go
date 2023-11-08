@@ -369,6 +369,42 @@ func TestTypeFuncFullType(t *testing.T) {
 			Expected: "func(first path.SomeType, second otheralias.SomeOtherType) (retVal third.SomeThirdType)",
 		},
 		{
+			Name: "variadic func with single arg",
+			Def: gopkg.TypeFunc{
+				Args: []gopkg.DeclVar{
+					{
+						Name: "v",
+						Type: gopkg.TypeInt64{},
+					},
+				},
+				VariadicLastArg: true,
+			},
+			Expected: "func(v ...int64)",
+		},
+		{
+			Name: "variadic func with multiple args and return args",
+			Def: gopkg.TypeFunc{
+				Args: []gopkg.DeclVar{
+					{
+						Name: "a",
+						Type: gopkg.TypeInt64{},
+					},
+					{
+						Name: "b",
+						Type: gopkg.TypeInt32{},
+					},
+					{
+						Name: "v",
+						Type: gopkg.TypePointer{
+							ValueType: gopkg.TypeString{},
+						},
+					},
+				},
+				VariadicLastArg: true,
+			},
+			Expected: "func(a int64, b int32, v ...*string)",
+		},
+		{
 			Name: "mix of named and unnamed params returns error",
 			Def: gopkg.TypeFunc{
 				Args: []gopkg.DeclVar{
@@ -606,11 +642,25 @@ func TestTypeInterfaceFullType(t *testing.T) {
 							},
 						),
 					},
+					{
+						Name: "VariadicMethod",
+						Args: []gopkg.DeclVar{
+							{
+								Type: gopkg.TypeFloat64{},
+							},
+						},
+						ReturnArgs: tmpl.UnnamedReturnArgs(
+							gopkg.TypeString{},
+							gopkg.TypeError{},
+						),
+						VariadicLastArg: true,
+					},
 				},
 			},
 			Expected: `interface {
 	FirstMethod(a int32, b float64) (string, error)
 	SecondMethod() MyType
+	VariadicMethod(...float64) (string, error)
 }`,
 		},
 		{
