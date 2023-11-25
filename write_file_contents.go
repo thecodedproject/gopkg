@@ -14,6 +14,10 @@ func WriteFileContents(
 		return errors.New("package name cannot be empty")
 	}
 
+	if c.DocString != "" {
+		w.Write([]byte(c.DocString + "\n"))
+	}
+
 	w.Write([]byte("package " + c.PackageName + "\n\n"))
 
 	if len(c.Imports) > 0 {

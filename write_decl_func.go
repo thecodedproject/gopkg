@@ -19,6 +19,10 @@ func WriteDeclFunc(
 		return err
 	}
 
+	if decl.DocString != "" {
+		w.Write([]byte(decl.DocString + "\n"))
+	}
+
 	w.Write([]byte(funcDecl))
 	w.Write([]byte(" {\n"))
 

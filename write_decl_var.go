@@ -27,6 +27,9 @@ func WriteDeclVars(
 	}
 
 	if len(decls) == 1 {
+		if decls[0].DocString != "" {
+			w.Write([]byte(decls[0].DocString + "\n"))
+		}
 		w.Write([]byte(keyword + " "))
 		writeDeclVar(w, decls[0], importAliases)
 		w.Write([]byte("\n"))
@@ -34,7 +37,14 @@ func WriteDeclVars(
 	}
 
 	w.Write([]byte(keyword + " (\n"))
-	for _, d := range decls {
+	for i, d := range decls {
+		if d.DocString != "" {
+			// vanity space var/const declarations if there is a docstring
+			if i != 0 {
+				w.Write([]byte("\n"))
+			}
+			w.Write([]byte("\t" + d.DocString + "\n"))
+		}
 		w.Write([]byte("\t"))
 		writeDeclVar(w, d, importAliases)
 	}

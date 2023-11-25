@@ -140,6 +140,59 @@ func TestWriteFileContents(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "file with doc strings",
+			C: gopkg.FileContents{
+				PackageName: "docstrings",
+				DocString: `// A file level doc string
+// across multiple
+// lines...`,
+				Vars: []gopkg.DeclVar{
+					{
+						Name: "Avar",
+						Type: gopkg.TypeString{},
+						LiteralValue: `"hello world"`,
+						DocString: "// Avar has a single line doc string...",
+					},
+					{
+						Name: "Bvar",
+						Type: gopkg.TypeInt32{},
+						LiteralValue: `123`,
+						DocString: `// A doc string for Bvar
+	// with multiple lines and indents`,
+					},
+				},
+				Consts: []gopkg.DeclVar{
+					{
+						Name: "SingleConst",
+						Type: gopkg.TypeError{},
+						DocString: "// SingleConst is an error type",
+					},
+				},
+				Types: []gopkg.DeclType{
+					{
+						Name: "SomeType",
+						Type: gopkg.TypeInt{},
+						DocString: "// SomeType with a doc string",
+					},
+					{
+						Name: "AnotherType",
+						Type: gopkg.TypeStruct{},
+						DocString: "// Another type with\n// a multi line\n// docstring",
+					},
+				},
+				Functions: []gopkg.DeclFunc{
+					{
+						Name: "OneFunc",
+						DocString: "// OneFunc with a docstring",
+					},
+					{
+						Name: "AnotherFunc",
+						DocString: "// AnotherFunc with a docstring\n// on multiple lines",
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {

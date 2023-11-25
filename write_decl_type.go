@@ -23,6 +23,10 @@ func WriteDeclType(
 		return err
 	}
 
+	if decl.DocString != "" {
+		w.Write([]byte(decl.DocString + "\n"))
+	}
+
 	w.Write([]byte(
 		"type " + decl.Name + " " + fullType + "\n",
 	))

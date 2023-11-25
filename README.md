@@ -54,7 +54,6 @@ See also:
 
 * Make linting method to sort FileContents
 
-* Remove leading whitespace from DeclFunc.BodyTmpl
 
 * Add DeclFunc.AdditionalImports field, which can be used to add imports at the function level
 
@@ -76,4 +75,7 @@ See also:
   * etc...
 
 * Add doc strings
+
+* Add linter to _sanatize literals_ which will strip leading and trailing whitespace from all literals:
+  * Remove leading whitespace from DeclFunc.BodyTmpl
 
