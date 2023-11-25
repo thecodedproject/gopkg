@@ -17,7 +17,10 @@ import (
 
 const CURRENT_PKG = "current_pkg_import"
 
-func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
+// Parse parses the file or package at `inputPath` and returns its `FileContents` representation
+//
+// `inputPath` may either be a single golang source file or a directory of golang source files (i.e. a package)
+func Parse(inputPath string, opts ...ParseOption) ([]FileContents, error) {
 
 	var parseOptions parseOptions
 	for _, opt := range opts {
@@ -26,16 +29,32 @@ func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
 
 	if parseOptions.pkgImportPath == "" {
 		var err error
-		parseOptions.pkgImportPath, err = PackageImportPath(pkgDir)
+		parseOptions.pkgImportPath, err = PackageImportPath(inputPath)
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	fileInfo, err := os.Stat(inputPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if fileInfo.IsDir() {
+		return parseSingleDirectory(inputPath, parseOptions)
+	}
+
+	return parseSingleFile(inputPath, parseOptions)
+}
+
+func parseSingleDirectory(
+	dir string,
+	parseOpts parseOptions,
+) ([]FileContents, error) {
 	fset := token.NewFileSet()
 	pkgs, err := parser.ParseDir(
 		fset,
-		pkgDir,
+		dir,
 		nil,
 		parser.ParseComments,
 	)
@@ -50,7 +69,7 @@ func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
 		for filepath, fileNode := range pkg.Files {
 
 			fileContents, err := fileContentsFromAstFile(
-				parseOptions.pkgImportPath,
+				parseOpts.pkgImportPath,
 				filepath,
 				fileNode,
 				fset,
@@ -60,7 +79,7 @@ func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
 			}
 
 			fileContents.PackageName = pkg.Name
-			fileContents.PackageImportPath = parseOptions.pkgImportPath
+			fileContents.PackageImportPath = parseOpts.pkgImportPath
 			fileContents.Filepath = filepath
 
 			pkgContents = append(
@@ -75,6 +94,38 @@ func Parse(pkgDir string, opts ...ParseOption) ([]FileContents, error) {
 	})
 
 	return pkgContents, nil
+}
+
+func parseSingleFile(
+	filepath string,
+	parseOpts parseOptions,
+) ([]FileContents, error) {
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(
+		fset,
+		filepath,
+		nil,
+		parser.ParseComments,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	fileContents, err := fileContentsFromAstFile(
+		parseOpts.pkgImportPath,
+		filepath,
+		f,
+		fset,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	fileContents.PackageName = f.Name.String()
+	fileContents.PackageImportPath = parseOpts.pkgImportPath
+	fileContents.Filepath = filepath
+
+	return []FileContents{fileContents}, nil
 }
 
 func fileContentsFromAstFile(

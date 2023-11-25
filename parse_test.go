@@ -1,8 +1,10 @@
 package gopkg_test
 
 import (
+	"bytes"
 	"testing"
 
+	"github.com/sebdah/goldie/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -10,7 +12,7 @@ import (
 	"github.com/thecodedproject/gopkg/tmpl"
 )
 
-func TestParse(t *testing.T) {
+func TestParseDir(t *testing.T) {
 
 	testCases := []struct {
 		Name         string
@@ -1497,6 +1499,73 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, test.Expected, pc)
+		})
+	}
+}
+
+func TestParseSingleFile(t *testing.T) {
+
+	testCases := []struct{
+		Name string
+		InputFile string
+		ParseOptions []gopkg.ParseOption
+		Expected []gopkg.FileContents
+	}{
+		{
+			Name: "very_simple/very_simple.go",
+			InputFile: "test_packages/very_simple/very_simple.go",
+			Expected: []gopkg.FileContents{
+				{
+					Filepath:          "test_packages/very_simple/very_simple.go",
+					PackageName:       "very_simple",
+					PackageImportPath: "github.com/thecodedproject/gopkg/test_packages/very_simple",
+					Vars: []gopkg.DeclVar{
+						{
+							Name:   "MyVar",
+							Import: "github.com/thecodedproject/gopkg/test_packages/very_simple",
+							Type:   gopkg.TypeInt{},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+			pc, err := gopkg.Parse(test.InputFile, test.ParseOptions...)
+			require.NoError(t, err)
+			assert.Equal(t, test.Expected, pc)
+		})
+	}
+}
+
+// TestParseAndWriteSingleFile checks that a roundtrip (parse + generate) of a single produces the desired result
+func TestParseAndWriteSingleFile(t *testing.T) {
+
+	testCases := []struct{
+		Name string
+		InputFile string
+	}{
+		{
+			Name: "docstrings",
+			InputFile: "testdata/TestParseAndWriteSingleFile/docstrings_input.go",
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.Name, func(t *testing.T) {
+			pc, err := gopkg.Parse(test.InputFile)
+			require.NoError(t, err)
+
+			require.Equal(t, 1, len(pc), "Expected exactly 1 file contents")
+
+			buffer := bytes.NewBuffer(nil)
+			err = gopkg.WriteFileContents(buffer, pc[0])
+			require.NoError(t, err)
+
+			g := goldie.New(t)
+			g.Assert(t, t.Name(), buffer.Bytes())
 		})
 	}
 }
