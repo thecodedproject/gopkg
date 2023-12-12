@@ -78,4 +78,6 @@ See also:
 
 * Add linter to _sanatize literals_ which will strip leading and trailing whitespace from all literals:
   * Remove leading whitespace from DeclFunc.BodyTmpl
+  * Remove leading and trailing whitespace from all strings in `FileContents`
+  * Maybe remove newlines from things that shouldnt have new lines? (e.g. Decl names?)
 
