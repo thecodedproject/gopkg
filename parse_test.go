@@ -1490,6 +1490,81 @@ func TestParseDir(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name:   "dependent_types",
+			PkgDir: "test_packages/dependent_types",
+			ParseOptions: []gopkg.ParseOption{
+				gopkg.ParseWithPkgImportPath("myimport/some_dependent_types"),
+				gopkg.ParseDependentTypes(),
+			},
+			Expected: []gopkg.FileContents{
+				{
+					Filepath:          "test_packages/dependent_types/dependent_types.go",
+					PackageName:       "dependent_types",
+					PackageImportPath: "myimport/some_dependent_types",
+					Imports: tmpl.UnnamedImports(
+						"math/big",
+						"github.com/shopspring/decimal",
+					),
+					Types: []gopkg.DeclType{
+						{
+							Name: "AStruct",
+							Import: "myimport/some_dependent_types",
+							Type: gopkg.TypeStruct{
+								Fields: []gopkg.DeclVar{
+									{
+										Name: "One",
+										Type: gopkg.TypeNamed{
+											Name: "Int",
+											Import: "math/big",
+											ValueType: gopkg.TypeStruct{
+												Fields: []gopkg.DeclVar{
+													{
+														Name: "neg",
+														Type: gopkg.TypeBool{},
+													},
+													{
+														Name: "abs",
+														Type: gopkg.TypeNamed{
+															Name: "nat",
+															Import: "math/big",
+														},
+													},
+												},
+											},
+										},
+									},
+									{
+										Name: "Two",
+										Type: gopkg.TypeNamed{
+											Name: "Decimal",
+											Import: "github.com/shopspring/decimal",
+											ValueType: gopkg.TypeStruct{
+												Fields: []gopkg.DeclVar{
+													{
+														Name: "value",
+														Type: gopkg.TypePointer{
+															ValueType: gopkg.TypeNamed{
+																Name: "Int",
+																Import: "math/big",
+															},
+														},
+													},
+													{
+														Name: "exp",
+														Type: gopkg.TypeInt32{},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range testCases {

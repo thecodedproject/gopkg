@@ -74,10 +74,10 @@ See also:
     * Type not set
   * etc...
 
-* Add doc strings
-
 * Add linter to _sanatize literals_ which will strip leading and trailing whitespace from all literals:
   * Remove leading whitespace from DeclFunc.BodyTmpl
   * Remove leading and trailing whitespace from all strings in `FileContents`
   * Maybe remove newlines from things that shouldnt have new lines? (e.g. Decl names?)
+
+* Consider removing `Import` field from declaration types - it doesn't seem that this is used at all for generating; It seems like a convenience field but I'm not sure there is a scenario where this is useful
 

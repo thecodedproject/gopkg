@@ -11,8 +11,9 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"golang.org/x/tools/go/packages"
 
-	//"fmt"
+	"fmt"
 )
 
 const CURRENT_PKG = "current_pkg_import"
@@ -69,7 +70,7 @@ func parseSingleDirectory(
 		for filepath, fileNode := range pkg.Files {
 
 			fileContents, err := fileContentsFromAstFile(
-				parseOpts.pkgImportPath,
+				parseOpts,
 				filepath,
 				fileNode,
 				fset,
@@ -112,7 +113,7 @@ func parseSingleFile(
 	}
 
 	fileContents, err := fileContentsFromAstFile(
-		parseOpts.pkgImportPath,
+		parseOpts,
 		filepath,
 		f,
 		fset,
@@ -129,7 +130,7 @@ func parseSingleFile(
 }
 
 func fileContentsFromAstFile(
-	pkgImportPath string,
+	parseOpts parseOptions,
 	filepath string,
 	f *ast.File,
 	fileSet *token.FileSet,
@@ -158,12 +159,12 @@ func fileContentsFromAstFile(
 		contents.Imports = append(contents.Imports, i)
 	}
 
-	fileImports := buildFileAliasesAndImports(pkgImportPath, contents.Imports)
+	fileImports := buildFileAliasesAndImports(parseOpts.pkgImportPath, contents.Imports)
 
 	for _, d := range f.Decls {
 		switch decl := d.(type) {
 		case *ast.FuncDecl:
-			f, err := getDeclFunc(pkgImportPath, fileSet, fileImports, fp, decl)
+			f, err := getDeclFunc(parseOpts, fileSet, fileImports, fp, decl)
 			if err != nil {
 				return FileContents{}, err
 			}
@@ -184,7 +185,7 @@ func fileContentsFromAstFile(
 				switch s := declSpec.(type) {
 				case *ast.TypeSpec:
 
-					fullType, err := getFullType(fileImports, s.Type)
+					fullType, err := getFullType(parseOpts, fileImports, s.Type)
 					if err != nil {
 						return FileContents{}, err
 					}
@@ -193,7 +194,7 @@ func fileContentsFromAstFile(
 						contents.Types,
 						DeclType{
 							Name:      s.Name.Name,
-							Import:    pkgImportPath,
+							Import:    parseOpts.pkgImportPath,
 							Type:      fullType,
 							DocString: docString,
 						},
@@ -201,7 +202,7 @@ func fileContentsFromAstFile(
 				case *ast.ValueSpec:
 
 					declVars, err := declVarsFromAstValueSpec(
-						pkgImportPath,
+						parseOpts,
 						fileImports,
 						fp,
 						fileSet,
@@ -262,33 +263,33 @@ func buildFileAliasesAndImports(
 }
 
 func getDeclFunc(
-	pkgImportPath string,
+	parseOpts parseOptions,
 	fileSet *token.FileSet,
 	fileImports map[string]string,
 	fp *os.File,
 	decl *ast.FuncDecl,
 ) (DeclFunc, error) {
 
-	receiver, err := getFuncReceiverFromFieldList(decl.Recv)
+	receiver, err := getFuncReceiverFromFieldList(parseOpts, decl.Recv)
 	if err != nil {
 		return DeclFunc{}, err
 	}
 
 	variadicLastArg := handleVariadicLastArg(decl.Type.Params)
 
-	args, err := getDeclVarsFromFieldList(fileImports, decl.Type.Params)
+	args, err := getDeclVarsFromFieldList(parseOpts, fileImports, decl.Type.Params)
 	if err != nil {
 		return DeclFunc{}, err
 	}
 
-	retArgs, err := getDeclVarsFromFieldList(fileImports, decl.Type.Results)
+	retArgs, err := getDeclVarsFromFieldList(parseOpts, fileImports, decl.Type.Results)
 	if err != nil {
 		return DeclFunc{}, err
 	}
 
 	f := DeclFunc{
 		Name:       decl.Name.String(),
-		Import:     pkgImportPath,
+		Import:     parseOpts.pkgImportPath,
 		Receiver:   receiver,
 		Args:       args,
 		ReturnArgs: retArgs,
@@ -349,6 +350,7 @@ func readFromFileSet(
 // Note that `DeclVar.Import` will always be blank as the field list will
 // only contain vars declared in a local scope (i.e. not at the package level)
 func getDeclVarsFromFieldList(
+	parseOpts parseOptions,
 	imports map[string]string,
 	fieldList *ast.FieldList,
 ) ([]DeclVar, error) {
@@ -360,7 +362,7 @@ func getDeclVarsFromFieldList(
 	typeList := make([]DeclVar, 0, len(fieldList.List))
 
 	for _, f := range fieldList.List {
-		fieldType, err := getFullType(imports, f.Type)
+		fieldType, err := getFullType(parseOpts, imports, f.Type)
 		if err != nil {
 			return nil, err
 		}
@@ -391,6 +393,7 @@ func getDeclVarsFromFieldList(
 }
 
 func getDeclFuncsFromFieldList(
+	parseOpts parseOptions,
 	imports map[string]string,
 	fieldList *ast.FieldList,
 ) ([]DeclFunc, error) {
@@ -415,12 +418,12 @@ func getDeclFuncsFromFieldList(
 
 				variadicLastArg := handleVariadicLastArg(funcType.Params)
 
-				args, err := getDeclVarsFromFieldList(imports, funcType.Params)
+				args, err := getDeclVarsFromFieldList(parseOpts, imports, funcType.Params)
 				if err != nil {
 					return nil, err
 				}
 
-				retArgs, err := getDeclVarsFromFieldList(imports, funcType.Results)
+				retArgs, err := getDeclVarsFromFieldList(parseOpts, imports, funcType.Results)
 				if err != nil {
 					return nil, err
 				}
@@ -467,6 +470,7 @@ func handleVariadicLastArg(funcParams *ast.FieldList) bool {
 }
 
 func getFuncReceiverFromFieldList(
+	parseOpts parseOptions,
 	fieldList *ast.FieldList,
 ) (FuncReceiver, error) {
 
@@ -474,7 +478,7 @@ func getFuncReceiverFromFieldList(
 		return FuncReceiver{}, nil
 	}
 
-	types, err := getDeclVarsFromFieldList(nil, fieldList)
+	types, err := getDeclVarsFromFieldList(parseOpts, nil, fieldList)
 	if err != nil {
 		return FuncReceiver{}, err
 	}
@@ -508,6 +512,7 @@ func getFuncReceiverFromFieldList(
 }
 
 func getFullType(
+	parseOpts parseOptions,
 	imports map[string]string,
 	t ast.Expr,
 ) (Type, error) {
@@ -519,7 +524,7 @@ func getFullType(
 		if t.Len != nil {
 			return nil, errors.New("[...]T array types not supported")
 		}
-		fullType, err := getFullType(imports, t.Elt)
+		fullType, err := getFullType(parseOpts, imports, t.Elt)
 		if err != nil {
 			return nil, err
 		}
@@ -540,12 +545,12 @@ func getFullType(
 
 	case *ast.MapType:
 
-		keyType, err := getFullType(imports, t.Key)
+		keyType, err := getFullType(parseOpts, imports, t.Key)
 		if err != nil {
 			return nil, err
 		}
 
-		valueType, err := getFullType(imports, t.Value)
+		valueType, err := getFullType(parseOpts, imports, t.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -556,7 +561,7 @@ func getFullType(
 		}, nil
 
 	case *ast.StarExpr:
-		fullType, err := getFullType(imports, t.X)
+		fullType, err := getFullType(parseOpts, imports, t.X)
 		if err != nil {
 			return nil, err
 		}
@@ -578,6 +583,28 @@ func getFullType(
 			return nil, errors.New("unknown import path " + imp.Name)
 		}
 
+		if parseOpts.dependentTypes {
+
+			fmt.Println("******* Found dependent type:", importPath, t.Sel.Name)
+
+			conf := &packages.Config{
+				Mode: packages.NeedName |
+					packages.NeedFiles |
+					//packages.NeedCompiledGoFiles |
+					//packages.NeedImports |
+					//packages.NeedTypesSizes |
+					packages.NeedDeps |
+					packages.NeedTypes,
+			}
+			pkgs, err := packages.Load(conf, importPath)
+
+		  //get dependent type:
+		 	//	Parse importPath with `packages`
+		 	//	look for type with `t.Sel.Name`
+		 	//	Parse ast of that type
+		}
+
+
 		//fmt.Println("****** Type:", importPath, importPrefix + "." + t.Sel.Name)
 
 		return TypeNamed{
@@ -588,6 +615,7 @@ func getFullType(
 	case *ast.StructType:
 
 		structFieldsAndEmbeds, err := getDeclVarsFromFieldList(
+			parseOpts,
 			imports,
 			t.Fields,
 		)
@@ -609,6 +637,7 @@ func getFullType(
 	case *ast.InterfaceType:
 
 		interfaceFuncs, err := getDeclFuncsFromFieldList(
+			parseOpts,
 			imports,
 			t.Methods,
 		)
@@ -623,6 +652,7 @@ func getFullType(
 		// Embedded types or interfaces will appear in the field list
 		// without any name
 		possibleEmbeds, err := getDeclVarsFromFieldList(
+			parseOpts,
 			imports,
 			t.Methods,
 		)
@@ -642,11 +672,11 @@ func getFullType(
 
 		variadicLastArg := handleVariadicLastArg(t.Params)
 
-		args, err := getDeclVarsFromFieldList(imports, t.Params)
+		args, err := getDeclVarsFromFieldList(parseOpts, imports, t.Params)
 		if err != nil {
 			return nil, err
 		}
-		retArgs, err := getDeclVarsFromFieldList(imports, t.Results)
+		retArgs, err := getDeclVarsFromFieldList(parseOpts, imports, t.Results)
 		if err != nil {
 			return nil, err
 		}
@@ -736,7 +766,7 @@ func typeFromString(t string) Type {
 }
 
 func declVarsFromAstValueSpec(
-	pkgImportPath string,
+	parseOpts parseOptions,
 	imports map[string]string,
 	fp *os.File,
 	fileSet *token.FileSet,
@@ -748,7 +778,7 @@ func declVarsFromAstValueSpec(
 		sType = TypeUnnamedLiteral{}
 	} else {
 		var err error
-		sType, err = getFullType(imports, spec.Type)
+		sType, err = getFullType(parseOpts, imports, spec.Type)
 		if err != nil {
 			return nil, err
 		}
@@ -781,7 +811,7 @@ func declVarsFromAstValueSpec(
 			declVars,
 			DeclVar{
 				Name:         spec.Names[iDecl].String(),
-				Import:       pkgImportPath,
+				Import:       parseOpts.pkgImportPath,
 				Type:         sType,
 				LiteralValue: literalValue,
 				DocString:    docString,
@@ -796,12 +826,19 @@ type ParseOption func(parseOptions) parseOptions
 
 type parseOptions struct {
 	pkgImportPath string
+	dependentTypes bool
 }
 
 func ParseWithPkgImportPath(importPath string) ParseOption {
-
 	return func(o parseOptions) parseOptions {
 		o.pkgImportPath = importPath
+		return o
+	}
+}
+
+func ParseDependentTypes() ParseOption {
+	return func(o parseOptions) parseOptions {
+		o.dependentTypes = true
 		return o
 	}
 }
