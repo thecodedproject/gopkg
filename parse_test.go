@@ -1505,6 +1505,7 @@ func TestParseDir(t *testing.T) {
 					Imports: tmpl.UnnamedImports(
 						"math/big",
 						"github.com/shopspring/decimal",
+						"github.com/thecodedproject/gopkg/test_packages/dependent_types/nested_pkg",
 					),
 					Types: []gopkg.DeclType{
 						{
@@ -1553,6 +1554,38 @@ func TestParseDir(t *testing.T) {
 													{
 														Name: "exp",
 														Type: gopkg.TypeInt32{},
+													},
+												},
+											},
+										},
+									},
+									{
+										Name: "Three",
+										Type: gopkg.TypeNamed{
+											Name: "SomeType",
+											Import: "github.com/thecodedproject/gopkg/test_packages/dependent_types/nested_pkg",
+											ValueType: gopkg.TypePointer{
+												ValueType: gopkg.TypeInt32{},
+											},
+										},
+									},
+									{
+										Name: "Four",
+										Type: gopkg.TypeNamed{
+											Name: "AnotherType",
+											Import: "github.com/thecodedproject/gopkg/test_packages/dependent_types/nested_pkg",
+											ValueType: gopkg.TypeStruct{
+												Fields: []gopkg.DeclVar{
+													{
+														Name: "A",
+														Type: gopkg.TypeString{},
+													},
+													{
+														Name: "B",
+														Type: gopkg.TypeNamed{
+															Name: "Context",
+															Import: "context",
+														},
 													},
 												},
 											},

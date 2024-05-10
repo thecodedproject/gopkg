@@ -151,12 +151,9 @@ func fileContentsFromAstFile(
 		}
 	}
 
-	for _, importSpec := range f.Imports {
-		i, err := parseImportSpec(importSpec)
-		if err != nil {
-			return FileContents{}, err
-		}
-		contents.Imports = append(contents.Imports, i)
+	contents.Imports, err = parseImportsFromAstFile(f)
+	if err != nil {
+		return FileContents{}, err
 	}
 
 	fileImports := buildFileAliasesAndImports(parseOpts.pkgImportPath, contents.Imports)
@@ -229,6 +226,25 @@ func fileContentsFromAstFile(
 	}
 
 	return contents, nil
+}
+
+func parseImportsFromAstFile(
+	fileAst *ast.File,
+) ([]ImportAndAlias, error) {
+
+	if len(fileAst.Imports) == 0 {
+		return nil, nil
+	}
+
+	imports := make([]ImportAndAlias, 0, len(fileAst.Imports))
+	for _, importSpec := range fileAst.Imports {
+		i, err := parseImportSpec(importSpec)
+		if err != nil {
+			return nil, err
+		}
+		imports = append(imports, i)
+	}
+	return imports, nil
 }
 
 // buildFileAliasesAndImports builds a map of _local aliases_ to their imports.
@@ -580,23 +596,26 @@ func getFullType(
 
 		importPath, ok := imports[imp.Name]
 		if !ok {
-			return nil, errors.New("unknown import path " + imp.Name)
+			return nil, errors.New("unknown import path '" + imp.Name + "'")
 		}
 
+		var valueType Type
 		if parseOpts.dependentTypes {
 
 			fmt.Println("******* Found dependent type:", importPath, t.Sel.Name)
 
-			conf := &packages.Config{
-				Mode: packages.NeedName |
-					packages.NeedFiles |
-					//packages.NeedCompiledGoFiles |
-					//packages.NeedImports |
-					//packages.NeedTypesSizes |
-					packages.NeedDeps |
-					packages.NeedTypes,
+			dependentImports, depTypeExpr, err := fetchFileImportsAndAstForDependentType(importPath, t.Sel.Name)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to get ast for dependent type")
 			}
-			pkgs, err := packages.Load(conf, importPath)
+
+
+			// TODO:
+			// * Stop parsing nested dependent types (need to change the parseOpts passed here to turn off dep types)
+			valueType, err = getFullType(parseOptions{}, dependentImports, depTypeExpr)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to get full type for dependent type")
+			}
 
 		  //get dependent type:
 		 	//	Parse importPath with `packages`
@@ -610,6 +629,7 @@ func getFullType(
 		return TypeNamed{
 			Name:   t.Sel.Name,
 			Import: importPath,
+			ValueType: valueType,
 		}, nil
 
 	case *ast.StructType:
@@ -690,6 +710,57 @@ func getFullType(
 	default:
 		return nil, errors.New("unknown field type")
 	}
+}
+
+func fetchFileImportsAndAstForDependentType(
+	pkgPath string,
+	typeName string,
+) (map[string]string, ast.Expr, error) {
+
+	conf := &packages.Config{
+		Mode: packages.NeedDeps |
+			packages.NeedFiles |
+			packages.NeedName |
+			packages.NeedSyntax,
+	}
+	pkgs, err := packages.Load(conf, pkgPath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(pkgs) == 0 {
+		return nil, nil, errors.New("package not found '" + pkgPath + "'")
+	}
+
+	for _, fileAst := range pkgs[0].Syntax {
+		for _, decl := range fileAst.Decls {
+
+			switch d := decl.(type) {
+			case *ast.GenDecl:
+
+				for _, declSpec := range d.Specs {
+
+					switch s := declSpec.(type) {
+					case *ast.TypeSpec:
+
+						if s.Name.Name == typeName {
+
+							imports, err := parseImportsFromAstFile(fileAst)
+							if err != nil {
+								return nil, nil, err
+							}
+
+							fileImports := buildFileAliasesAndImports(pkgPath, imports)
+
+							return fileImports, s.Type, nil
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return nil, nil, errors.New("type '" + typeName + "' not found in packge '" + pkgPath + "'")
 }
 
 func removeQuotes(s string) string {
